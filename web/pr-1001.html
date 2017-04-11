@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+  <title>XMatrix</title>
+
+  <!-- Bootstrap -->
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+  <script src="js/jquery-3.2.0.min.js"></script>
+  <style type="text/css">
+    body { padding-top: 70px; }
+  </style>
+  <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+      <![endif]-->
+    </head>
+    <body>
+              <!-- 标题栏开始 -->
+      <script type="text/javascript">
+        function myfun(){
+          $("#t-problem").addClass("active");
+        }
+        $(function() {
+          $("#nav-bar").load("nav-bar.html");
+          var t=setTimeout("myfun()",500);
+        });
+      </script>
+
+      <div id="nav-bar"></div>
+      <!--标题栏结束 -->
+      <div class="container-fluid">
+        <div class="row-fluid">
+
+          <div class="col-xs-2">
+            <ul class="nav nav-pills nav-stacked">
+              <li class="active"><a href="pr-1001.html">1001</a></li>
+              <li><a href="pr-1002.html">1002</a></li>
+              <li><a href="pr-1003.html">1003</a></li>
+              <li><a href="pr-1004.html">1004</a></li>
+            </ul>
+          </div>
+          <!-- Tab panes -->
+          <div class="col-xs-10">
+
+            <div class="panel panel-default">
+              <div class="panel-heading">题目名称1 : D&A Static Linked List(eden)</div>
+              <div class="panel-body">
+
+                <div class="col-xs-9">
+                  <p>时间限制 : 1000 ms</p>
+                  <p>空间限制 : 32 MB</p>
+                </div>
+                <div class="col-xs-3">
+                  <p>出题：秀秀</p>
+                  <p>邮箱：dalao@dalao.com</p>
+
+
+                </div>
+
+              </div>
+            </div>
+
+            <div class="panel panel-default">
+              <div class="panel-body">
+                <div class="markdown-body"><p>Introduction</p>
+                  <p>Knowledge points: encapsulation, copy constructor, linked list algorithms, debug methods(GDB or IDE or output debug).</p>
+                  <p>In this Lab, again, you are going to implement a class named static linked list which is based on an fiexed length array storage. You need to figure out the logic inside this.</p>
+                  <p>I recommend you to:</p>
+                  <p>Learn the knowledge points mentioned above. Use local compilers to test you program rather than submit your answer to the system time after time. Use local debug tools(GDB is recommended) to debug your code, especially for the memory leak problem. I can tell you that you will meet runtime error problem if you don't use local debug tools. Make use of your paper and pen to have some sketches because it's a good way when you meet list.</p>
+                  <h1>Knowledge</h1>
+                  <h2>Linked List</h2>
+                  <p>Read the "Linked lists using arrays of nodes" part.</p>
+                  <h2>Requirements:</h2>
+                  <p>Just read the requirements in "simple list"</p>
+                  <p>Note that there are exactly two "list" in the class list. One is the actual list while another is the list to maintain the empty nodes in the storage array. And we use <code>empty_head</code> as the head node for the latter.  The operation of the linked list implies the maintenance of the empty nodes.</p>
+                  <p>Source Author: <em>叶嘉祺</em></p></div>
+                </div>
+              </div>
+            </div>
+
+
+
+          </div>
+        </div>
+      </div>
+      <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+      <script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
+      <!-- Include all compiled plugins (below), or include individual files as needed -->
+      <script src="js/bootstrap.min.js"></script>
+    </body>
+    </html>
