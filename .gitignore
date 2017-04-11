@@ -1,0 +1,6 @@
+#binary file
+*.exe
+*.out
+
+#readme markdown file
+/README.md
