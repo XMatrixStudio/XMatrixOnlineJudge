@@ -8,11 +8,41 @@
   <title>XMatrix</title>
   <!-- Bootstrap -->
   <link href="css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="css/codemirror.css">
+  <link rel="stylesheet" href="css/show-hint.css">
+  <link rel="stylesheet" href="css/blackboard.css">
+
+
+  <script src="js/codemirror.js"></script>
+
+  <script type="text/javascript" src="js/edit/closebrackets.js"></script>
+  <script type="text/javascript" src="js/edit/closetag.js"></script>
+  <script type="text/javascript" src="js/edit/continuelist.js"></script>
+  <script type="text/javascript" src="js/edit/matchtags.js"></script>
+  <script type="text/javascript" src="js/edit/trailingspace.js"></script>
+
+  <!-- hint -->
+  <script type="text/javascript" src="js/javascript-hint.js"></script>
+  <script src="js/edit/matchbrackets.js"></script>
+  <script src="js/show-hint.js"></script>
+  <script src="js/clike.js"></script>
+
+
   <link rel="shortcut icon" href="xmatrix.ico">
   <script src="js/jquery-3.2.0.min.js"></script>
+  <script src="js/showdown.min.js"></script>
   <style type="text/css">
     body { padding-top: 70px; }
   </style>
+  <script type="text/javascript">
+    function myfun(){
+      $("#t-problem").addClass("active");
+    }
+    $(function() {
+      $("#nav-bar").load("nav-bar.html");
+    });
+  </script>
+
   <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
   <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
@@ -21,85 +51,88 @@
       <![endif]-->
     </head>
     <body>
-     <!-- 标题栏开始 -->
-     <script type="text/javascript">
-      function myfun(){
-        $("#t-problem").addClass("active");
-      }
-      $(function() {
-        $("#nav-bar").load("nav-bar.html");
-        var t=setTimeout("myfun()",500);
-      });
-    </script>
+      <script type="text/javascript">
+        $(function(){
+          var textarea = document.getElementById('codetext');
+          var editor = CodeMirror.fromTextArea(textarea, {
+            //lineNumbers: true,
+            autofocus: true,
+            mode: 'text/x-c++src',
+            theme: 'blackboard',
+            matchBrackets: true,
+            autoCloseBrackets: true,
+            extraKeys: {"Ctrl": "autocomplete"},
+          });
+        });
+      </script>
+      <!-- 标题栏开始 -->
 
-    <div id="nav-bar"></div>
-    <!--标题栏结束 -->
-    <div class="container-fluid">
-      <div class="row-fluid">
+      <div id="nav-bar"></div>
+      <!--标题栏结束 -->
+      <div class="container-fluid">
+        <div class="row-fluid">
 
-        <!-- Nav tabs -->
-        <ul class="nav nav-tabs">
-          <li class="active"><a href="#home" data-toggle="tab">问题描述</a></li>
-          <li><a href="#profile" data-toggle="tab">代码提交</a></li>
-          <li><a href="#messages" data-toggle="tab">成绩报告</a></li>
-          <li><a href="#settings" data-toggle="tab">排名情况</a></li>
-        </ul>
-        <br>
-        <!-- Tab panes -->
-        <div class="tab-content">
-          <div class="tab-pane fade in active" id="home">
-            <div class="panel panel-default">
-              <div class="panel-heading">题目名称2 : D&A Static Linked List(eden)</div>
-              <div class="panel-body">
+          <!-- Nav tabs -->
+          <ul class="nav nav-tabs">
+            <li class="active"><a href="#home" data-toggle="tab">问题描述</a></li>
+            <li><a href="#profile" data-toggle="tab">代码提交</a></li>
+            <li><a href="#messages" data-toggle="tab">成绩报告</a></li>
+            <li><a href="#settings" data-toggle="tab">排名情况</a></li>
+          </ul>
+          <br>
+          <!-- Tab panes -->
+          <div class="tab-content">
+            <div class="tab-pane fade in active" id="home">
+              <div class="panel panel-default">
+                <div class="panel-heading">题目名称2 : D&A Static Linked List(eden)</div>
+                <div class="panel-body">
 
-                <div class="col-xs-9">
-                  <p>时间限制 : 1000 ms</p>
-                  <p>空间限制 : 32 MB</p>
+                  <div class="col-xs-9">
+                    <p>时间限制 : 1000 ms</p>
+                    <p>空间限制 : 32 MB</p>
+                  </div>
+                  <div class="col-xs-3 hidden-xs">
+                    <p>出题：秀秀</p>
+                    <p>邮箱：dalao@dalao.com</p>
+                  </div>
+
                 </div>
-                <div class="col-xs-3">
-                  <p>出题：秀秀</p>
-                  <p>邮箱：dalao@dalao.com</p>
-                </div>
-
               </div>
+
+              <script>
+                $.get("problems/1001.md", function(result){
+                  var converter = new showdown.Converter();
+                  $("#mymarkdown").html(converter.makeHtml(result));
+                });
+              </script>
+
+              <div class="panel panel-default">
+                <div class="panel-body">
+                  <div id="mymarkdown" class="markdown-body">
+
+                  </div>
+                </div>
+              </div>
+
             </div>
+            <div class="tab-pane fade" id="profile">
+              <form role="form">
 
-            <div class="panel panel-default">
-              <div class="panel-body">
-                <div class="markdown-body">
+                <div class="form-group">
+                  <textarea id="codetext" class="form-control" cols="100" style="width: auto;height: 80%;">
 
-                  <p>Introduction</p>
-                  <p>Knowledge points: encapsulation, copy constructor, linked list algorithms, debug methods(GDB or IDE or output debug).</p>
-                  <p>In this Lab, again, you are going to implement a class named static linked list which is based on an fiexed length array storage. You need to figure out the logic inside this.</p>
-                  <p>I recommend you to:</p>
-                  <p>Learn the knowledge points mentioned above. Use local compilers to test you program rather than submit your answer to the system time after time. Use local debug tools(GDB is recommended) to debug your code, especially for the memory leak problem. I can tell you that you will meet runtime error problem if you don't use local debug tools. Make use of your paper and pen to have some sketches because it's a good way when you meet list.</p>
-                  <h1>Knowledge</h1>
-                  <h2>Linked List</h2>
-                  <p>Read the "Linked lists using arrays of nodes" part.</p>
-                  <h2>Requirements:</h2>
-                  <p>Just read the requirements in "simple list"</p>
-                  <p>Note that there are exactly two "list" in the class list. One is the actual list while another is the list to maintain the empty nodes in the storage array. And we use <code>empty_head</code> as the head node for the latter.  The operation of the linked list implies the maintenance of the empty nodes.</p>
-                  <p>Source Author: <em>叶嘉祺</em></p>
-
-                </div>
-              </div>
-            </div>
-
-          </div>
-          <div class="tab-pane fade" id="profile">
-            <form role="form">
-              <div class="form-group">
-                <textarea class="form-control" rows="20"></textarea>
-              </div>
-              <div class="form-group">
-
-                <div class="col-md-11"></div>
-                <div class="col-md-1">
-                  <button type="submit" class="btn btn-success">提交</button>
+                  </textarea>
                 </div>
 
-              </div>
-            </form>
+
+                <div class="form-group">
+                  <div class="col-md-11"></div>
+                  <div class="col-md-1">
+                    <button type="submit" class="btn btn-success">提交</button>
+                  </div>
+
+                </div>
+              </form>
 
 
 
@@ -107,54 +140,54 @@
 
 
 
-          </div>
-          <div class="tab-pane fade" id="messages">
-
-            <div class="panel panel-success">
-              <div class="panel-heading">
-                <h3 class="panel-title">得分情况</h3>
-              </div>
-              <div class="panel-body">
-                NULL
-              </div>
             </div>
+            <div class="tab-pane fade" id="messages">
 
+              <div class="panel panel-success">
+                <div class="panel-heading">
+                  <h3 class="panel-title">得分情况</h3>
+                </div>
+                <div class="panel-body">
+                  NULL
+                </div>
+              </div>
+
+            </div>
+            <div class="tab-pane fade" id="settings">
+
+              <table class="table table-hover">
+                <tr>
+                  <th>名次</th>
+                  <th>名字</th>
+                  <th>提交时间</th>
+                </tr>
+                <tr>
+                  <td>0</td>
+                  <td>XiuXiu</td>
+                  <td>2017-04-12 00:00:49</td>
+                </tr>
+                <tr>
+                  <td>1</td>
+                  <td>dalao</td>
+                  <td>2017-04-12 00:01:44</td>
+                </tr>
+              </table>
+
+
+            </div>
           </div>
-          <div class="tab-pane fade" id="settings">
-
-            <table class="table table-hover">
-              <tr>
-              <th>名次</th>
-              <th>名字</th>
-                <th>提交时间</th>
-              </tr>
-              <tr>
-                <td>0</td>
-                <td>XiuXiu</td>
-                <td>2017-04-12 00:00:49</td>
-              </tr>
-              <tr>
-                <td>1</td>
-                <td>dalao</td>
-                <td>2017-04-12 00:01:44</td>
-              </tr>
-            </table>
 
 
-          </div>
+
         </div>
 
 
 
       </div>
-
-
-
     </div>
-  </div>
-  <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-  <script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
-  <!-- Include all compiled plugins (below), or include individual files as needed -->
-  <script src="js/bootstrap.min.js"></script>
-</body>
-</html>
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="js/bootstrap.min.js"></script>
+  </body>
+  </html>

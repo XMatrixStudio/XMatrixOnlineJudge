@@ -14,6 +14,14 @@
   <style type="text/css">
     body { padding-top: 70px; }
   </style>
+    <script type="text/javascript">
+    function myfun(){
+      $("#t-about").addClass("active");
+    }
+    $(function() {
+      $("#nav-bar").load("nav-bar.html");
+    });
+  </script>
   <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
   <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
@@ -23,15 +31,6 @@
     </head>
     <body>
          <!-- 标题栏开始 -->
-      <script type="text/javascript">
-        function myfun(){
-          $("#t-about").addClass("active");
-        }
-        $(function() {
-          $("#nav-bar").load("nav-bar.html");
-          var t=setTimeout("myfun()",500);
-        });
-      </script>
 
       <div id="nav-bar"></div>
       <!--标题栏结束 -->
