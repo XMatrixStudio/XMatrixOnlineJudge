@@ -1,3 +1,7 @@
-#binary file
+# binary file
 *.exe
 *.out
+
+# .NET Core RESTORE & Build File
+./judge/bin/
+./judge/obj/

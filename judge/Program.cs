@@ -1,4 +1,5 @@
-﻿using System;
+using System;
+using judge;
 
 namespace xmatrix
 {
@@ -10,9 +11,24 @@ namespace xmatrix
         /// <param name="args">get the judging id from CGI</param>
         static void Main(string[] args)
         {
-            if (args[0] != null)
+            try
             {
-                Console.WriteLine("$QUERY_STRING is " + args[0]);
+                Console.WriteLine("The judge result of {0} is:", args[0]);
+            }
+            catch
+            {
+                Console.WriteLine("Invalid Parameter.");
+                return;
+            }
+            Compare cmp = new Compare();
+            bool result = cmp.FileStringCompare(string.Format(@"..\test\{0}\std.txt", args[0]), @"..\test\output.txt");
+            if (result)
+            {
+                Console.WriteLine("Accept.");
+            }
+            else
+            {
+                Console.WriteLine("Wrong Answer.");
             }
         }
     }
