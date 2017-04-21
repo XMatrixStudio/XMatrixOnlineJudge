@@ -1,18 +1,10 @@
-using System;
 using System.IO;
-using System.Text;
 
-namespace judge
+namespace XMatrix.Judge
 {
     public class Compare
     {
-        /// <summary>
-        /// Compare two txt files by string.
-        /// </summary>
-        /// <param name="src">standard file</param>
-        /// <param name="dest">output file</param>
-        /// <returns>result</returns>
-        public bool FileStringCompare(string src, string dest)
+        public static bool FileStringCompare(string src, string dest)
         {
             using (StreamReader srcSR = File.OpenText(src))
             {

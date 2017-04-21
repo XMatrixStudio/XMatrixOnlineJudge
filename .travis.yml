@@ -1,0 +1,9 @@
+language: csharp
+solution: judge/XMatrix.csproj
+mono: none
+dotnet: 1.0.1
+dist: trusty
+script:
+  - cd judge
+  - dotnet restore
+  - dotnet build

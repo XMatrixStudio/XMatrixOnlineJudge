@@ -3,5 +3,5 @@
 *.out
 
 # .NET Core RESTORE & Build File
-./judge/bin/
-./judge/obj/
+/judge/bin/
+/judge/obj/
