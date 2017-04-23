@@ -7,10 +7,11 @@
   <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后�?-->
   <title>XMatrix</title>
   <!-- Bootstrap -->
-  <link href="http://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="shortcut icon" href="http://zhenly-1252808268.cosgz.myqcloud.com/xmoj/xmatrix.ico">
-  <script src="http://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
-  <script src="http://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="shortcut icon" href="xmatrix.ico">
+  <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <script src="js/login.js"></script>
   <style type="text/css">
     body { padding-top: 70px; }
   </style>
@@ -20,6 +21,7 @@
     }
     $(function() {
       $("#nav-bar").load("nav-bar.html");
+      $("#tips").hide();
     });
   </script>
   <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
@@ -44,15 +46,28 @@
              <div class="container">
                <h1>XMatrix</h1>
                <p>Online Judging System</p>
+               <br>
+               <div id="tips" class="alert alert-danger">Oh,no! Your password is <strong>error</strong>! Please input again.</div>
+            <div class="form-group">
+              <label for="exampleInputEmail1">Email address</label>
+              <input type="email" id="user_email" class="form-control" id="exampleInputEmail1" placeholder="Enter email">
+            </div>
+            <div class="form-group" id="password_div">
+              <label id="password_state" for="exampleInputPassword1">Password</label>
+              <input type="password" id="user_password" class="form-control" id="exampleInputPassword1" placeholder="Password">
+            </div>
+            <button type="submit" class="btn btn-success" onclick="login()">Login</button>
+
              </div>
            </div>
 
-         </div>
-       </div>
-     </div>
+        </div>
+      </div>
+    </div>
 
-     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-     <!-- Include all compiled plugins (below), or include individual files as needed -->
 
-   </body>
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+
+  </body>
    </html>
