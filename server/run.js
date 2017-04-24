@@ -1,4 +1,4 @@
-
+﻿
 //基本模块
 var express = require('express');
 var app = express();
@@ -14,7 +14,7 @@ app.use(express.static('public'));
 var pidindex = 0;
 var mysql = require('mysql');
 var mysql_fs = require('fs');
-var mysql_file = 'config/mysql.json';
+var mysql_file = 'mysql.json';
 var mysqlConfig = JSON.parse(mysql_fs.readFileSync(mysql_file));  //加载配置文件
 var pool = mysql.createPool({
   host : mysqlConfig.host,
@@ -154,7 +154,7 @@ app.get('/login', function(req, res) {
 
 
 //监听30002端口
-var server = app.listen(30002, function() {
+var server = app.listen(30002,'127.0.0.1', function() {
   var host = server.address().address;
   var port = server.address().port;
   console.log('Example app listening at https://%s:%s', host, port);
