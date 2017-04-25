@@ -28,6 +28,8 @@
   <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
   <script src="https://cdn.bootcss.com/showdown/1.6.4/showdown.min.js"></script>
   <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <script src="js/judging.js"></script>
+  <script src="js/cookies.js"></script>
   <style type="text/css">
     body { padding-top: 70px; }
   </style>
@@ -35,7 +37,6 @@
   <script type="text/javascript">
 
    function testcode() {
-
     var textarea = document.getElementById('codetext');
     var editor = CodeMirror.fromTextArea(textarea, {
       autofocus: true,
@@ -53,39 +54,18 @@
     });
   }
 
-  function myfun(){
-    $("#t-problem").addClass("active");
-  }//激活导航栏
-
   $(function() {
-    $("#nav-bar").load("nav-bar.html");
-  });//添加导航栏
-
-  function running() {
-    $.post("api/submit/getpid",{
-      user:'zhenly'
-    },function(data){
-      var nopid = data.pid;
-      running2(nopid);
+    $("#nav-bar").load("nav-bar.html", function () {
+      $("#t-problem").addClass("active");
     });
+    });//处理标题栏
+
+  function isLogin() {
+   if (getCookie("isLogin") != 'yes'){
+      window.location.href='index.html';
+    }
   }
 
-  function running2(nopid) {
-    $('#myTab a[href="#messages"]').tab('show');
-    $("#grade").html('Judging...');
-    $("#compiledtest").html('Judging...');
-    $("#stardtest").html('Judging...');
-    $.post("api/submit",
-    {
-      pid : nopid,
-      code : document.getElementById("codetext").value
-    },
-    function(data){
-      $("#grade").html(data.grade);
-      $("#compiledtest").html(data.compiledtest);
-      $("#stardtest").html(data.stardtest);
-    });
-  }
 </script>
 
 <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
@@ -106,9 +86,9 @@
           <!-- Nav tabs -->
           <ul class="nav nav-tabs" id="myTab">
             <li class="active"><a href="#home" data-toggle="tab">问题描述</a></li>
-            <li><a href="#profile" data-toggle="tab" >代码提交</a></li>
-            <li><a href="#messages" data-toggle="tab">成绩报告</a></li>
-            <li><a href="#settings" data-toggle="tab">排名情况</a></li>
+            <li><a href="#profile" data-toggle="tab" onclick="isLogin()" >代码提交</a></li>
+            <li><a href="#messages" data-toggle="tab" onclick="isLogin()" >成绩报告</a></li>
+            <li><a href="#settings" data-toggle="tab" onclick="isLogin()" >排名情况</a></li>
           </ul>
           <br>
           <!-- Tab panes -->

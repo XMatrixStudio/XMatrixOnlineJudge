@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- ä¸Šè¿°3ä¸ªmetaæ ‡ç­¾*å¿…é¡»*æ”¾åœ¨æœ€å‰é¢ï¼Œä»»ä½•å…¶ä»–å†…å®¹éƒ½*å¿…é¡»*è·Ÿéšå…¶åŽï¼?-->
+  <title>XMatrix</title>
+  <!-- Bootstrap -->
+  <link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="shortcut icon" href="xmatrix.ico">
+  <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <script src="js/login.js"></script>
+  <script src="js/register.js"></script>
+  <script src="js/SHA1.js"></script>
+  <style type="text/css">
+    body { padding-top: 70px; }
+  </style>
+  <script type="text/javascript">
+    $(function() {
+      $("#nav-bar").load("nav-bar.html", function() {
+        $("#t-home").addClass("active");
+      });
+    });//处理标题栏
+    function toregister() {
+      if(document.getElementById("user_email").value == ''){
+        sendNotice("请输入邮箱地址");
+        $("#user_email").focus();
+        return;
+      }
+      if(document.getElementById("user_name").value == ''){
+        sendNotice("请输入用户名");
+        $("#user_name").focus();
+        return;
+      }
+      if(document.getElementById("user_password").value == ''){
+        sendNotice("请输入密码");
+        $("#user_password").focus();
+        return;
+      }
+      if(document.getElementById("user_password2").value == ''){
+        sendNotice("请再次输入密码");
+        $("#user_password2").focus();
+        return;
+      }
+      var pattern= /^([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+@([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+\.[a-zA-Z]{2,3}$/;
+      var strEmail=pattern.test(document.getElementById("user_email").value);
+      if(!strEmail){
+        sendNotice("请输入有效的E_mail！");
+        $("#user_email").focus();
+        $("#user_email").val("");
+        return;
+      }
+      if (document.getElementById("user_password2").value != document.getElementById("user_password").value){
+        sendNotice("两次输入的密码不一致");
+        $("#user_password2").focus();
+        return;
+      }
+      $("#user_password").val(hex_sha1(document.getElementById("user_password").value));
+      $("#user_password2").val(hex_sha1(document.getElementById("user_password2").value));
+      register();
+    }
+  </script>
+</head>
+<body>
+  <div id="nav-bar"></div>
+  <div class="container-fluid">
+    <div class="row-fluid">
+      <div class="span12">
+        <div class="jumbotron ">
+         <div class="container">
+           <h1>Register</h1>
+           <br>
+           <div id="notice"></div>
+
+           <div class="form-group">
+            <label for="exampleInputEmail1">Email address</label>
+            <input type="email" id="user_email" class="form-control" id="exampleInputEmail1" placeholder="Enter email">
+          </div>
+          <div class="form-group">
+            <label for="exampleInputEmail1">User name</label>
+            <input type="name" id="user_name" class="form-control" id="exampleInputEmail1" placeholder="Enter email">
+          </div>
+          <div class="form-group" id="password_div">
+            <label id="password_state" for="exampleInputPassword1">Password</label>
+            <input type="password" id="user_password" class="form-control" placeholder="Password">
+          </div>
+          <div class="form-group" id="password_div">
+            <label id="password_state" for="exampleInputPassword1">Password Again</label>
+            <input type="password" id="user_password2" class="form-control" placeholder="Password">
+          </div>
+          <button type="submit" class="btn btn-info" onclick="toregister()">Register</button>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+
+</body>
+</html>
