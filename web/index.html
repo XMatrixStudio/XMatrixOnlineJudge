@@ -18,53 +18,65 @@
   </style>
   <script type="text/javascript">
     $(function() {
+      if (getCookie("isLogin") == 'yes')$("#logindiv").hide();
       $("#nav-bar").load("nav-bar.html", function() {
-      $("#t-home").addClass("active");
-      $("#user_email").focus();
+        $("#t-home").addClass("active");
+        $("#user_email").focus();
       });
     });//处理标题栏
     function toLogin() {
+      if(document.getElementById("user_email").value == ''){
+        sendNotice("<strong>邮箱地址为空</strong>  请输入邮箱地址");
+        $("#user_email").focus();
+        return;
+      } else if (document.getElementById("user_password").value == '' && document.getElementById("user_email").value != ''){
+        sendNotice("<strong>密码为空</strong>  请输入密码");
+        $("#user_password").focus();
+        return;
+      }
       $("#user_password").val(hex_sha1(document.getElementById("user_password").value));
       login();
     }
   </script>
-    </head>
-    <body>
+</head>
+<body>
 
 
-      <div id="nav-bar"></div>
+  <div id="nav-bar"></div>
 
 
-      <div class="container-fluid">
-        <div class="row-fluid">
-          <div class="span12">
-            <div class="jumbotron ">
-             <div class="container">
-               <h1>XMatrix</h1>
-               <p>Online Judging System</p>
-               <br>
-               <div id="notice"></div>
-              <div class="form-group">
-                <label for="exampleInputEmail1">Email address</label>
-                <input type="email" id="user_email" class="form-control" id="exampleInputEmail1" placeholder="Enter email">
-              </div>
-              <div class="form-group" id="password_div">
-                <label id="password_state" for="exampleInputPassword1">Password</label>
-                <input type="password" id="user_password" class="form-control" id="exampleInputPassword1" placeholder="Password">
-              </div>
-              <button type="submit" class="btn btn-success" onclick="toLogin()">Login</button>
-              <a class="btn btn-info" href="register.html" >Register</a>
+  <div class="container-fluid">
+    <div class="row-fluid">
+      <div class="span12">
+        <div class="jumbotron ">
+         <div class="container">
+           <h1>XMatrix</h1>
+           <p>Online Judging System</p>
+           <br>
+           <div id="logindiv">
+             <div id="notice"></div>
 
+             <div class="form-group">
+              <label for="exampleInputEmail1">Email address</label>
+              <input type="email" id="user_email" class="form-control" id="exampleInputEmail1" placeholder="Enter email">
             </div>
-          </div>
+            <div class="form-group" id="password_div">
+              <label id="password_state" for="exampleInputPassword1">Password</label>
+              <input type="password" id="user_password" class="form-control" id="exampleInputPassword1" placeholder="Password">
+            </div>
+            <button type="submit" class="btn btn-success" onclick="toLogin()">Login</button>
+            <a class="btn btn-info" href="register.html" >Register</a>
 
+          </div>
         </div>
       </div>
     </div>
+  </div>
+</div>
 
 
-    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-    <!-- Include all compiled plugins (below), or include individual files as needed -->
+<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+<!-- Include all compiled plugins (below), or include individual files as needed -->
 
-  </body>
-  </html>
+</body>
+</html>
