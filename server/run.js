@@ -12,9 +12,13 @@ app.use(express.static('public'));
 
 //加密模块
 const crypto = require('crypto');
-const hashSHA1 = crypto.createHash('sha1');
-//调用方法：
-//hashSHA1.update('test');
+
+/*
+SHA1加密调用方法：
+var hashSHA1 = crypto.createHash('sha1');
+hashSHA1.update(input);
+output = hashSHA1.digest('hex')
+*/
 
 // use secret to encrypt string
 function encrypt(str, secret) {
@@ -33,9 +37,9 @@ function decrypt(str, secret) {
 }
 
 /*
-调用方法：
-var xxx = encrypt(JSON.stringify(text),key);
-var ok = JSON.parse(decrypt(xxx,key));
+aes192加密调用方法：
+var output = encrypt(JSON.stringify(input),key);
+var newinput = JSON.parse(decrypt(output,key));
 */
 
 //-----------------------
@@ -150,6 +154,7 @@ app.post('/login', urlencodedParser, function(req, res) {
       if (error) throw error;
       console.log(req.body);
       console.log(results);
+      var hashSHA1 = crypto.createHash('sha1');
       hashSHA1.update(req.body.user_password);
       if (results != '' &&
           results[0].user_password == hashSHA1.digest('hex')) {  //密码正确
