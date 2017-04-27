@@ -23,6 +23,12 @@
         $("#t-home").addClass("active");
         $("#user_email").focus();
       });
+      $('#user_password').on('keypress',function(event){
+       if(event.keyCode == 13)
+       {
+         toLogin();
+       }
+     });
     });//处理标题栏
     function toLogin() {
       if(document.getElementById("user_email").value == ''){
@@ -37,6 +43,7 @@
       $("#user_password").val(hex_sha1(document.getElementById("user_password").value));
       login();
     }
+
   </script>
 </head>
 <body>

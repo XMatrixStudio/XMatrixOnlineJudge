@@ -14,9 +14,7 @@ function register() {
       alert("注册成功！请登陆你的账号。");
       window.location.href='index.html';
     }else{
-      sendNotice("注册失败");
+      sendNotice("邮箱已经被注册，请登陆。");
     }
   });
-
-  sendNotice("注册失败");
 }
