@@ -67,9 +67,7 @@
         $("#user_password2").focus();
         return;
       }
-      $("#user_password").val(hex_sha1(document.getElementById("user_password").value));
-      $("#user_password2").val(hex_sha1(document.getElementById("user_password2").value));
-      register();
+      register(hex_sha1(document.getElementById("user_password").value));
     }
   </script>
 </head>
@@ -108,10 +106,6 @@
     </div>
   </div>
 </div>
-
-
-<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-<!-- Include all compiled plugins (below), or include individual files as needed -->
 
 </body>
 </html>

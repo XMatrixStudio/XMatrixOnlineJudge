@@ -18,7 +18,22 @@
   </style>
   <script type="text/javascript">
     $(function() {
-      if (getCookie("isLogin") == 'yes')$("#logindiv").hide();
+      var temp = GetQueryString('op');
+      if(temp == 0){
+        document.cookie="userSession=";
+        document.cookie="sign=";
+        document.cookie="name=";
+        document.cookie="detail=";
+        document.cookie="web=";
+        document.cookie="isMail=";
+        document.cookie="userEmail=";
+        sendNotice("请重新登陆。");
+        $("#user_email").focus();
+      }else{
+        $("#logindiv").hide();
+      }
+      var qwq = getCookie("userSession");
+      if (qwq == 'no' || qwq == null )$("#logindiv").show();
       $("#nav-bar").load("nav-bar.html", function() {
         $("#t-home").addClass("active");
         $("#user_email").focus();
@@ -29,6 +44,11 @@
          toLogin();
        }
      });
+
+
+
+
+
     });//处理标题栏
     function toLogin() {
       if(document.getElementById("user_email").value == ''){
@@ -40,8 +60,7 @@
         $("#user_password").focus();
         return;
       }
-      $("#user_password").val(hex_sha1(document.getElementById("user_password").value));
-      login();
+      login(hex_sha1(document.getElementById("user_password").value));
     }
 
   </script>
