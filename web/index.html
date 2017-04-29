@@ -14,7 +14,10 @@
   <script src="js/cookies.js"></script>
   <script src="js/SHA1.js"></script>
   <style type="text/css">
-    body { padding-top: 70px; }
+    body {
+      padding-top: 70px;
+      background-color: #EEEEEE;
+    }
   </style>
   <script type="text/javascript">
     $(function() {
@@ -29,13 +32,23 @@
         document.cookie="userEmail=";
         sendNotice("请重新登陆。");
         $("#user_email").focus();
+
+      }else if (temp == 1) {
+        sendNotice("请登陆后再访问");
+        $("#user_email").focus();
       }else{
         $("#logindiv").hide();
+        $("#other").hide();
       }
       var qwq = getCookie("userSession");
-      if (qwq == 'no' || qwq == null )$("#logindiv").show();
+      if (qwq == 'no' || qwq == null ){
+        $("#logindiv").show();
+        $("#other").show();
+      }
       $("#nav-bar").load("nav-bar.html", function() {
         $("#t-home").addClass("active");
+        var username = getCookie("name");
+        if(username !== null) document.getElementById('userBar').innerHTML=username + ' <span class="caret"></span>';
         $("#user_email").focus();
       });
       $('#user_password').on('keypress',function(event){
@@ -60,6 +73,14 @@
         $("#user_password").focus();
         return;
       }
+      var pattern= /^([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+@([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+\.[a-zA-Z]{2,3}$/;
+      var strEmail=pattern.test(document.getElementById("user_email").value);
+      if(!strEmail){
+        sendNotice("请输入有效的E_mail！");
+        $("#user_email").focus();
+        $("#user_email").val("");
+        return;
+      }
       login(hex_sha1(document.getElementById("user_password").value));
     }
 
@@ -67,35 +88,39 @@
 </head>
 <body>
 
-
   <div id="nav-bar"></div>
-
-
   <div class="container-fluid">
     <div class="row-fluid">
-      <div class="span12">
-        <div class="jumbotron ">
+      <div class="col-md-6  col-md-offset-3" style="padding-top:5%;">
+        <div class="jumbotron" style="background: #FBFBFB;">
          <div class="container">
+         <div class="text-center">
            <h1>XMatrix</h1>
            <p>Online Judging System</p>
            <br>
-           <div id="logindiv">
-             <div id="notice"></div>
-
+           </div>
+           <div id="logindiv" class="col-md-10  col-md-offset-1">
+          <div id="notice"></div>
              <div class="form-group">
-              <label for="exampleInputEmail1">Email address</label>
-              <input type="email" id="user_email" class="form-control" id="exampleInputEmail1" placeholder="Enter email">
-            </div>
+             <div class="input-group">
+             <span class="input-group-addon glyphicon glyphicon-user"></span>
+              <input type="text" id="user_email" class="form-control" id="exampleInputEmail1" placeholder="Email" aria-describedby="inputGroupSuccess1Status">
+            </div></div>
             <div class="form-group" id="password_div">
-              <label id="password_state" for="exampleInputPassword1">Password</label>
+             <div class="input-group">
+             <span class="input-group-addon glyphicon glyphicon-console"></span>
               <input type="password" id="user_password" class="form-control" id="exampleInputPassword1" placeholder="Password">
+            </div></div>
+            <br>
+            <div class="col-md-6  col-md-offset-3">
+            <button type="submit" class="btn btn-success btn-block" onclick="toLogin()">Login</button>
             </div>
-            <button type="submit" class="btn btn-success" onclick="toLogin()">Login</button>
-            <a class="btn btn-info" href="register.html" >Register</a>
+
 
           </div>
         </div>
       </div>
+      <div id="other" class="text-center" style="font-size:16px;"><a href="register.html" >Register</a>  |  <a href="about.html">About</a></div>
     </div>
   </div>
 </div>

@@ -25,6 +25,8 @@
       }
       document.getElementById('myemail').innerHTML= email_s;
       $("#nav-bar").load("nav-bar.html", function() {
+        var username = getCookie("name");
+        if(username !== null) document.getElementById('userBar').innerHTML=username + ' <span class="caret"></span>';
         $("#t-home").addClass("active");
       });
 
@@ -69,7 +71,7 @@
 
              <div class="form-group">
               <label for="exampleInputEmail1">Email address：</label>
-              <p id="myemail"></p>
+              <p id="myemail" class="form-control-static"></p>
             </div>
             <button type="submit" class="btn btn-success" onclick="toMail()">发送激活邮件</button>
 
