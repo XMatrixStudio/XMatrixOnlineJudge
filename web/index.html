@@ -4,7 +4,6 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后�?-->
   <title>XMatrix</title>
   <!-- Bootstrap -->
   <link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
@@ -12,62 +11,123 @@
   <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
   <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
   <script src="js/login.js"></script>
+  <script src="js/cookies.js"></script>
+  <script src="js/SHA1.js"></script>
   <style type="text/css">
-    body { padding-top: 70px; }
+    body {
+      padding-top: 70px;
+      background-color: #EEEEEE;
+    }
   </style>
   <script type="text/javascript">
-    function myfun(){
-      $("#t-home").addClass("active");
-    }
     $(function() {
-      $("#nav-bar").load("nav-bar.html");
-      $("#tips").hide();
-    });
+      var temp = GetQueryString('op');
+      if(temp == 0){
+        document.cookie="userSession=";
+        document.cookie="sign=";
+        document.cookie="name=";
+        document.cookie="detail=";
+        document.cookie="web=";
+        document.cookie="isMail=";
+        document.cookie="userEmail=";
+        sendNotice("请重新登陆。");
+        $("#user_email").focus();
+
+      }else if (temp == 1) {
+        sendNotice("请登陆后再访问");
+        $("#user_email").focus();
+      }else{
+        $("#logindiv").hide();
+        $("#other").hide();
+      }
+      var qwq = getCookie("userSession");
+      if (qwq == 'no' || qwq == null ){
+        $("#logindiv").show();
+        $("#other").show();
+      }
+      $("#nav-bar").load("nav-bar.html", function() {
+        $("#t-home").addClass("active");
+        var username = getCookie("name");
+        if(username !== null) document.getElementById('userBar').innerHTML=username + ' <span class="caret"></span>';
+        $("#user_email").focus();
+      });
+      $('#user_password').on('keypress',function(event){
+       if(event.keyCode == 13)
+       {
+         toLogin();
+       }
+     });
+
+
+
+
+
+    });//处理标题栏
+    function toLogin() {
+      if(document.getElementById("user_email").value == ''){
+        sendNotice("<strong>邮箱地址为空</strong>  请输入邮箱地址");
+        $("#user_email").focus();
+        return;
+      } else if (document.getElementById("user_password").value == '' && document.getElementById("user_email").value != ''){
+        sendNotice("<strong>密码为空</strong>  请输入密码");
+        $("#user_password").focus();
+        return;
+      }
+      var pattern= /^([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+@([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+\.[a-zA-Z]{2,3}$/;
+      var strEmail=pattern.test(document.getElementById("user_email").value);
+      if(!strEmail){
+        sendNotice("请输入有效的E_mail！");
+        $("#user_email").focus();
+        $("#user_email").val("");
+        return;
+      }
+      login(hex_sha1(document.getElementById("user_password").value));
+    }
+
   </script>
-  <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
-  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-      <script src="https://cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
-      <script src="https://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
-      <![endif]-->
-    </head>
-    <body>
-      <!-- 标题栏开�?-->
+</head>
+<body>
 
-
-      <div id="nav-bar"></div>
-      <!--标题栏结�?-->
-
-
-      <div class="container-fluid">
-        <div class="row-fluid">
-          <div class="span12">
-            <div class="jumbotron ">
-             <div class="container">
-               <h1>XMatrix</h1>
-               <p>Online Judging System</p>
-               <br>
-               <div id="tips" class="alert alert-danger">Oh,no! Your password is <strong>error</strong>! Please input again.</div>
-            <div class="form-group">
-              <label for="exampleInputEmail1">Email address</label>
-              <input type="email" id="user_email" class="form-control" id="exampleInputEmail1" placeholder="Enter email">
-            </div>
-            <div class="form-group" id="password_div">
-              <label id="password_state" for="exampleInputPassword1">Password</label>
-              <input type="password" id="user_password" class="form-control" id="exampleInputPassword1" placeholder="Password">
-            </div>
-            <button type="submit" class="btn btn-success" onclick="login()">Login</button>
-
-             </div>
+  <div id="nav-bar"></div>
+  <div class="container-fluid">
+    <div class="row-fluid">
+      <div class="col-md-6  col-md-offset-3" style="padding-top:5%;">
+        <div class="jumbotron" style="background: #FBFBFB;">
+         <div class="container">
+         <div class="text-center">
+           <h1>XMatrix</h1>
+           <p>Online Judging System</p>
+           <br>
            </div>
+           <div id="logindiv" class="col-md-10  col-md-offset-1">
+          <div id="notice"></div>
+             <div class="form-group">
+             <div class="input-group">
+             <span class="input-group-addon glyphicon glyphicon-user"></span>
+              <input type="text" id="user_email" class="form-control" id="exampleInputEmail1" placeholder="Email" aria-describedby="inputGroupSuccess1Status">
+            </div></div>
+            <div class="form-group" id="password_div">
+             <div class="input-group">
+             <span class="input-group-addon glyphicon glyphicon-console"></span>
+              <input type="password" id="user_password" class="form-control" id="exampleInputPassword1" placeholder="Password">
+            </div></div>
+            <br>
+            <div class="col-md-6  col-md-offset-3">
+            <button type="submit" class="btn btn-success btn-block" onclick="toLogin()">Login</button>
+            </div>
 
+
+          </div>
         </div>
       </div>
+      <div id="other" class="text-center" style="font-size:16px;"><a href="register.html" >Register</a>  |  <a href="about.html">About</a></div>
     </div>
+  </div>
+</div>
 
 
-    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-    <!-- Include all compiled plugins (below), or include individual files as needed -->
+<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+<!-- Include all compiled plugins (below), or include individual files as needed -->
 
-  </body>
-   </html>
+</body>
+</html>

@@ -4,7 +4,6 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
   <title>XMatrix</title>
 
   <!-- Bootstrap -->
@@ -12,40 +11,61 @@
   <link rel="shortcut icon" href="xmatrix.ico">
   <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
   <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <script src='js/cookies.js'></script>
   <style type="text/css">
-    body { padding-top: 70px; }
-  </style>
-    <script type="text/javascript">
-    function myfun(){
-      $("#t-about").addClass("active");
+    body {
+      padding-top: 70px;
+      background-color: #EEEEEE;
     }
-    $(function() {
-      $("#nav-bar").load("nav-bar.html");
+  </style>
+  <script type="text/javascript">
+   $(function() {
+    $("#nav-bar").load("nav-bar.html", function () {
+      var username = getCookie("name");
+      if(username !== null) document.getElementById('userBar').innerHTML=username + ' <span class="caret"></span>';
+      $("#t-about").addClass("active");
     });
+    });//处理标题栏
   </script>
-  <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
-  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-      <script src="https://cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
-      <script src="https://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
-      <![endif]-->
-    </head>
-    <body>
-         <!-- 标题栏开始 -->
+</head>
+<body>
+ <!-- 标题栏开始 -->
 
-      <div id="nav-bar"></div>
-      <!--标题栏结束 -->
-      <div class="container-fluid">
-        <div class="row-fluid">
-        <div class="span12">
-            <div class="jumbotron">
-             <div class="container">
-               <h1>Hello,World!</h1>
-               <h2><a href="https://github.com/XMatrixTeam" target="_blank">Github</a></h2>
-             </div>
-           </div>
-         </div>
+ <div id="nav-bar"></div>
+ <!--标题栏结束 -->
+ <div class="container-fluid">
+  <div class="row-fluid">
+    <div class="span12">
+      <div class="jumbotron col-md-10  col-md-offset-1" style="background: #FBFBFB;">
+       <div class="container">
+         <h1>XMatrix</h1>
+         <h3>一个还没有完成的Online Judging System</h3>
+
        </div>
      </div>
-   </body>
-   </html>
+     <div class="jumbotron col-md-10  col-md-offset-1" style="background: #FBFBFB;">
+       <div class="container">
+         <h2><img src="pic/cat.png"><strong>  V0.1 </strong>森林猫<small> Apr 02, 2017 ~ Now</small></h2>
+         <div class="col-md-10  col-md-offset-1">
+          <p class="lead">1. 确定发展方向</p>
+          <p class="lead">2. 建立用户系统</p>
+          <p class="lead">3. We are doing...</p>
+        </div>
+      </div>
+  <HR width="80%" color=#987cb9 SIZE=3>
+    </div>
+  </div>
+  <div class="jumbotron col-md-10  col-md-offset-1" style="background: #FBFBFB;">
+   <div class="container text-center" style="font-size: 25px;">
+
+     <p class="lead">License</p>
+     <p> XMatrix Online Judge is released under the MIT License.</p>
+     <HR width="80%" color=#987cb9 SIZE=3>
+       <img src="pic/github.png"><p> </p><a href="https://github.com/XMatrixTeam" target="_blank">Github</a>
+     </div>
+   </div>
+ </div>
+</div>
+</div>
+</body>
+</html>

@@ -5,3 +5,4 @@
 # .NET Core RESTORE & Build File
 /judge/bin/
 /judge/obj/
+web/updata.log
