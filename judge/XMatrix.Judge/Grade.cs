@@ -5,35 +5,29 @@ namespace XMatrix
 {
     public class Grade
     {
+        public int uid;
         public int pid;
         public string compile;
-        public string result;
+        public string[] result;
 
-        public Grade(int _pid, string _compilePath, bool _result)
+        public Grade(int _uid, int _pid, int _std_test_num)
         {
-            using (StreamReader sr = File.OpenText(_compilePath))
-            {
-                compile = sr.ReadToEnd();
-            }
+            uid = _uid;
             pid = _pid;
-            if (compile == string.Empty)
-            {
-                if (_result == true)
-                {
-                    result = "Accept.";
-                }
-                else
-                {
-                    result = "Wrong Answer.";
-                }
-            }
-            else
-            {
-                result = "Compile Error.";
-            }
+            result = new string[_std_test_num];
         }
 
-        public bool Json(string path)
+        public void SetCompile(string _compile)
+        {
+            compile = _compile;
+        }
+
+        public void SetResult(int _index, string _result)
+        {
+            result[_index] = _result;
+        }
+
+        public bool ToJson(string path)
         {
             using (StreamWriter sw = File.CreateText(path))
             {

@@ -7,19 +7,20 @@ namespace XMatrix
     {
         static void Main(string[] args)
         {
-            int pid;
+            int uid, pid, std_test_num;
             try
             {
-                pid = int.Parse(args[0]);
+                uid = int.Parse(args[0]);
+                pid = int.Parse(args[1]);
+                std_test_num = int.Parse(args[2]);
             }
             catch
             {
                 Console.WriteLine("Invalid Parameter.");
                 return;
             }
-            bool result = Compare.FileStringCompare(string.Format(@"..\test\{0}\std.txt", args[0]), @"..\test\output.txt");
-            Grade g = new Grade(pid, @"..\test\compiler.txt", result);
-            g.Json(string.Format(@"..\test\{0}.json", args[0]));
+            JudgeProcess judge = new JudgeProcess(uid, pid, std_test_num);
+            judge.DoJudge();
         }
     }
 }
