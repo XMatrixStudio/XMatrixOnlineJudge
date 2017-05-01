@@ -83,8 +83,8 @@ function comptime(beginTime, endTime) {
 //--------------------------------------------------------------------------------------
 
 //用户认证模块
-const mykey = 'xiuxiuDALAO';
-const mysign = 'DALAOxiuxiu'
+var key_file = 'key.json';
+var keyConfig = JSON.parse(fs.readFileSync(key_file));
 function userVerif(fxk, userSession, sign, callback) {
   console.log(sLine);
   var t_now = new Date().Format('yyyy-MM-dd hh:mm:ss');
@@ -97,7 +97,7 @@ function userVerif(fxk, userSession, sign, callback) {
     return;
     }
   var signSHA1 = crypto.createHash('sha1');
-  signSHA1.update(userSession + mysign);
+  signSHA1.update(userSession + keyConfig.mysign);
   var nowSHA1 = signSHA1.digest('hex');
   if (nowSHA1 != sign) {
     console.log('签名认证失败');
@@ -105,7 +105,7 @@ function userVerif(fxk, userSession, sign, callback) {
     return;
     }  //验证签名
 
-  var allData = JSON.parse(decrypt(userSession, mykey));
+  var allData = JSON.parse(decrypt(userSession, keyConfig.mykey));
   console.log('用户ID：' + allData.userID);
   var nowTime = new Date().Format('yyyy-MM-dd hh:mm:ss');
   if (comptime(allData.lastDate, nowTime) > 3) {
@@ -169,10 +169,10 @@ userVerif(session, qwq, function(mydata) {
 
   } else {
     console.log(mydata);
-    session = encrypt(JSON.stringify(mydata), mykey);
+    session = encrypt(JSON.stringify(mydata), keyConfig.mykey);
     console.log(session);
     var signSHA1 = crypto.createHash('sha1');
-    signSHA1.update(session + mysign);
+    signSHA1.update(session + keyConfig.mysign);
     qwq = signSHA1.digest('hex');
     console.log(qwq);
   }
@@ -264,9 +264,9 @@ app.post('/submit', urlencodedParser, function(req, res) {
 
       //------------------------------------------------------------------------------
 
-      var sessionXXX = encrypt(JSON.stringify(mydata), mykey);
+      var sessionXXX = encrypt(JSON.stringify(mydata), keyConfig.mykey);
       var signSHA1 = crypto.createHash('sha1');
-      signSHA1.update(sessionXXX + mysign);
+      signSHA1.update(sessionXXX + keyConfig.mysign);
       var qwq = signSHA1.digest('hex');
       response = {
         state: 'success',
@@ -346,9 +346,9 @@ app.post('/login', urlencodedParser, function(req, res) {
               token: newToken,
               lastDate: nowTime
             }
-            var sessionXXX = encrypt(JSON.stringify(mydata), mykey);
+            var sessionXXX = encrypt(JSON.stringify(mydata), keyConfig.mykey);
             var signSHA1 = crypto.createHash('sha1');
-            signSHA1.update(sessionXXX + mysign);
+            signSHA1.update(sessionXXX + keyConfig.mysign);
             qwq = signSHA1.digest('hex');
             response = {
               state: 'success',
@@ -398,9 +398,9 @@ app.get('/login', function(req, res) {
                   mydata.userID + '\'';
               conn.query(sqlRun, function(error, results, fields) {
                 if (error) throw error;
-                session = encrypt(JSON.stringify(mydata), mykey);
+                session = encrypt(JSON.stringify(mydata), keyConfig.mykey);
                 var signSHA1 = crypto.createHash('sha1');
-                signSHA1.update(session + mysign);
+                signSHA1.update(session + keyConfig.mysign);
                 qwq = signSHA1.digest('hex');
                 res.redirect('../index.html?op=0');
               });
@@ -509,9 +509,9 @@ app.post('/mail', urlencodedParser, function(req, res) {
           conn.query(sqlRun, function(err, results, fields) {
             if (err) console.log(err);
             console.log('读取用户邮箱' + results[0].user_email);
-            session = encrypt(JSON.stringify(mydata), mykey);
+            session = encrypt(JSON.stringify(mydata), keyConfig.mykey);
             var signSHA1 = crypto.createHash('sha1');
-            signSHA1.update(session + mysign);
+            signSHA1.update(session + keyConfig.mysign);
             qwq = signSHA1.digest('hex');
             var textArr = {
               text:
