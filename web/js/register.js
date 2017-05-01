@@ -13,6 +13,8 @@ function register(_password) {
     if(data.state == 'success'){
       alert("注册成功！请登陆你的账号。");
       window.location.href='index.html';
+    }else if(data.why == 'NOT_EMAIL'){
+      sendNotice("非法POST请求");
     }else{
       sendNotice("邮箱已经被注册，请登陆。");
     }

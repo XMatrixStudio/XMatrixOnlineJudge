@@ -4,6 +4,7 @@ const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
 const fs = require('fs');
+const sLine = '-----------------------------------------------';
 //------------------------------------------------------------------------------
 
 // post模块
@@ -84,8 +85,14 @@ function comptime(beginTime, endTime) {
 //用户认证模块
 const mykey = 'xiuxiuDALAO';
 const mysign = 'DALAOxiuxiu'
-function userVerif(userSession, sign, callback) {
+function userVerif(fxk, userSession, sign, callback) {
+  console.log(sLine);
+  var t_now = new Date().Format('yyyy-MM-dd hh:mm:ss');
+  console.log(t_now);
+  console.log('用户认证开始');
+  if (fxk == 1) console.log('特殊模式：忽略邮箱认证');
   if (userSession == undefined || sign == undefined) {
+    console.log('凭据为空');
     callback('ILLEGAL_SIGN');
     return;
     }
@@ -93,14 +100,16 @@ function userVerif(userSession, sign, callback) {
   signSHA1.update(userSession + mysign);
   var nowSHA1 = signSHA1.digest('hex');
   if (nowSHA1 != sign) {
+    console.log('签名认证失败');
     callback('ILLEGAL_SIGN');
     return;
     }  //验证签名
 
   var allData = JSON.parse(decrypt(userSession, mykey));
-
+  console.log('用户ID：' + allData.userID);
   var nowTime = new Date().Format('yyyy-MM-dd hh:mm:ss');
   if (comptime(allData.lastDate, nowTime) > 3) {
+    console.log('登陆超时');
     callback('TIME_OUT');
     return;
   }
@@ -112,9 +121,11 @@ function userVerif(userSession, sign, callback) {
     console.log(oldToken);
     console.log(allData.token);
     if (oldToken != allData.token) {
+      console.log('与数据库token不匹配');
       callback('ILLEGAL_TOKEN');
     } else {
-      if (isMail == 0) {
+      if (isMail == 0 && fxk == 0) {
+        console.log('邮箱没有激活');
         callback('NO_MAIL');
       } else {
         allData.token = newToken;
@@ -134,12 +145,12 @@ function getToken(userID, newToken, callback) {
       if (err) console.log(err);
       var oldToken = results[0].user_token;
       var isMail = results[0].isMail;
-      console.log('The user_token is: ', oldToken);
+      console.log('从数据库读取TOKEN：', oldToken);
       sqlRun = 'update user set user_token=\'' + newToken +
           '\' where user_id=\'' + userID + '\'';
       conn.query(sqlRun, function(error, results, fields) {  //更新用户tokem
         if (error) throw error;
-        console.log('updata token to ' + newToken);
+        console.log('更新TOKEN为 ' + newToken);
         conn.release();
         callback(oldToken, isMail);
       });
@@ -192,7 +203,7 @@ pool.getConnection(function(err, conn) {
 
   conn.query(sqlRun, function(err, results) {
     if (err) console.log(err);
-    console.log('The pid is: ', results[0].dataint);
+    console.log('从数据库读取PID： ', results[0].dataint);
     pidindex = results[0].dataint;
     conn.release();
   });
@@ -209,10 +220,14 @@ app.get('/submit', function(req, res) {
 
 //获取pid
 app.post('/submit', urlencodedParser, function(req, res) {
-  userVerif(req.body.userSession, req.body.sign, function(mydata) {
+  userVerif(0, req.body.userSession, req.body.sign, function(mydata) {
+    console.log(sLine);
+  var t_now = new Date().Format('yyyy-MM-dd hh:mm:ss');
+  console.log(t_now);
+    console.log('题目评测开始');
     if (mydata.userID == undefined) {
       console.log(mydata);
-
+      console.log('认证失败');
       res.send({state: 'failed', why: mydata});
     } else {
       pidindex++;
@@ -290,59 +305,85 @@ require('child_process').spawnSync;//创建同步子进程，回阻塞主进程�
 
 
 //用户登录模块
-app.post('/login', urlencodedParser, function(req, res) {
 
-  pool.getConnection(function(err, conn) {
-    if (err) console.log('POOL ==> ' + err);
-    var sqlRun =
-        'select user_name, user_password, user_detail, user_web, user_id, isMail from user where user_email=\'' +
-        req.body.user_email + '\'';
-    conn.query(sqlRun, function(error, results, fields) {
-      if (error) throw error;
-      console.log(req.body);
-      console.log(results);
-      var hashSHA1 = crypto.createHash('sha1');
-      hashSHA1.update(req.body.user_password);
-      if (results != '' &&
-          results[0].user_password == hashSHA1.digest('hex')) {  //密码正确
-        var newToken = Math.round(Math.random() * 10000000);
-        getToken(results[0].user_id, newToken, function(oldToken) {
-          var nowTime = new Date().Format('yyyy-MM-dd hh:mm:ss');
-          mydata = {
-            userID: results[0].user_id,
-            token: newToken,
-            lastDate: nowTime
-          }
-          var sessionXXX = encrypt(JSON.stringify(mydata), mykey);
-          var signSHA1 = crypto.createHash('sha1');
-          signSHA1.update(sessionXXX + mysign);
-          qwq = signSHA1.digest('hex');
-          response = {
-            state: 'success',
-            name: results[0].user_name,
-            detail: results[0].user_detail,
-            web: results[0].user_web,
-            isMail: results[0].isMail,
-            userSession: sessionXXX,
-            sign: qwq
-          };
+
+function isEmailStr(str) {
+  var pattern =
+      /^([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+@([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+\.[a-zA-Z]{2,3}$/;
+  var strEmail = pattern.test(str);
+  if (!strEmail) {
+    return 0;
+  } else {
+    return 1;
+  }
+}
+
+app.post('/login', urlencodedParser, function(req, res) {
+  console.log(sLine);
+  var t_now = new Date().Format('yyyy-MM-dd hh:mm:ss');
+  console.log(t_now);
+  console.log('用户登陆:');
+  if (isEmailStr(req.body.user_email)) {
+    pool.getConnection(function(err, conn) {
+      if (err) console.log('POOL ==> ' + err);
+      var sqlRun =
+          'select user_name, user_password, user_detail, user_web, user_id, isMail from user where user_email=\'' +
+          req.body.user_email + '\'';
+      conn.query(sqlRun, function(error, results, fields) {
+        if (error) throw error;
+        console.log('读取用户数据');
+        console.log(results);
+        var hashSHA1 = crypto.createHash('sha1');
+        hashSHA1.update(req.body.user_password);
+        if (results != '' &&
+            results[0].user_password == hashSHA1.digest('hex')) {  //密码正确
+          console.log('认证成功');
+          var newToken = Math.round(Math.random() * 10000000);
+          getToken(results[0].user_id, newToken, function(oldToken) {
+            var nowTime = new Date().Format('yyyy-MM-dd hh:mm:ss');
+            mydata = {
+              userID: results[0].user_id,
+              token: newToken,
+              lastDate: nowTime
+            }
+            var sessionXXX = encrypt(JSON.stringify(mydata), mykey);
+            var signSHA1 = crypto.createHash('sha1');
+            signSHA1.update(sessionXXX + mysign);
+            qwq = signSHA1.digest('hex');
+            response = {
+              state: 'success',
+              name: results[0].user_name,
+              detail: results[0].user_detail,
+              web: results[0].user_web,
+              isMail: results[0].isMail,
+              userSession: sessionXXX,
+              sign: qwq
+            };
+            res.send(response);
+          });
+        } else {  //密码错误
+          console.log('密码或用户名错误');
+          response = {state: 'failed', why: 'ERROR_PASSWORD'};
           res.send(response);
-          console.log(response);
-        });
-      } else {  //密码错误
-        response = {state: 'failed'};
-        res.send(response);
-        console.log(response);
-      }
-      conn.release();
+        }
+        conn.release();
+      });
     });
-  });
+  } else {
+    console.log('非法POST请求');
+    res.send({state: 'failed', why: 'NOT_EMAIL'});
+  }
 });
 //邮箱验证系统
 app.get('/login', function(req, res) {
+  console.log(sLine);
+  var t_now = new Date().Format('yyyy-MM-dd hh:mm:ss');
+  console.log(t_now);
+  console.log('邮件认证:');
   if (req.query.userSession != undefined && req.query.sign != undefined) {
-    userVerif(req.query.userSession, req.query.sign, function(mydata) {
+    userVerif(1, req.query.userSession, req.query.sign, function(mydata) {
       if (mydata.userID == undefined) {
+        console.log('非法请求！');
         res.send('非法请求！');
       } else {
         pool.getConnection(function(err, conn) {
@@ -352,19 +393,19 @@ app.get('/login', function(req, res) {
           conn.query(sqlRun, function(err, results) {
             if (err) console.log(err);
             if (results[0].isMail == 0) {
+              console.log('邮箱激活成功');
               sqlRun = 'update user set isMail=1 where user_id=\'' +
                   mydata.userID + '\'';
               conn.query(sqlRun, function(error, results, fields) {
                 if (error) throw error;
                 session = encrypt(JSON.stringify(mydata), mykey);
-                console.log(session);
                 var signSHA1 = crypto.createHash('sha1');
                 signSHA1.update(session + mysign);
                 qwq = signSHA1.digest('hex');
-                console.log(qwq);
                 res.redirect('../index.html?op=0');
               });
             } else {
+              console.log('邮箱已激活');
               res.send('邮箱已激活');
             }
             conn.release();
@@ -373,9 +414,9 @@ app.get('/login', function(req, res) {
       }
     });
   } else {
+    console.log('无法读取参数');
     res.send('未知错误！');
   }
-  console.log('login ok!');
 });  //状态显示
 
 // INSERT INTO `xmoj`.`user` (`user_id`, `user_name`, `user_password`,
@@ -385,60 +426,81 @@ app.get('/login', function(req, res) {
 
 // todo
 //注册模块
-
+function isTrueUser(email, name) {
+  var isEmail = isEmailStr(email);
+  var pattern2 = /^[a-zA-z0-9\_\.]{3,20}$/;
+  var strname = pattern2.test(name);
+  if (strname && isEmail) {
+    return 1;
+  } else {
+    return 0;
+  }
+}
 
 
 app.post('/register', urlencodedParser, function(req, res) {
-  pool.getConnection(function(err, conn) {
-    if (err) console.log('POOL ==> ' + err);
-    var sqlRun = 'select user_name from user where user_email=\'' +
-        req.body.user_email + '\'';
-    conn.query(sqlRun, function(error, results, fields) {
-      if (error) throw error;
-      console.log(results);
-      if (results != '') {  //邮箱已经存在
-        console.log('had');
-        res.send({state: 'failed'});
-        return;
-      } else {
-        var sqlRun = 'select dataint from global where name=\'user_num\'';
-        conn.query(sqlRun, function(err, results1, fields) {
-          console.log(results1);
-          if (err) console.log(err);
-          console.log('The userMaxID is: ', results1[0].dataint);
-          var userMaxID = results1[0].dataint;  //获取UserID
-          var hashSHA1 = crypto.createHash('sha1');
-          hashSHA1.update(req.body.user_password);
-          var sqlRun =
-              'INSERT INTO `xmoj`.`user` (`user_id`, `user_name`, `user_password`, `user_email`,`user_detail`,`user_web`) VALUES (\'' +
-              (userMaxID + 10000) + '\', \'' + req.body.user_name + '\', \'' +
-              hashSHA1.digest('hex') + '\', \'' + req.body.user_email +
-              '\', \'Nothing\', \'Nothing\')';
-          conn.query(sqlRun, function(error, results, fields) {
-            if (error) throw error;
-            res.send({state: 'success'});
-          });  //写入数据库
-          var sqlRun = 'update global set dataint=\'' + (userMaxID + 1) +
-              '\' where name=\'user_num\'';
-          conn.query(sqlRun, function(error, results, fields) {
-            if (error) throw error;
-            console.log('updata userMaxID to ' + (userMaxID + 1));
-          });  //更新UserID
-        });
-      }
-      conn.release();
+  console.log(sLine);
+  var t_now = new Date().Format('yyyy-MM-dd hh:mm:ss');
+  console.log(t_now);
+  console.log('用户注册:');
+  if (isTrueUser(req.body.user_email, req.body.user_name)) {
+    pool.getConnection(function(err, conn) {
+      if (err) console.log('POOL ==> ' + err);
+      var sqlRun = 'select user_name from user where user_email=\'' +
+          req.body.user_email + '\'';
+      conn.query(sqlRun, function(error, results, fields) {
+        if (error) throw error;
+        if (results != '') {  //邮箱已经存在
+          console.log('邮箱已经存在');
+          res.send({state: 'failed'});
+          return;
+        } else {
+          var sqlRun = 'select dataint from global where name=\'user_num\'';
+          conn.query(sqlRun, function(err, results1, fields) {
+            if (err) console.log(err);
+            console.log('数据库操作');
+            console.log(results1);
+            var userMaxID = results1[0].dataint;  //获取UserID
+            var hashSHA1 = crypto.createHash('sha1');
+            hashSHA1.update(req.body.user_password);
+            var sqlRun =
+                'INSERT INTO `xmoj`.`user` (`user_id`, `user_name`, `user_password`, `user_email`,`user_detail`,`user_web`) VALUES (\'' +
+                (userMaxID + 10000) + '\', \'' + req.body.user_name + '\', \'' +
+                hashSHA1.digest('hex') + '\', \'' + req.body.user_email +
+                '\', \'Nothing\', \'Nothing\')';
+            conn.query(sqlRun, function(error, results, fields) {
+              if (error) throw error;
+              console.log('注册成功');
+              res.send({state: 'success'});
+            });  //写入数据库
+            var sqlRun = 'update global set dataint=\'' + (userMaxID + 1) +
+                '\' where name=\'user_num\'';
+            conn.query(sqlRun, function(error, results, fields) {
+              if (error) throw error;
+              console.log('updata userMaxID to ' + (userMaxID + 1));
+            });  //更新UserID
+          });
+        }
+        conn.release();
+      });
     });
-  });
+  } else {
+    res.send({state: 'failed', why: 'NOT_EMAIL'});
+  }
 });
 
 
 app.post('/mail', urlencodedParser, function(req, res) {
+  console.log(sLine);
+  var t_now = new Date().Format('yyyy-MM-dd hh:mm:ss');
+  console.log(t_now);
+  console.log('发送激活邮件');
   if (req.body.userSession == null || req.body.sign == null) {
     res.send({state: 'failed', why: 'ILLEGAL_SIGN'});
   } else {
-    userVerif(req.body.userSession, req.body.sign, function(mydata) {
+    userVerif(1, req.body.userSession, req.body.sign, function(mydata) {
       if (mydata.userID == undefined) {
-          res.send({state: 'failed', why: mydata});
+        res.send({state: 'failed', why: mydata});
       } else {
         pool.getConnection(function(err, conn) {
           if (err) console.log('POOL ==> ' + err);
@@ -446,13 +508,11 @@ app.post('/mail', urlencodedParser, function(req, res) {
               mydata.userID + '\'';
           conn.query(sqlRun, function(err, results, fields) {
             if (err) console.log(err);
-            console.log('The user_email is: ', results[0].user_email);
+            console.log('读取用户邮箱' + results[0].user_email);
             session = encrypt(JSON.stringify(mydata), mykey);
-            console.log(session);
             var signSHA1 = crypto.createHash('sha1');
             signSHA1.update(session + mysign);
             qwq = signSHA1.digest('hex');
-            console.log(qwq);
             var textArr = {
               text:
                   '请点击下面的连接完成邮箱激活\nhttps://xmatrix.ml/api/login?userSession=',
