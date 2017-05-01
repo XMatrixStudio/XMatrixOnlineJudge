@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using XMatrix.Judge;
 
 namespace XMatrix
@@ -20,6 +21,7 @@ namespace XMatrix
                 return;
             }
             JudgeProcess judge = new JudgeProcess(uid, pid, std_test_num);
+            judge.shell = "sh";
             judge.DoJudge();
         }
     }

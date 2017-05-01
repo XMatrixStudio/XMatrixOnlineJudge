@@ -7,3 +7,11 @@ script:
   - cd judge
   - dotnet restore
   - dotnet build
+  - dotnet run 10000 1000 3
+  - dotnet run 10001 1000 3
+  - dotnet run 10002 1000 3
+  - dotnet run 10003 1000 3
+  - cat 10000_1000.json
+  - cat 10001_1000.json
+  - cat 10002_1000.json
+  - cat 10003_1000.json

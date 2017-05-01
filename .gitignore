@@ -2,6 +2,10 @@
 *.exe
 *.out
 
+# test txt file
+/test/*.txt
+/test/*.json
+
 # .NET Core RESTORE & Build File
 /judge/bin/
 /judge/obj/
