@@ -32,7 +32,8 @@
         document.cookie="userEmail=";
         sendNotice("请重新登陆。");
         $("#user_email").focus();
-
+        $("#logindiv").show();
+        $("#other").show();
       }else if (temp == 1) {
         sendNotice("请登陆后再访问");
         $("#user_email").focus();
@@ -41,14 +42,14 @@
         $("#other").hide();
       }
       var qwq = getCookie("userSession");
-      if (qwq == 'no' || qwq == null ){
+      if (qwq == null || qwq == "" ){
         $("#logindiv").show();
         $("#other").show();
       }
       $("#nav-bar").load("nav-bar.html", function() {
         $("#t-home").addClass("active");
         var username = getCookie("name");
-        if(username !== null) document.getElementById('userBar').innerHTML=username + ' <span class="caret"></span>';
+        if(username !== null  && username !== "") document.getElementById('userBar').innerHTML=username + ' <span class="caret"></span>';
         $("#user_email").focus();
       });
       $('#user_password').on('keypress',function(event){
@@ -76,7 +77,7 @@
       var pattern= /^([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+@([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+\.[a-zA-Z]{2,3}$/;
       var strEmail=pattern.test(document.getElementById("user_email").value);
       if(!strEmail){
-        sendNotice("请输入有效的E_mail！");
+        sendNotice("请输入有效的Email！");
         $("#user_email").focus();
         $("#user_email").val("");
         return;

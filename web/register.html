@@ -14,6 +14,7 @@
   <script src="js/login.js"></script>
   <script src="js/register.js"></script>
   <script src="js/SHA1.js"></script>
+  <script src="js/cookies.js"></script>
   <style type="text/css">
     body { padding-top: 70px;
       background-color: #EEEEEE;}
@@ -22,6 +23,9 @@
     $(function() {
       $("#nav-bar").load("nav-bar.html", function() {
         $("#t-home").addClass("active");
+        var username = getCookie("name");
+        if(username !== null  && username !== "") document.getElementById('userBar').innerHTML=username + ' <span class="caret"></span>';
+        $("#user_email").focus();
       });
     });//处理标题栏
     function toregister() {
@@ -45,9 +49,21 @@
         $("#user_password2").focus();
         return;
       }
-      if(document.getElementById("user_name").value.length < 3 || document.getElementById("user_name").value.length > 20){
-        sendNotice("用户名长度不合法，有效长度：3 - 20");
+      var pattern= /^([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+@([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+\.[a-zA-Z]{2,3}$/;
+      var strEmail=pattern.test(document.getElementById("user_email").value);
+      if(!strEmail){
+        sendNotice("请输入有效的Email！");
+        $("#user_email").focus();
+        $("#user_email").val("");
+        return;
+      }
+
+      var pattern2= /^[a-zA-z0-9\_\.]{3,20}$/;
+      var strname=pattern2.test(document.getElementById("user_name").value);
+      if(!strname){
+        sendNotice("请输入有效的用户名！(由字母，下划线，点组成的3-20位字符串)");
         $("#user_name").focus();
+        $("#user_name").val("");
         return;
       }
       if(document.getElementById("user_password").value.length < 6 || document.getElementById("user_password").value.length > 20){
@@ -55,14 +71,7 @@
         $("#user_password").focus();
         return;
       }
-      var pattern= /^([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+@([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+\.[a-zA-Z]{2,3}$/;
-      var strEmail=pattern.test(document.getElementById("user_email").value);
-      if(!strEmail){
-        sendNotice("请输入有效的E_mail！");
-        $("#user_email").focus();
-        $("#user_email").val("");
-        return;
-      }
+
       if (document.getElementById("user_password2").value != document.getElementById("user_password").value){
         sendNotice("两次输入的密码不一致");
         $("#user_password2").focus();

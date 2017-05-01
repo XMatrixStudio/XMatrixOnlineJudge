@@ -22,7 +22,7 @@
    $(function() {
     $("#nav-bar").load("nav-bar.html", function () {
       var username = getCookie("name");
-      if(username !== null) document.getElementById('userBar').innerHTML=username + ' <span class="caret"></span>';
+      if(username !== null  && username !== "") document.getElementById('userBar').innerHTML=username + ' <span class="caret"></span>';
       $("#t-about").addClass("active");
     });
     });//处理标题栏
@@ -61,7 +61,7 @@
      <p class="lead">License</p>
      <p> XMatrix Online Judge is released under the MIT License.</p>
      <HR width="80%" color=#987cb9 SIZE=3>
-       <img src="pic/github.png"><p> </p><a href="https://github.com/XMatrixTeam" target="_blank">Github</a>
+       <a href="https://github.com/XMatrixTeam/XMatrixOnlineJudge" target="_blank"><img src="pic/github.png"></a>
      </div>
    </div>
  </div>
