@@ -10,3 +10,5 @@
 /judge/bin/
 /judge/obj/
 web/updata.log
+server/key.json
+server/mysql.json
