@@ -5,15 +5,13 @@ const app = express();
 const bodyParser = require('body-parser');
 const fs = require('fs');
 const sLine = '-----------------------------------------------';
+const cookieParser = require('cookie-parser');//cookie模块
+app.use(cookieParser());
 //------------------------------------------------------------------------------
 
 // post模块
 const urlencodedParser = bodyParser.urlencoded({extended: false})
-app.use(bodyParser.urlencoded(
-    {extended: false}));  // for parsing application/x-www-form-urlencoded
-app.use(express.static('public'));
-
-
+app.use(bodyParser.urlencoded({extended: false}));  // for parsing application/x-www-form-urlencoded
 //------------------------------------------------------------------------------
 //加密模块
 const crypto = require('crypto');
@@ -46,7 +44,6 @@ aes192加密调用方法：
 var output = encrypt(JSON.stringify(input),key);
 var newinput = JSON.parse(decrypt(output,key));
 */
-
 //------------------------------------------------------------------------------
 //时间模块
 Date.prototype.Format = function(fmt) {
@@ -87,14 +84,17 @@ Date.prototype.Format = function(fmt) {
 //用户认证模块
 var key_file = 'key.json';
 var keyConfig = JSON.parse(fs.readFileSync(key_file));
-function userVerif(fxk, userSession, sign, callback) {
+function userVerif(fxk, req, callback) {
   console.log('用户认证开始');
   if (fxk == 1) console.log('特殊模式：忽略邮箱认证');
+  userSession = req.cookies.userSession;
+  sign = req.cookies.sign;
   if (userSession == undefined || sign == undefined) {
     console.log('凭据为空');
     callback('ILLEGAL_SIGN');
     return;
   }
+
   var signSHA1 = crypto.createHash('sha1');
   signSHA1.update(userSession + keyConfig.mysign);
   var nowSHA1 = signSHA1.digest('hex');
@@ -160,7 +160,7 @@ function userVerif(fxk, userSession, sign, callback) {
 
   var appUserVerif = function(req, res, next) {
     console.log('题目评测开始');
-    userVerif(0, req.body.userSession, req.body.sign, function(mydata) {
+    userVerif(0, req, function(mydata) {
       if (mydata.userID == undefined) {
         console.log('认证失败');
         res.send({state: 'failed', why: mydata});
@@ -172,12 +172,16 @@ function userVerif(fxk, userSession, sign, callback) {
     })
   };
 
-  function makeASign(data, callback) {
+  function makeASign(res, data, callback) {
     var sessionXXX = encrypt(JSON.stringify(data), keyConfig.mykey);
     var signSHA1 = crypto.createHash('sha1');
     signSHA1.update(sessionXXX + keyConfig.mysign);
     var qwq = signSHA1.digest('hex');
-    callback(sessionXXX, qwq);
+    res.clearCookie('userSession');
+    res.clearCookie('sign');
+    res.cookie('userSession', sessionXXX, { expires: new Date(Date.now() + 10000000), httpOnly: true });
+    res.cookie('sign', qwq, { expires: new Date(Date.now() + 10000000), httpOnly: true });
+    callback();
   }
 
 
@@ -233,16 +237,12 @@ pool.getConnection(function(err, conn) {
 
 //------------------------------------------------------------------------------
 //日志处理
-app.post(function(req, res, next) {
+app.use(function(req, res, next) {
   console.log(sLine);
-  console.log('Post:');
-  console.log('Time:', Date.now());
-  next();
-});
-app.get(function(req, res, next) {
-  console.log(sLine);
-  console.log('Get:');
-  console.log('Time:', Date.now());
+  console.log(req.headers.cookie);
+  console.log('Method: ' + req.method);
+  var nowtime = new Date().Format('yyyy-MM-dd hh:mm:ss');
+  console.log('Time:' + nowtime);
   next();
 });
 
@@ -260,7 +260,7 @@ app.post('/submit', [appUserVerif], function(req, res) {
     var sqlRun = 'update global set dataint=' + pidindex + ' where name=\'pid\'';
     conn.query(sqlRun, function(error, results, fields) {
       if (error) throw error;
-      console.log('updata pid to' + pidindex);
+      console.log('updata pid to ' + pidindex);
       conn.release();
     });
   });  //更新pid状态
@@ -269,15 +269,13 @@ app.post('/submit', [appUserVerif], function(req, res) {
   // todo
   //调用评测系统
   //------------------------------------------------------------------------------
-  makeASign(req.data_, function(session, sign) {
+  makeASign(res, req.data_, function(){
     response = {
       state: 'success',
       pid: pidindex,
       grade: '100',
       compiledtest: '40',
       stardtest: '60',
-      userSession: session,
-      sign: sign
     };
     console.log(response);
     res.send(response);
@@ -345,15 +343,13 @@ app.post('/login', [isEmailStr], function(req, res) {
             token: newToken,
             lastDate: nowTime
           }
-          makeASign(mydata, function (session, sign) {
+          makeASign(res, mydata, function () {
             response = {
               state: 'success',
               name: results[0].user_name,
               detail: results[0].user_detail,
               web: results[0].user_web,
               isMail: results[0].isMail,
-              userSession: session,
-              sign: sign
             };
             res.send(response);
           });
@@ -380,7 +376,7 @@ app.get('/login', function(req, res, next) {
     next('route');
   }
 }, function (req, res, next) {
-  userVerif(1, req.query.userSession, req.query.sign, function(mydata) {
+  userVerif(1, req, function(mydata) {
     if (mydata.userID == undefined) {
       console.log('非法请求！');
       res.send('非法请求！');
@@ -481,7 +477,7 @@ app.post('/mail', urlencodedParser, function(req, res, next) {
     next();
   }
 }, function (req, res, next) {
-  userVerif(1, req.body.userSession, req.body.sign, function(mydata) {
+  userVerif(1, req, function(mydata) {
     if (mydata.userID == undefined) {
       res.send({state: 'failed', why: mydata});
       next('route');

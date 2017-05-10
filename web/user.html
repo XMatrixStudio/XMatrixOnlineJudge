@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="theme-color" content="#222222">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>XMatrix</title>
 
@@ -22,7 +23,7 @@
       if(username !== null  && username !== "") document.getElementById('userBar').innerHTML=username + ' <span class="caret"></span>';
       $("#t-user").addClass("active");
     });
-    var cook_userSession = getCookie("userSession");
+    var cook_userSession = getCookie("name");
     var cook_isMail = getCookie("isMail");
 
     if (cook_userSession == 'no' || cook_userSession == undefined || cook_userSession == ""){

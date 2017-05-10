@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="theme-color" content="#222222">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="shortcut icon" href="xmatrix.ico">
   <title>XMatrix</title>
@@ -63,7 +64,7 @@
     });//处理标题栏
 
   function isLogin() {
-    var qwq = getCookie("userSession");
+    var qwq = getCookie("name");
     var wdf = getCookie("isMail");
    if (qwq == 'no' || qwq == undefined || qwq == ""){
       window.location.href='index.html?op=1';

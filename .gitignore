@@ -12,3 +12,4 @@
 web/updata.log
 server/key.json
 server/mysql.json
+server/run.log

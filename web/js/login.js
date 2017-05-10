@@ -8,8 +8,6 @@ function login(_password) {
       user_password:_password
     },function(data){
       if(data.state == 'success'){
-        document.cookie="userSession=" + data.userSession;
-        document.cookie="sign=" + data.sign;
         document.cookie="name=" + data.name;
         document.cookie="detail=" + data.detail;
         document.cookie="web=" + data.web;

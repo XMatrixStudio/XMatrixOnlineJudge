@@ -6,14 +6,10 @@ function running() {
   $('#compiledtest').html('Judging...');
   $('#stardtest').html('Judging...');
   $.post('api/submit', {
-    userSession: getCookie('userSession'),
-    sign:getCookie('sign'),
     code: document.getElementById('codetext').value
 }, function(data) {
     if (data.state == 'success') {
       var nopid = data.pid;
-      document.cookie="userSession=" + data.userSession;
-      document.cookie="sign=" + data.sign;
       $('#grade').html(data.grade);
       $('#compiledtest').html(data.compiledtest);
       $('#stardtest').html(data.stardtest);
