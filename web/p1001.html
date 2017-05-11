@@ -64,9 +64,9 @@
     });//处理标题栏
 
   function isLogin() {
-    var qwq = getCookie("name");
+    var isLogin = getCookie("isLogin");
     var wdf = getCookie("isMail");
-   if (qwq == 'no' || qwq == undefined || qwq == ""){
+   if (isLogin == '' || qwq == 0){
       window.location.href='index.html?op=1';
     }else if (wdf == '0' || wdf == undefined || wdf == ""){
       window.location.href='mail.html';

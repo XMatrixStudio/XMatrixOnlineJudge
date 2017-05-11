@@ -11,7 +11,6 @@
   <link rel="shortcut icon" href="xmatrix.ico">
   <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
   <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-  <script src="js/login.js"></script>
   <script src="js/cookies.js"></script>
   <style type="text/css">
     body { padding-top: 70px; }
@@ -19,8 +18,9 @@
   <script type="text/javascript">
     $(function() {
       var qwq = getCookie("isMail");
+      var isLogin = getCookie("isLogin");
       var email_s = getCookie('userEmail');
-      if (qwq != 0 || email_s == null) {
+      if (qwq != 0 || email_s == null || isLogin == 0) {
         alert("非法访问！");
         window.location.href='index.html';
       }
@@ -34,12 +34,10 @@
     });//处理标题栏
     function toMail() {
       $.post("api/mail",{
-        userSession: getCookie('userSession'),
-        sign:getCookie('sign')
+        state: 'EMAIL'
       },function(data){
         if(data.state == 'success'){
-          alert('邮件发送成功！请检查你的邮箱');
-          window.location.href='index.html?op=0';
+          window.location.href='index.html?op=2';
         }else{
           if(data.why == 'ILLEGAL_SIGN' || data.why == 'ILLEGAL_TOKEN') alert("非法访问，请重新登陆");
           if(data.why == 'TIME_OUT') alert("登陆超时，请重新登陆");

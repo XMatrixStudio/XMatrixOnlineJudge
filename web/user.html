@@ -23,10 +23,10 @@
       if(username !== null  && username !== "") document.getElementById('userBar').innerHTML=username + ' <span class="caret"></span>';
       $("#t-user").addClass("active");
     });
-    var cook_userSession = getCookie("name");
+    var isLogin = getCookie("isLogin");
     var cook_isMail = getCookie("isMail");
 
-    if (cook_userSession == 'no' || cook_userSession == undefined || cook_userSession == ""){
+    if (isLogin == 0 || isLogin == ''){
       window.location.href='index.html?op=1';
     }else if (cook_isMail == '0' || cook_isMail == undefined || cook_isMail == ""){
       window.location.href='mail.html';
@@ -35,7 +35,6 @@
     var cook_name= getCookie("name");
     var cook_web = getCookie("web");
     var cook_userEmail = getCookie("userEmail");
-    var cook_sign = getCookie("sign");
 
     document.getElementById('user_name').innerHTML=cook_name;
     $("#user_tname").val(cook_name);
