@@ -45,15 +45,18 @@ var userModule = {
 
   userVerif: function(fxk, req, callback) {
     console.log('User Verif: ');
-    if (fxk == 1) console.log('Ignore Email');
     userSession = req.cookies.userSession;
     sign = req.cookies.sign;
+    if (fxk == 1){
+      console.log('Ignore Email');
+      userSession = req.userSession_;
+      sign = req.sign_;
+    }
     if (userSession == undefined || sign == undefined) {
       console.log('Err: NO Sign');
       callback('ILLEGAL_SIGN');
       return;
     }
-
     var signSHA1 = crypto.createHash('sha1');
     signSHA1.update(userSession + keyConfig.mysign);
     var nowSHA1 = signSHA1.digest('hex');
@@ -72,12 +75,8 @@ var userModule = {
         return;
       }
       allData.lastDate = nowTime;
-
       var newToken = Math.round(Math.random() * 10000000);
-
       userModule.getToken(allData.userID, newToken, function(oldToken, isMail) {
-        console.log(oldToken);
-        console.log(allData.token);
         if (oldToken != allData.token) {
           console.log('Err: Illegal Token');
           callback('ILLEGAL_TOKEN');
@@ -103,12 +102,10 @@ var userModule = {
         if (err) console.log(err);
         var oldToken = results[0].user_token;
         var isMail = results[0].isMail;
-        console.log('select TOKEN：', oldToken);
         sqlRun = 'update user set user_token=\'' + newToken +
         '\' where user_id=\'' + userID + '\'';
         conn.query(sqlRun, function(error, results, fields) {  //更新用户tokem
           if (error) throw error;
-          console.log('update TOKEN to ' + newToken);
           conn.release();
           callback(oldToken, isMail);
         });
@@ -130,9 +127,8 @@ var userModule = {
     })
   },  //进行用户认证
 
-  makeASign: function(res, data, callback) {
-
-    var sessionXXX = userModule.encrypt(JSON.stringify(data), keyConfig.mykey);
+  makeASign: function(res, req, callback) {
+    var sessionXXX = userModule.encrypt(JSON.stringify(req.data_), keyConfig.mykey);
     var signSHA1 = crypto.createHash('sha1');
     signSHA1.update(sessionXXX + keyConfig.mysign);
     var qwq = signSHA1.digest('hex');
@@ -162,15 +158,12 @@ var userModule = {
   },
 
   isTrueUser: function(req, res, next) {
-    var pattern =
-    /^([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+@([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+\.[a-zA-Z]{2,3}$/;
-    var strEmail = pattern.test(req.body.user_email);
     var pattern2 = /^[a-zA-z0-9\_\.]{3,20}$/;
     var strname = pattern2.test(req.body.user_name);
-    if (strname && strEmail) {
+    if (strname) {
       next();
     } else {
-      res.send({state: 'failed', why: 'NOT_EMAIL'});
+      res.send({state: 'failed', why: 'NOT_USER'});
       next('route');
     }
   }
@@ -184,7 +177,7 @@ var userModule = {
     code
     ...
 
-    makeASign(req.data_, res,  function(session, sign) {
+    makeASign(res, req,  function(session, sign) {
       res.send(response);
     });
   });

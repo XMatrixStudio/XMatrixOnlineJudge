@@ -11,9 +11,7 @@
   <link rel="shortcut icon" href="xmatrix.ico">
   <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
   <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-  <script src="js/login.js"></script>
-  <script src="js/cookies.js"></script>
-  <script src="js/SHA1.js"></script>
+  <script src="js/xmatrix.js"></script>
   <style type="text/css">
     body {
       padding-top: 70px;
@@ -25,6 +23,7 @@
       var temp = GetQueryString('op');
       if(temp == 0 || temp == 2){
         document.cookie="isLogin=0";
+        document.cookie="name=";
         if(temp == 2){
           sendNotice("邮件发送成功，请点击邮件里链接进行激活后再登陆");
         }else{
@@ -37,19 +36,25 @@
         document.cookie="isLogin=0";
         sendNotice("请登陆后再访问");
         $("#user_email").focus();
+      }else if(temp == 3){
+        sendNotice('登陆已过时，请重新登陆！');
       }else{
         $("#logindiv").hide();
         $("#other").hide();
       }
       var isLogin = getCookie("isLogin");
-      if (isLogin == 0){
+      if (isLogin == 0 || isLogin == ''|| isLogin == undefined){
         $("#logindiv").show();
         $("#other").show();
       }
       $("#nav-bar").load("nav-bar.html", function() {
         $("#t-home").addClass("active");
         var username = getCookie("name");
-        if(username !== null  && username !== "") document.getElementById('userBar').innerHTML=username + ' <span class="caret"></span>';
+        if(username !== null  && username !== ""){
+           document.getElementById('userBar').innerHTML=username + ' <span class="caret"></span>';
+        }else{
+          document.getElementById('userBar').innerHTML='未登陆 <span class="caret"></span>';
+        }
         $("#user_email").focus();
       });//加载标题栏
       $('#user_password').on('keypress',function(event){
@@ -59,27 +64,6 @@
        }
       });//绑定回车事件
     });
-
-    function toLogin() {
-      if(document.getElementById("user_email").value == ''){
-        sendNotice("<strong>邮箱地址为空</strong>  请输入邮箱地址");
-        $("#user_email").focus();
-        return;
-      } else if (document.getElementById("user_password").value == '' && document.getElementById("user_email").value != ''){
-        sendNotice("<strong>密码为空</strong>  请输入密码");
-        $("#user_password").focus();
-        return;
-      }
-      var pattern= /^([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+@([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+\.[a-zA-Z]{2,3}$/;
-      var strEmail=pattern.test(document.getElementById("user_email").value);
-      if(!strEmail){
-        sendNotice("请输入有效的Email！");
-        $("#user_email").focus();
-        $("#user_email").val("");
-        return;
-      }
-      login(hex_sha1(document.getElementById("user_password").value));
-    }
   </script>
 </head>
 <body>

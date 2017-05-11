@@ -11,7 +11,7 @@
   <link rel="shortcut icon" href="xmatrix.ico">
   <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
   <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-  <script src="js/cookies.js"></script>
+  <script src="js/xmatrix.js"></script>
   <style type="text/css">
     body { padding-top: 70px; }
   </style>
@@ -20,7 +20,7 @@
       var qwq = getCookie("isMail");
       var isLogin = getCookie("isLogin");
       var email_s = getCookie('userEmail');
-      if (qwq != 0 || email_s == null || isLogin == 0) {
+      if (qwq != 0 || email_s == null || isLogin == 0 || isLogin == undefined) {
         alert("非法访问！");
         window.location.href='index.html';
       }
@@ -32,20 +32,7 @@
       });
 
     });//处理标题栏
-    function toMail() {
-      $.post("api/mail",{
-        state: 'EMAIL'
-      },function(data){
-        if(data.state == 'success'){
-          window.location.href='index.html?op=2';
-        }else{
-          if(data.why == 'ILLEGAL_SIGN' || data.why == 'ILLEGAL_TOKEN') alert("非法访问，请重新登陆");
-          if(data.why == 'TIME_OUT') alert("登陆超时，请重新登陆");
-          alert(data.why);
-          window.location.href='index.html?op=0';
-        }
-      });
-    }
+
 
 </script>
 </head>

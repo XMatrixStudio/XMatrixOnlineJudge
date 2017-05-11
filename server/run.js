@@ -66,7 +66,6 @@ pool.getConnection(function(err, conn) {
 //日志处理
 app.use(function(req, res, next) {
   console.log(sLine);
-  console.log(req.headers.cookie);
   console.log('Method: ' + req.method);
   var nowtime = new Date().Format('yyyy-MM-dd hh:mm:ss');
   console.log('Time:' + nowtime);
@@ -95,15 +94,22 @@ app.post('/submit', [userModule.appUserVerif], function(req, res) {
   // todo
   //调用评测系统
   //------------------------------------------------------------------------------
+  var nowtime = new Date().Format('yyyy-MM-dd hh:mm:ss');
   response = {
       state: 'success',
       pid: pidindex,
-      grade: '100',
-      compiledtest: '40',
-      stardtest: '60',
+      time: nowtime,
+      runtime: '211ms',
+      grade: {
+        total:95,totalm:100,
+        test1:20,test1m:20,test1e:'',
+        test2:20,test2m:20,test2e:'',
+        test3:35,test3m:40,test3e:'Wrong answer',
+        test4:20,test4m:20,test4e:''
+      },
   };
   console.log('judging success!');
-  userModule.makeASign(res, req.data_, function(){
+  userModule.makeASign(res, req, function(){
     res.send(response);
   });
 });
@@ -139,7 +145,7 @@ app.post('/login', [userModule.isEmailStr], function(req, res) {
         var newToken = Math.round(Math.random() * 10000000);
         userModule.getToken(results[0].user_id, newToken, function(oldToken) {
           var nowTime = new Date().Format('yyyy-MM-dd hh:mm:ss');
-          mydata = {
+          req.data_ = {
             userID: results[0].user_id,
             token: newToken,
             lastDate: nowTime
@@ -151,7 +157,7 @@ app.post('/login', [userModule.isEmailStr], function(req, res) {
               web: results[0].user_web,
               isMail: results[0].isMail,
           };
-          userModule.makeASign(res, mydata, function(){
+          userModule.makeASign(res, req, function(){
             console.log(response);
             res.send(response);
           });
@@ -171,6 +177,8 @@ app.post('/login', [userModule.isEmailStr], function(req, res) {
 app.get('/login', function(req, res, next) {
   console.log('Email activation:');
   if (req.query.userSession != undefined && req.query.sign != undefined) {
+    req.userSession_ = req.query.userSession;
+    req.sign_ = req.query.sign;
     next();
   }else{
     console.log('Unable to read parameters');
@@ -184,6 +192,7 @@ app.get('/login', function(req, res, next) {
       res.send('Illegal request');
       next('route');
     } else {
+      req.data_ = mydata;
       next();
     }
   });
@@ -191,13 +200,13 @@ app.get('/login', function(req, res, next) {
   pool.getConnection(function(err, conn) {
     if (err) console.log('POOL ==> ' + err);
     var sqlRun =
-    'select isMail from user where user_id=\'' + mydata.userID + '\'';
+    'select isMail from user where user_id=\'' + req.data_.userID + '\'';
     conn.query(sqlRun, function(err, results) {
       if (err) console.log(err);
       if (results[0].isMail == 0) {
         console.log('Email activation success');
         sqlRun = 'update user set isMail=1 where user_id=\'' +
-        mydata.userID + '\'';
+        req.data_.userID + '\'';
         conn.query(sqlRun, function(error, results, fields){
           if (error) throw error;
           res.redirect('../index.html?op=0');
@@ -215,7 +224,7 @@ app.get('/login', function(req, res, next) {
 // todo
 //注册模块
 
-app.post('/register', [userModule.isTrueUser], function(req, res, next) {
+app.post('/register', [userModule.isEmailStr, userModule.isTrueUser], function(req, res, next) {
   console.log('User registration:');
   pool.getConnection(function(err, conn) {
     if (err) console.log('POOL ==> ' + err);
@@ -260,8 +269,10 @@ app.post('/register', [userModule.isTrueUser], function(req, res, next) {
 
 //-----------------------------------------------
 //发送激活邮件
-app.post('/mail', urlencodedParser, function (req, res, next) {
+app.post('/mail', function (req, res, next) {
   console.log('send email to user: ');
+  req.userSession_ = req.cookies.userSession;
+  req.sign_ = req.cookies.sign;
   userModule.userVerif(1, req, function(mydata) {
     if (mydata.userID == undefined) {
       console.log(mydata);
@@ -272,39 +283,126 @@ app.post('/mail', urlencodedParser, function (req, res, next) {
       next();
     }
   });
+}, function (req, res, next) {
+   var nowtime = new Date().Format('yyyy-MM-dd-hh');
+   pool.getConnection(function(err, conn) {
+    if (err) console.log('POOL ==> ' + err);
+    var sqlRun =
+    'select send_email from user where user_id=\'' + req.data_.userID + '\'';
+    conn.query(sqlRun, function(err, results) {
+      if (err) console.log(err);
+      if (results[0].send_email != nowtime) {
+        console.log('ok to Send email!');
+        sqlRun = 'update user set send_email=\''+ nowtime + '\' where user_id=\'' +
+        req.data_.userID + '\'';
+        conn.query(sqlRun, function(error, results, fields){
+          if (error) throw error;
+          console.log('Updata send_email!');
+          next();
+        });
+      } else {
+        console.log('Err: Send two emails in a hour.');
+        userModule.makeASign(res, req, function(){
+          res.send({state:'failed', why:'HAD_SEND'});
+        });
+        next('route');
+      }
+      conn.release();
+    });
+  });
 }, function(req, res) {
   pool.getConnection(function(err, conn) {
     if (err) console.log('POOL ==> ' + err);
     var sqlRun = 'select user_email from user where user_id=\'' +
-    mydata.userID + '\'';
+    req.data_.userID + '\'';
     conn.query(sqlRun, function(err, results, fields) {
       if (err) console.log(err);
       console.log('user_email:' + results[0].user_email);
-      var keyConfig = require('./user.js').keyConfig;
-      var session = userModule.encrypt(JSON.stringify(mydata), keyConfig.mykey);
+      var keyConfig = JSON.parse(fs.readFileSync('key.json'));
+      var session = userModule.encrypt(JSON.stringify(req.data_), keyConfig.mykey);
       var signSHA1 = crypto.createHash('sha1');
       signSHA1.update(session + keyConfig.mysign);
       var qwq = signSHA1.digest('hex');
-      var textArr = {
-        text:
-        '请点击下面的连接完成邮箱激活\nhttps://xmatrix.ml/api/login?userSession=',
-        session2: session,
-        sign: qwq
-      };
+      var mail1 = fs.readFileSync('mail1.data');
+      var mail2 = fs.readFileSync('mail2.data');
       fs.writeFile(
         'test.txt',
-        textArr.text + textArr.session2 + '&sign=' + textArr.sign,
+        mail1 + session + '&sign=' + qwq + mail2,
         function(err) {
           if (err) console.error(err);
           const spawn = require('child_process').spawn;
           const ls = spawn('./sendMail.sh', [results[0].user_email]);
         });
-      res.send({state: 'success'});
+      res.send({state:'success'});
       conn.release();
     });
   });
 });
 //-----------------------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------
+//修改密码
+app.post('/user/pwd', [userModule.appUserVerif], function(req, res) {
+  console.log('Password Change: ');
+  pool.getConnection(function(err, conn) {
+    if (err) console.log('POOL ==> ' + err);
+    var sqlRun =
+    'select user_password from user where user_id=\'' + req.data_.userID + '\'';
+    conn.query(sqlRun, function(err, results) {
+      if (err) console.log(err);
+      var hashSHA1 = crypto.createHash('sha1');
+      hashSHA1.update(req.body.old_password);
+      if (results[0].user_password == hashSHA1.digest('hex')) {
+        console.log('Password is Right!');
+        var nhashSHA1 = crypto.createHash('sha1');
+        nhashSHA1.update(req.body.new_password);
+        sqlRun = 'update user set user_password=\''+ nhashSHA1.digest('hex') + '\' where user_id=\'' +
+        req.data_.userID + '\'';
+        conn.query(sqlRun, function(error, results, fields){
+          if (error) throw error;
+          console.log('Updata password!');
+          userModule.makeASign(res, req, function(){
+            res.send({state:'success'});
+          });
+        });
+      } else {
+        console.log('Err: Password is ERR');
+        userModule.makeASign(res, req, function(){
+          res.send({state:'failed', why:'ERR_PWD'});
+        });
+      }
+      conn.release();
+    });
+  });
+});
+//-----------------------------------------------------------------------
+//修改个人信息
+app.post('/user/info', [userModule.appUserVerif, userModule.isTrueUser],function(req, res, next) {
+  var re=/select|update|delete|truncate|join|union|exec|insert|drop|count|'|"|;|>|<|%/i;
+  if(re.test(req.body.user_detail) || re.test(req.body.user_web)){
+    res.redirect('.../index.html?op=3');
+    next('route');
+  }else{
+    next();
+  }
+}, function(req, res) {
+  console.log('Info Change: ');
+  pool.getConnection(function(err, conn) {
+    if (err) console.log('POOL ==> ' + err);
+    var sqlRun =
+    'update user set user_name=\'' + req.body.user_name + '\', user_detail=\'' + req.body.user_detail + '\', user_web=\'' + req.body.user_web + '\' where user_id=\'' + req.data_.userID + '\'';
+    conn.query(sqlRun, function(err, results) {
+      if (err) console.log(err);
+      console.log('Update user Info!');
+      userModule.makeASign(res, req, function(){
+        res.send({state:'success'});
+      });
+    });
+    conn.release();
+  });
+});
+
+//-----------------------------------------------------------------------
 
 
 //监听30002端口
