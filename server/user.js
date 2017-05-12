@@ -45,12 +45,10 @@ var userModule = {
 
   userVerif: function(fxk, req, callback) {
     console.log('User Verif: ');
-    userSession = req.cookies.userSession;
-    sign = req.cookies.sign;
+    userSession = req.userSession_;
+    sign = req.sign_;
     if (fxk == 1){
       console.log('Ignore Email');
-      userSession = req.userSession_;
-      sign = req.sign_;
     }
     if (userSession == undefined || sign == undefined) {
       console.log('Err: NO Sign');
@@ -115,6 +113,8 @@ var userModule = {
 
 
   appUserVerif: function(req, res, next) {
+    req.userSession_ = req.cookies.userSession;
+    req.sign_ = req.cookies.sign;
     userModule.userVerif(0, req, function(mydata) {
       if (mydata.userID == undefined) {
         console.log('Illegal access');

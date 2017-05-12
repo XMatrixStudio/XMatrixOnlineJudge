@@ -16,92 +16,67 @@
   <style type="text/css">
     body { padding-top: 70px;
       background-color: #EEEEEE;
-       }
+    }
   </style>
-  </style>
-    <script type="text/javascript">
-   $(function() {
-      $("#nav-bar").load("nav-bar.html", function () {
-      var username = getCookie("name");
-      if(username !== null  && username !== "") document.getElementById('userBar').innerHTML=username + ' <span class="caret"></span>';
-      $("#t-problem").addClass("active");
-      });
+</style>
+<script type="text/javascript">
+ $(function() {
+  $("#nav-bar").load("nav-bar.html", function () {
+    var username = getCookie("name");
+    if(username !== null  && username !== "") document.getElementById('userBar').innerHTML=username + ' <span class="caret"></span>';
+    $("#t-problem").addClass("active");
+    isLogin(getPlist);
+  });
     });//处理标题栏
   </script>
-    </head>
-    <body>
-      <!-- 标题栏开始 -->
+</head>
+<body>
+  <!-- 标题栏开始 -->
 
 
-      <div id="nav-bar"></div>
-      <!--标题栏结束 -->
-      <div class="container-fluid">
-        <div class="row-fluid">
+  <div id="nav-bar"></div>
+  <!--标题栏结束 -->
+  <div class="container-fluid">
+    <div class="row-fluid">
 
-          <div class="col-xs-2">
-            <ul class="nav nav-pills nav-stacked hidden-xs">
-              <li class="active list-group-item"><a href="#pr-1001" data-toggle="tab">数据结构 <span class="badge">3</span></a></li>
-              <li class="list-group-item"><a href="#pr-1002" data-toggle="tab">特别困难  <span class="badge">1</span></a></li>
-              <li class="list-group-item"><a href="#pr-1003" data-toggle="tab">算法  <span class="badge">0</span></a></li>
-              <li class="list-group-item"><a href="#pr-1004" data-toggle="tab">秀秀推荐  <span class="badge">0</span></a></li>
-            </ul>
-            <ul class="nav nav-defualt visible-xs">
-              <li class="active"><a href="#pr-1001" data-toggle="tab">数据结构 <span class="badge">3</span></a></li>
-              <li ><a href="#pr-1002" data-toggle="tab">特别困难  <span class="badge">1</span></a></li>
-              <li ><a href="#pr-1003" data-toggle="tab">算法  <span class="badge">0</span></a></li>
-              <li><a href="#pr-1004" data-toggle="tab">秀秀推荐  <span class="badge">0</span></a></li>
-            </ul>
+      <div class="col-xs-2">
+        <ul class="nav nav-pills nav-stacked hidden-xs">
+          <li class="active list-group-item"><a href="#pr-1001" data-toggle="tab">数据结构 <span id="course_num_1" class="badge">3</span></a></li>
+          <li class="list-group-item"><a href="#pr-1002" data-toggle="tab">特别困难  <span id="course_num_2" class="badge">1</span></a></li>
+          <li class="list-group-item"><a href="#pr-1003" data-toggle="tab">算法  <span id="course_num_3" class="badge">0</span></a></li>
+          <li class="list-group-item"><a href="#pr-1004" data-toggle="tab">秀秀推荐  <span id="course_num_4" class="badge">0</span></a></li>
+        </ul>
+        <ul class="nav nav-defualt visible-xs">
+          <li class="active"><a href="#pr-1001" data-toggle="tab">数据结构 <span id="course_num_1_" class="badge">3</span></a></li>
+          <li ><a href="#pr-1002" data-toggle="tab">特别困难  <span id="course_num_2_" class="badge">1</span></a></li>
+          <li ><a href="#pr-1003" data-toggle="tab">算法  <span id="course_num_3_"  class="badge">0</span></a></li>
+          <li><a href="#pr-1004" data-toggle="tab">秀秀推荐  <span id="course_num_4_"  class="badge">0</span></a></li>
+        </ul>
 
-          </div>
-          <!-- Tab panes -->
-          <div class="col-xs-10">
-            <div class="tab-content">
-              <div class="tab-pane fade in active" id="pr-1001">
-
-                <div class="list-group">
-
-                  <a href="p1001.html" class="list-group-item">
-                    <h4 class="list-group-item-heading">D&A Static Linked List(eden)   <span class="label label-success">easy</span></h4>
-                    <p class="list-group-item-text">编程题</p>
-                  </a>
-
-                </div>
-
-
-
-
-              </div>
-              <div class="tab-pane fade" id="pr-1002">
-
-                  <a href="#" class="list-group-item">
-                    <h4 class="list-group-item-heading"><span class="label label-info">NULL</span></h4>
-                  </a>
-
-
-              </div>
-              <div class="tab-pane fade" id="pr-1003">
-
-                  <a href="#" class="list-group-item">
-                    <h4 class="list-group-item-heading"><span class="label label-info">NULL</span></h4>
-                  </a>
-
-              </div>
-              <div class="tab-pane fade" id="pr-1004">
-
-                  <a href="#" class="list-group-item">
-                    <h4 class="list-group-item-heading"><span class="label label-info">NULL</span></h4>
-                  </a>
-
-              </div>
+      </div>
+      <!-- Tab panes -->
+      <div class="col-xs-10">
+        <div class="tab-content">
+          <div class="tab-pane fade in active" id="pr-1001">
+            <div id="course_1" class="list-group">
             </div>
-
-
           </div>
-
-
-
+          <div class="tab-pane fade" id="pr-1002">
+           <div id="course_2" class="list-group">
+           </div>
+         </div>
+         <div class="tab-pane fade" id="pr-1003">
+           <div id="course_3" class="list-group">
+           </div>
+         </div>
+         <div class="tab-pane fade" id="pr-1004">
+          <div id="course_4" class="list-group">
+          </div>
         </div>
       </div>
     </div>
-  </body>
-  </html>
+  </div>
+</div>
+</div>
+</body>
+</html>

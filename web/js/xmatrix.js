@@ -188,7 +188,7 @@ function running() {
   $('#j_info2').html('');
   $('#j_info3').html('');
   $('#j_info4').html('');
-  $.post('api/submit', {code: document.getElementById('codetext').value}, function(data) {
+  $.post('/api/submit', {code: document.getElementById('codetext').value}, function(data) {
     if (data.state == 'success') {
       $('#j_grade').html(data.grade.total);
       document.getElementById('j_pro').style.width = data.grade.total + '%';
@@ -211,46 +211,46 @@ function running() {
                 '编译测试： ' + data.grade.test1 + '/' + data.grade.test1m +
                 ' <span class="glyphicon glyphicon-ok" style="float:right;"></span>');
         document.getElementById('j_test1').style.color = '#228B22';
-      }else{
+      } else {
         $('#j_test1')
             .html(
                 '编译测试： ' + data.grade.test1 + '/' + data.grade.test1m +
                 ' <span class="glyphicon glyphicon-remove" style="float:right;"></span>');
         document.getElementById('j_test1').style.color = '#B22222';
-      }
+        }
       if (data.grade.test2 === data.grade.test2m) {
         $('#j_test2')
             .html(
                 '标准测试： ' + data.grade.test2 + '/' + data.grade.test2m +
                 ' <span class="glyphicon glyphicon-ok" style="float:right;"></span>');
         document.getElementById('j_test2').style.color = '#228B22';
-      }else{
+      } else {
         $('#j_test2')
             .html(
                 '标准测试： ' + data.grade.test2 + '/' + data.grade.test2m +
                 ' <span class="glyphicon glyphicon-remove" style="float:right;"></span>');
         document.getElementById('j_test2').style.color = '#B22222';
-      }
+        }
       if (data.grade.test3 === data.grade.test3m) {
         $('#j_test3')
             .html(
                 '随机测试： ' + data.grade.test3 + '/' + data.grade.test3m +
                 ' <span class="glyphicon glyphicon-ok" style="float:right;"></span>');
         document.getElementById('j_test3').style.color = '#228B22';
-      }else{
+      } else {
         $('#j_test3')
             .html(
                 '随机测试： ' + data.grade.test3 + '/' + data.grade.test3m +
                 ' <span class="glyphicon glyphicon-remove" style="float:right;"></span>');
         document.getElementById('j_test3').style.color = '#B22222';
-      }
+        }
       if (data.grade.test4 === data.grade.test4m) {
         $('#j_test4')
             .html(
                 '内存测试： ' + data.grade.test4 + '/' + data.grade.test4m +
                 ' <span class="glyphicon glyphicon-ok" style="float:right;"></span>');
         document.getElementById('j_test4').style.color = '#228B22';
-      }else{
+      } else {
         $('#j_test4')
             .html(
                 '内存测试： ' + data.grade.test4 + '/' + data.grade.test4m +
@@ -463,18 +463,86 @@ function testcode() {
     extraKeys: {'Ctrl': 'autocomplete'},
     lineNumbers: true,
   });
-  $("#begin").addClass("hidden");
-  editor.on("change", function(Editor, changes) {
-    $("#codetext").text(editor.getValue());
+  $('#begin').addClass('hidden');
+  editor.on('change', function(Editor, changes) {
+    $('#codetext').text(editor.getValue());
   });
   }  //代码编辑框
 
-function isLogin() {
-  var qwq = getCookie("isLogin");
-  var wdf = getCookie("isMail");
-  if (qwq == '' || qwq == 0 || qwq == undefined){
-      //window.location.href='index.html?op=1';
-    }else if (wdf == '0' || wdf == undefined || wdf == ""){
-      window.location.href='mail.html';
+function isLogin(callback) {
+  var qwq = getCookie('isLogin');
+  var wdf = getCookie('isMail');
+  if (qwq == '' || qwq == 0 || qwq == undefined) {
+    window.location.href='index.html?op=1';
+  } else if (wdf == '0' || wdf == undefined || wdf == '') {
+    window.location.href = 'mail.html';
+  }else{
+    if(callback != undefined)callback();
+  }
+}  //检测是否登陆和验证邮箱
+
+function getPlist() {
+
+  $.post('api/getPlist', {state: 'hello,world'}, function(resdata) {
+    var proList = new Array;
+    var proCount = new Array;
+    proCount=[0,0,0,0,0,0];
+    for (var i = 1; i <= resdata.pCount; i++) {
+      proCount[resdata.pCourse[i]]++;
+      if (proList[resdata.pCourse[i]] == undefined) proList[resdata.pCourse[i]] = '';
+      proList[resdata.pCourse[i]] += '<a href="api/problem/';
+      proList[resdata.pCourse[i]] += resdata.pId[i];
+      proList[resdata.pCourse[i]] +=
+          '"class="list-group-item"><h4 class="list-group-item-heading">';
+      proList[resdata.pCourse[i]] += resdata.pName[i];
+      proList[resdata.pCourse[i]] += '   <span class="label label-';
+      switch (resdata.pHard[i]) {
+        case 1:
+          proList[resdata.pCourse[i]] += 'success">easy';
+          break;
+        case 2:
+          proList[resdata.pCourse[i]] += 'info">common';
+          break;
+        case 3:
+          proList[resdata.pCourse[i]] += 'danger">hard';
+          break;
+      }
+      proList[resdata.pCourse[i]] +=
+          '</span></h4><p class="list-group-item-text">';
+      switch (resdata.pClass[i]) {
+        case 1:
+          proList[resdata.pCourse[i]] += '编程题';
+          break;
+        case 2:
+          proList[resdata.pCourse[i]] += '选择题';
+          break;
+        case 3:
+          proList[resdata.pCourse[i]] += '不知道什么题';
+          break;
+      }
+      proList[resdata.pCourse[i]] += '</p></a>'
+      }
+
+    for (var i = 1; i <= 4; i++) {
+      if (proList[i] == undefined) {
+        proList[i] =
+            '<a href="#" class="list-group-item"><h4 class="list-group-item-heading"><span class="label label-info">NULL</span></h4></a>'
+      }
+      if(proCount[i] == undefined)proCount[i] = 0;
     }
-  }//检测是否登陆和验证邮箱
+    document.getElementById('course_1').innerHTML= proList[1];
+    document.getElementById('course_2').innerHTML= proList[2];
+    document.getElementById('course_3').innerHTML= proList[3];
+    document.getElementById('course_4').innerHTML= proList[4];
+    document.getElementById('course_num_1').innerHTML= proCount[1];
+    document.getElementById('course_num_1_').innerHTML= proCount[1];
+    document.getElementById('course_num_2').innerHTML= proCount[2];
+    document.getElementById('course_num_2_').innerHTML= proCount[2];
+    document.getElementById('course_num_3').innerHTML= proCount[3];
+    document.getElementById('course_num_3_').innerHTML= proCount[3];
+    document.getElementById('course_num_4').innerHTML= proCount[4];
+    document.getElementById('course_num_4_').innerHTML= proCount[4];
+  });
+  }
+
+
