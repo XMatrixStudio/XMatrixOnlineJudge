@@ -440,7 +440,7 @@ app.engine('ntl', function(filePath, options, callback) {  // 定义模板引擎
   fs.readFile(filePath, function(err, content) {
     if (err) return callback(new Error(err));
 
-    var rank_table = '<table class="table table-hover table-striped"><tr><th>名次</th><th>名字</th><th>提交时间</th><th>分数</th></tr>';
+    var rank_table = '<table class="table table-hover table-striped"><tr style="font-size:17px;color:#fff;background-color: #479EA2"><th>No</th><th>昵称</th><th>提交时间</th><th>分数</th></tr>';
     var rank_name = options.rank_name.split(',');
     var rank_time = options.rank_time.split(',');
     var rank_grade = options.rank_grade.split(',');
@@ -462,6 +462,10 @@ app.engine('ntl', function(filePath, options, callback) {  // 定义模板引擎
     .replace('#jLtime#', options.jLtime)
     .replace('#jRtime#', options.jRtime)
     .replace('#jMGrade#', options.jMGrade)
+    .replace('#jText1#', options.jText1)
+    .replace('#jText2#', options.jText2)
+    .replace('#jText3#', options.jText3)
+    .replace('#jText4#', options.jText4)
     .replace('#jGrade1#', options.jGrade1 + ' / ' + options.jGrade1m)
     .replace('#jGrade2#', options.jGrade2 + ' / ' + options.jGrade2m)
     .replace('#jGrade3#', options.jGrade3 + ' / ' + options.jGrade3m)
@@ -494,6 +498,13 @@ app.get('/problem/:id',function(req, res, next){
     console.log('Not a id ' + req.params.id);
     next('route');
   }
+},function(req,res,next) {
+  if(req.cookies.isLogin != 1){
+    res.redirect('../../index.html?op=1');
+    next('route');
+  }else{
+    next();
+  }
 },[userModule.appUserVerif],function(req, res, next){
   console.log(req.params.id);
   pool.getConnection(function(err, conn) {
@@ -502,7 +513,7 @@ app.get('/problem/:id',function(req, res, next){
     'SELECT `title`, `time_limit`, `mem_limit`, `author`, `email`, `hard`, `course`, `grade_1`, `grade_2`, `grade_3`, `grade_4`, `rank_count`, `rank_name`, `rank_time`, `rank_grade` FROM `problem` WHERE `pid` = ' +
     req.params.id;
     conn.query(sqlRun, function(err, results) {
-      if(results.length === 0){
+      if(results == undefined){
         console.log('No a problem');
         userModule.makeASign(res,req,function () {
           res.redirect('../../problem.html');
@@ -519,9 +530,9 @@ app.get('/problem/:id',function(req, res, next){
 function (req,res,next) {
   pool.getConnection(function(err, conn) {
     if (err) console.log('POOL ==> ' + err);
-    var sqlRun = 'SELECT `code`, `grade`, `grade_max`, `grade_1`, `grade_2`, `grade_3`, `grade_4`, `last_time`, `run_time` FROM `' + req.data_.userID + '` WHERE pid=' + req.params.id;
+    var sqlRun = 'SELECT `code`, `grade`, `grade_max`, `grade_1`, `grade_2`, `grade_3`, `grade_4`, `help_text_1`, `help_text_2`, `help_text_3`, `help_text_4`, `last_time`, `run_time` FROM `' + req.data_.userID + '` WHERE pid=' + req.params.id;
     conn.query(sqlRun, function(err, results) {
-      if(results.length === 0){
+      if(results == undefined){
         userModule.makeASign(res,req,function () {
           console.log('No do');
           res.render('problem', {
@@ -539,10 +550,10 @@ function (req,res,next) {
             jLtime: '',
             jRtime: '',
             jMGrade: '0',
-            jGrade1:'0',jGrade1m:req.problem_detail.grade_1,jGrade1_c:'B22222',jGrade1_g:'remove',
-            jGrade2:'0',jGrade2m:req.problem_detail.grade_2,jGrade2_c:'B22222',jGrade2_g:'remove',
-            jGrade3:'0',jGrade3m:req.problem_detail.grade_3,jGrade3_c:'B22222',jGrade3_g:'remove',
-            jGrade4:'0',jGrade4m:req.problem_detail.grade_4,jGrade4_c:'B22222',jGrade4_g:'remove',
+            jGrade1:'0',jGrade1m:req.problem_detail.grade_1,jGrade1_c:'B22222',jGrade1_g:'remove',jText1:'',
+            jGrade2:'0',jGrade2m:req.problem_detail.grade_2,jGrade2_c:'B22222',jGrade2_g:'remove',jText2:'',
+            jGrade3:'0',jGrade3m:req.problem_detail.grade_3,jGrade3_c:'B22222',jGrade3_g:'remove',jText3:'',
+            jGrade4:'0',jGrade4m:req.problem_detail.grade_4,jGrade4_c:'B22222',jGrade4_g:'remove',jText4:'',
             code:''
           });
         });
@@ -554,6 +565,10 @@ function (req,res,next) {
           var isGood2 = results[0].grade_2 == req.problem_detail.grade_2;
           var isGood3 = results[0].grade_3 == req.problem_detail.grade_3;
           var isGood4 = results[0].grade_4 == req.problem_detail.grade_4;
+          var text_1 = '<p>' + results[0].help_text_1.toString().replace(/\\n/g, '</p><p>').replace(/\\r/,'') + '</p>';
+          var text_2 = '<p>' + results[0].help_text_2.toString().replace(/\\n/g, '</p><p>').replace(/\\r/,'') + '</p>';
+          var text_3 = '<p>' + results[0].help_text_3.toString().replace(/\\n/g, '</p><p>').replace(/\\r/,'') + '</p>';
+          var text_4 = '<p>' + results[0].help_text_4.toString().replace(/\\n/g, '</p><p>').replace(/\\r/,'') + '</p>';
           res.render('problem', {
             title: req.problem_detail.title,
             pid: req.params.id,
@@ -569,13 +584,13 @@ function (req,res,next) {
             jLtime: results[0].last_time,
             jRtime: results[0].run_time,
             jMGrade:results[0].grade_max,
-            jGrade1:results[0].grade_1,jGrade1m:req.problem_detail.grade_1,
+            jGrade1:results[0].grade_1,jGrade1m:req.problem_detail.grade_1,jText1:text_1,
             jGrade1_c:isGood1?'228B22':'B22222',jGrade1_g:isGood1?'ok':'remove',
-            jGrade2:results[0].grade_2,jGrade2m:req.problem_detail.grade_2,
+            jGrade2:results[0].grade_2,jGrade2m:req.problem_detail.grade_2,jText2:text_2,
             jGrade2_c:isGood2?'228B22':'B22222',jGrade2_g:isGood2?'ok':'remove',
-            jGrade3:results[0].grade_3,jGrade3m:req.problem_detail.grade_3,
+            jGrade3:results[0].grade_3,jGrade3m:req.problem_detail.grade_3,jText3:text_3,
             jGrade3_c:isGood3?'228B22':'B22222',jGrade3_g:isGood3?'ok':'remove',
-            jGrade4:results[0].grade_4,jGrade4m:req.problem_detail.grade_4,
+            jGrade4:results[0].grade_4,jGrade4m:req.problem_detail.grade_4,jText4:text_4,
             jGrade4_c:isGood4?'228B22':'B22222',jGrade4_g:isGood4?'ok':'remove',
             code:results[0].code
           });
@@ -585,7 +600,8 @@ function (req,res,next) {
     });
   });
 });
-
+//------------------------------------------------------------------------------------------
+//获取问题列表
 app.post('/getPlist',function(req, res, next){
   console.log('get Problem list: ');
   pool.getConnection(function(err, conn) {
@@ -618,7 +634,6 @@ app.post('/getPlist',function(req, res, next){
       conn.release();
     });
   });
-
 });
 
 
