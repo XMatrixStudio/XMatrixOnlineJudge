@@ -28,9 +28,9 @@ namespace XMatrix.Judge
             {
                 compile = sr.ReadToEnd();
             }
+            grade.SetCompile(compile);
             if (compile != string.Empty)
             {
-                grade.SetCompile(compile);
                 grade.ToJson(string.Format(@"../file/{0}_{1}.json", uid, pid));
                 return false;
             }
@@ -52,7 +52,8 @@ namespace XMatrix.Judge
                     grade.SetResult(i, "Wrong Answer");
                 }
             }
-            grade.ToJson(string.Format(@"../file/{0}_{1}.json", uid, pid));
+            //grade.ToJson(string.Format(@"../file/{0}_{1}.json", uid, pid));
+            grade.ToMySql();
             return true;
         }
     }
