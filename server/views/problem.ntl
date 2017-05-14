@@ -38,6 +38,10 @@
   </style>
 
   <script type="text/javascript">
+    var grade_1m = #grade_1m#;
+    var grade_2m = #grade_2m#;
+    var grade_3m = #grade_3m#;
+    var grade_4m = #grade_4m#;
     $(function () {
       $("#nav-bar").load("/nav-bar.html", function () {
         var username = getCookie("name");
@@ -133,7 +137,7 @@
           <div class="panel panel-default col-md-6 col-md-offset-1">
             <div class="panel-body" style="text-align:left;">
               <p id="j_Ltime" style="padding: 14px;font-size:20px;"> 最后提交：#jLtime#</p>
-              <p id="j_Rtime" style="padding: 14px;font-size:20px;"> 运行时间：#jRtime# ms</p>
+              <p id="j_Rtime" style="padding: 14px;font-size:20px;"> 运行时间：#jRtime#</p>
               <p id="j_men" style="padding: 14px;font-size:20px;"> 最高分数：#jMGrade#</p>
             </div>
           </div>

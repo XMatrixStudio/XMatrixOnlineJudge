@@ -13,3 +13,6 @@ web/updata.log
 server/key.json
 server/mysql.json
 server/run.log
+server/config/mysql.json
+server/package.json
+server/config/key.json

@@ -1,6 +1,6 @@
 const crypto = require('crypto');
 const fs = require('fs');
-var keyConfig = JSON.parse(fs.readFileSync('key.json'));
+var keyConfig = JSON.parse(fs.readFileSync('config/key.json'));
 exports.keyConfig = keyConfig;
 var userModule = {
 
@@ -166,6 +166,18 @@ var userModule = {
       res.send({state: 'failed', why: 'NOT_USER'});
       next('route');
     }
+  },
+  getPid: function (req,res,next) {
+      var str = req.headers.referer;
+      var regular = /\/api\/problem\/([0-9]{4})/;
+      arr = str.match(regular);
+      if (arr == undefined) {  // url请求非法
+        res.send({state: 'failed', why: 'NOT_PROBLEM'});
+        next('route');
+      } else {
+        req.pid_ = arr[1];
+        next();
+      }
   }
   //对Session进行加密签名并发送到客户端
 
