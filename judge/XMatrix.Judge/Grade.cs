@@ -89,7 +89,7 @@ namespace XMatrix.Judge
                 str = string.Format("{0}Case{1}: {2}\\n", str, i, result[i]);
             }
             string str_conn = string.Format("Database='{0}';Data Source='{1}';User ID={2};Password={3};CharSet=utf8;", db, web, user_id, pwd);
-            string cmd = string.Format(@"update `xmoj`.`{0}` SET 
+            string cmd = string.Format(@"update `xmoj`.`{0}` SET
                 `grade` = '{1}', `grade_1` = '{2}', `grade_2` = '{3}', `grade_3` = '{4}', `grade_4` = '{5}',
                 `help_text_1` = '{6}', `help_text_2` = '{7}', `help_text_3` = '{8}', `help_text_4` = '{9}',
                 `is_judging` = '0' WHERE `{0}`.`pid` = {10};",

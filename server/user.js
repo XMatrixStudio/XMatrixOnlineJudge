@@ -65,7 +65,7 @@ var userModule = {
       }  //验证签名
 
       var allData = JSON.parse(userModule.decrypt(userSession, keyConfig.mykey));
-      console.log('用户ID：' + allData.userID);
+      console.log('UserID：' + allData.userID);
       var nowTime = new Date().Format('yyyy-MM-dd hh:mm:ss');
       if (userModule.comptime(allData.lastDate, nowTime) > 3) {
         console.log('Err: user Time out');
@@ -92,6 +92,7 @@ var userModule = {
 
   getToken: function(userID, newToken, callback) {
     var pool = require('./run.js').pool;
+    console.log('updata the token...');
     pool.getConnection(function(err, conn) {
       if (err) console.log('POOL ==> ' + err);
       var sqlRun = 'select user_token, isMail from user where user_id=\'' +
@@ -105,6 +106,7 @@ var userModule = {
         conn.query(sqlRun, function(error, results, fields) {  //更新用户tokem
           if (error) throw error;
           conn.release();
+          console.log('updata!');
           callback(oldToken, isMail);
         });
       });
@@ -121,6 +123,7 @@ var userModule = {
         res.send({state: 'failed', why: mydata});
         next('route');
       } else {
+        console.log('Access!');
         req.data_ = mydata;
         next();
       }
@@ -172,9 +175,11 @@ var userModule = {
       var regular = /\/api\/problem\/([0-9]{4})/;
       arr = str.match(regular);
       if (arr == undefined) {  // url请求非法
+        console.log('NOT_PROBLEM');
         res.send({state: 'failed', why: 'NOT_PROBLEM'});
         next('route');
       } else {
+        console.log('Get Pid!');
         req.pid_ = arr[1];
         next();
       }

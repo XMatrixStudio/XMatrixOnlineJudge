@@ -48,8 +48,7 @@ Date.prototype.Format = function(fmt) {
 
 //数据库模块
 var mysql = require('mysql');
-var mysqlConfig =
-    JSON.parse(fs.readFileSync('config/mysql.json'));  //加载配置文件
+var mysqlConfig = JSON.parse(fs.readFileSync('config/mysql.json'));  //加载配置文件
 var pool = mysql.createPool(mysqlConfig);              //创建进程
 exports.pool = pool;                                   // 外部调用
 
@@ -74,9 +73,12 @@ app.post(
           if (results == undefined) {  //不存在这个问题
             console.log('NO_THIS_PROBLEM');
             res.send({state: 'failed', why: 'NO_THIS_PROBLEM'});
+            conn.release();
             next('route');
           } else {
+            console.log('Get problem case!');
             req.stand_case_ = results[0].stand_case;
+            conn.release();
             next();
           }
         });
@@ -90,7 +92,6 @@ app.post(
         conn.query(sqlRun, function(error, results, fields) {
           if (error) throw error;
           var now_time = new Date().Format('yyyy-MM-dd hh:mm:ss');
-          if (results == undefined || results[0].is_judging === 0) {
             if (results == undefined) {  //没有这个记录，生成一个记录
               console.log('new');
               sqlRun = 'INSERT INTO `' + req.data_.userID +
@@ -102,7 +103,7 @@ app.post(
               conn.query(sqlRun, function(error, results, fields) {
                 next();
               });
-            } else {  //有这个记录，修改code，time，is_judging 这三个数据
+            } else if(results[0].is_judging == 0) {  //有这个记录，修改code，time，is_judging 这三个数据
               console.log('updata');
               sqlRun = 'UPDATE `' + req.data_.userID + '` SET `code`=\'' +
               req.body.code + '\',`last_time`=\'' + now_time +
@@ -110,8 +111,7 @@ app.post(
               conn.query(sqlRun, function(error, results, fields) {
                 next();
               });
-            }
-          } else {  //问题正在评测中，返回failed
+            } else {  //问题正在评测中，返回failed
             console.log('IS_JUDGING');
             userModule.makeASign(res,req,function () {
               res.send({state: 'failed', why: 'IS_JUDGING'});
@@ -129,7 +129,8 @@ app.post(
         'file/' + req.data_.userID + '_' + req.pid_ + '.c', req.body.code,
         function(err) {
           if (err) return console.error(err);
-          var judgeModule = spawn('judge/judge.sh', [
+          console.log('toJudge...');
+          var judgeModule = spawn('./judge.sh', [
             req.data_.userID, req.pid_, req.stand_case_
             ]);  //调用judge子进程
           });    //写入文件
@@ -157,6 +158,7 @@ app.post(
                 console.log('NO_DO');
                 res.send({state: 'failed', why: 'NO_DO'});
             });
+            conn.release();
             next('route');
           } else {
             if (results[0].is_judging == 0) {//评测完毕
@@ -177,6 +179,7 @@ app.post(
                 run_time: results[0].run_time,
               };
               userModule.makeASign(res,req,function(){
+                conn.release();
                 res.send(response);
               });
             } else {//在评测中
@@ -184,6 +187,7 @@ app.post(
                 console.log('JUDGING');
                 res.send({state: 'failed', why: 'JUDGING'});
               });
+              conn.release();
               next('route');
             }
           }
@@ -646,7 +650,6 @@ app.get(
         } else {
           userModule.makeASign(res, req, function() {
             console.log('yes');
-            console.log(results[0].help_text_2);
             var isGood1 = (results[0].grade_1 == req.problem_detail.grade_1);
             var isGood2 = (results[0].grade_2 == req.problem_detail.grade_2);
             var isGood3 = (results[0].grade_3 == req.problem_detail.grade_3);

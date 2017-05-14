@@ -216,7 +216,7 @@ function getCookie(name) {
         }else if(data.why == 'NO_DO'){
           window.location.href = 'index.html?op=0';
         }else{
-          setTimeout(getGrade(count + 1), 3000);
+          setTimeout(getGrade, 2000, count);
         }
       });
     }else{
@@ -316,21 +316,25 @@ function getCookie(name) {
   var text_1 = '<p>' +
   data.help_text_1.toString()
   .replace(/\\n/g, '</p><p>')
+  .replace(/\n/g, '</p><p>')
   .replace(/\\r/, '') +
   '</p>';
   var text_2 = '<p>' +
   data.help_text_2.toString()
   .replace(/\\n/g, '</p><p>')
+  .replace(/\n/g, '</p><p>')
   .replace(/\\r/, '') +
   '</p>';
   var text_3 = '<p>' +
   data.help_text_3.toString()
   .replace(/\\n/g, '</p><p>')
+  .replace(/\n/g, '</p><p>')
   .replace(/\\r/, '') +
   '</p>';
   var text_4 = '<p>' +
   data.help_text_4.toString()
   .replace(/\\n/g, '</p><p>')
+  .replace(/\n/g, '</p><p>')
   .replace(/\\r/, '') +
   '</p>';
   $('#j_info1').html(text_1);
