@@ -31,7 +31,8 @@ namespace XMatrix.Judge
             grade.SetCompile(compile);
             if (compile != string.Empty)
             {
-                grade.ToJson(string.Format(@"../file/{0}_{1}.json", uid, pid));
+                //grade.ToJson(string.Format(@"../file/{0}_{1}.json", uid, pid));
+                grade.ToMySql();
                 return false;
             }
             for (int i = 0; i < std_test_num; i++)

@@ -91,10 +91,10 @@ namespace XMatrix.Judge
             string str_conn = string.Format("Database='{0}';Data Source='{1}';User ID={2};Password={3};CharSet=utf8;", db, web, user_id, pwd);
             string cmd = string.Format(@"update `xmoj`.`{0}` SET
                 `grade` = '{1}', `grade_1` = '{2}', `grade_2` = '{3}', `grade_3` = '{4}', `grade_4` = '{5}',
-                `help_text_1` = '{6}', `help_text_2` = '{7}', `help_text_3` = '{8}', `help_text_4` = '{9}',
+                `help_text_1` = {6}, `help_text_2` = '{7}', `help_text_3` = '{8}', `help_text_4` = '{9}',
                 `is_judging` = '0' WHERE `{0}`.`pid` = {10};",
                 /*0*/ uid, /*1*/ grade[0], /*2*/ grade[1], /*3*/ grade[2], /*4*/ grade[3], /*5*/ grade[4],
-                /*6*/ compile, /*7*/ str, /*8*/ string.Empty, /*9*/ string.Empty, /*10*/ pid);
+                /*6*/ string.Format("\"{0}\"",compile), /*7*/ str, /*8*/ string.Empty, /*9*/ string.Empty, /*10*/ pid);
             MySqlConnection connection = new MySqlConnection(str_conn);
             connection.Open();
             MySqlCommand command = new MySqlCommand(cmd, connection);
