@@ -462,18 +462,19 @@ function testcode() {
     autoCloseBrackets: true,
     extraKeys: {'Ctrl': 'autocomplete'},
     lineNumbers: true,
+    inputStyle: 'contenteditable',
   });
-  $('#begin').addClass('hidden');
   editor.on('change', function(Editor, changes) {
     $('#codetext').text(editor.getValue());
   });
-  }  //代码编辑框
+  editor.setSize('auto','500px');
+}  //代码编辑框
 
 function isLogin(callback) {
   var qwq = getCookie('isLogin');
   var wdf = getCookie('isMail');
   if (qwq == '' || qwq == 0 || qwq == undefined) {
-    window.location.href='index.html?op=1';
+    //window.location.href='index.html?op=1';
   } else if (wdf == '0' || wdf == undefined || wdf == '') {
     window.location.href = 'mail.html';
   }else{
