@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="theme-color" content="#222222">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>XMatrix</title>
   <!-- Bootstrap -->
@@ -10,44 +11,28 @@
   <link rel="shortcut icon" href="xmatrix.ico">
   <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
   <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-  <script src="js/login.js"></script>
-  <script src="js/cookies.js"></script>
+  <script src="js/xmatrix.js"></script>
   <style type="text/css">
     body { padding-top: 70px; }
   </style>
   <script type="text/javascript">
     $(function() {
       var qwq = getCookie("isMail");
+      var isLogin = getCookie("isLogin");
       var email_s = getCookie('userEmail');
-      if (qwq != 0 || email_s == null) {
+      if (qwq != 0 || email_s == null || isLogin == 0 || isLogin == undefined) {
         alert("非法访问！");
         window.location.href='index.html';
       }
       document.getElementById('myemail').innerHTML= email_s;
       $("#nav-bar").load("nav-bar.html", function() {
         var username = getCookie("name");
-        if(username !== null) document.getElementById('userBar').innerHTML=username + ' <span class="caret"></span>';
+        if(username !== null  && username !== "") document.getElementById('userBar').innerHTML=username + ' <span class="caret"></span>';
         $("#t-home").addClass("active");
       });
 
     });//处理标题栏
-    function toMail() {
-      $.post("api/mail",{
-        userSession: getCookie('userSession'),
-        sign:getCookie('sign')
-      },function(data){
-        if(data.state == 'success'){
-          alert('邮件发送成功！请检查你的邮箱');
-          window.location.href='index.html';
-        }else{
-          if(data.why == 'ILLEGAL_SIGN' || data.why == 'ILLEGAL_TOKEN') alert("非法访问，请重新登陆");
-          if(data.why == 'TIME_OUT') alert("登陆超时，请重新登陆");
-          document.cookie="userSession=no";
-          document.cookie="sign=no";
-          window.location.href='index.html';
-        }
-      });
-    }
+
 
 </script>
 </head>

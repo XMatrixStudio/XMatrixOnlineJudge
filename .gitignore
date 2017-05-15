@@ -2,7 +2,17 @@
 *.exe
 *.out
 
+# test txt file
+/test/*.txt
+/test/*.json
+
 # .NET Core RESTORE & Build File
 /judge/bin/
 /judge/obj/
 web/updata.log
+server/key.json
+server/mysql.json
+server/run.log
+server/config/mysql.json
+server/package.json
+server/config/key.json
