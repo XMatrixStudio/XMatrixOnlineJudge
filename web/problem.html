@@ -8,7 +8,7 @@
   <title>XMatrix</title>
 
   <!-- Bootstrap -->
-  <link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+  <link href="css/bootstrap.min.css" rel="stylesheet">
   <link rel="shortcut icon" href="/xmatrix.ico">
   <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
   <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
@@ -21,12 +21,8 @@
 </style>
 <script type="text/javascript">
  $(function() {
-  $("#nav-bar").load("nav-bar.html", function () {
-    var username = getCookie("name");
-    if(username !== null  && username !== "") document.getElementById('userBar').innerHTML=username + ' <span class="caret"></span>';
-    $("#t-problem").addClass("active");
-    getPlist();
-  });
+  loadBar("#t-problem");
+  getPlist();
     });//处理标题栏
   </script>
 </head>
@@ -36,21 +32,22 @@
 
   <div id="nav-bar"></div>
   <!--标题栏结束 -->
+  <br>
   <div class="container-fluid">
     <div class="row-fluid">
 
       <div class="col-xs-2">
         <ul class="nav nav-pills nav-stacked hidden-xs">
-          <li class="active list-group-item"><a href="#pr-1001" data-toggle="tab">数据结构 <span id="course_num_1" class="badge">0</span></a></li>
-          <li class="list-group-item"><a href="#pr-1002" data-toggle="tab">特别困难  <span id="course_num_2" class="badge">0</span></a></li>
-          <li class="list-group-item"><a href="#pr-1003" data-toggle="tab">算法  <span id="course_num_3" class="badge">0</span></a></li>
-          <li class="list-group-item"><a href="#pr-1004" data-toggle="tab">秀秀推荐  <span id="course_num_4" class="badge">0</span></a></li>
+          <li class="active list-group-item"><a href="#pr-1001" data-toggle="tab">普通题 <span id="course_num_1" class="badge">0</span></a></li>
+          <li class="list-group-item"><a href="#pr-1002" data-toggle="tab">Nothing  <span id="course_num_2" class="badge">0</span></a></li>
+          <li class="list-group-item"><a href="#pr-1003" data-toggle="tab">Nothing  <span id="course_num_3" class="badge">0</span></a></li>
+          <li class="list-group-item"><a href="#pr-1004" data-toggle="tab">Nothing  <span id="course_num_4" class="badge">0</span></a></li>
         </ul>
         <ul class="nav nav-defualt visible-xs">
-          <li class="active"><a href="#pr-1001" data-toggle="tab">数据结构 <span id="course_num_1_" class="badge">0</span></a></li>
-          <li ><a href="#pr-1002" data-toggle="tab">特别困难  <span id="course_num_2_" class="badge">0</span></a></li>
-          <li ><a href="#pr-1003" data-toggle="tab">算法  <span id="course_num_3_"  class="badge">0</span></a></li>
-          <li><a href="#pr-1004" data-toggle="tab">秀秀推荐  <span id="course_num_4_"  class="badge">0</span></a></li>
+          <li class="active"><a href="#pr-1001" data-toggle="tab">普通题 <span id="course_num_1_" class="badge">0</span></a></li>
+          <li ><a href="#pr-1002" data-toggle="tab">Nothing  <span id="course_num_2_" class="badge">0</span></a></li>
+          <li ><a href="#pr-1003" data-toggle="tab">Nothing  <span id="course_num_3_"  class="badge">0</span></a></li>
+          <li><a href="#pr-1004" data-toggle="tab">Nothing  <span id="course_num_4_"  class="badge">0</span></a></li>
         </ul>
 
       </div>

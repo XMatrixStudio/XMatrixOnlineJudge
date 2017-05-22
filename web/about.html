@@ -8,7 +8,7 @@
   <title>XMatrix</title>
 
   <!-- Bootstrap -->
-  <link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+  <link href="css/bootstrap.min.css" rel="stylesheet">
   <link rel="shortcut icon" href="xmatrix.ico">
   <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
   <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
@@ -21,42 +21,39 @@
   </style>
   <script type="text/javascript">
    $(function() {
-    $("#nav-bar").load("nav-bar.html", function () {
-      var username = getCookie("name");
-      if(username !== null  && username !== "") document.getElementById('userBar').innerHTML=username + ' <span class="caret"></span>';
-      $("#t-about").addClass("active");
-    });
-    });//处理标题栏
+    loadBar("#t-about");
+  });//处理标题栏
   </script>
 </head>
 <body>
  <!-- 标题栏开始 -->
 
  <div id="nav-bar"></div>
+  <br>
  <!--标题栏结束 -->
  <div class="container-fluid">
   <div class="row-fluid">
     <div class="span12">
-      <div class="jumbotron col-md-10  col-md-offset-1" style="background: #FBFBFB;">
+      <div class="jumbotron col-md-10  col-md-offset-1" style="background: #F8F8F8;">
        <div class="container">
          <h1>XMatrix</h1>
          <h3>一个还没有完成的Online Judging System</h3>
 
        </div>
      </div>
-     <div class="jumbotron col-md-10  col-md-offset-1" style="background: #FBFBFB;">
+     <div class="jumbotron col-md-10  col-md-offset-1" style="background: #F8F8F8;">
        <div class="container">
-         <h2><img src="pic/cat.png"><strong>  V0.1 </strong>森林猫<small> Apr 02, 2017 ~ Now</small></h2>
+         <h2><img src="pic/cat.png"><strong>  V0.1 </strong>森林猫<small> Apr 02, 2017 ~ May 20,2017</small></h2>
          <div class="col-md-10  col-md-offset-1">
-          <p class="lead">1. 确定发展方向</p>
+          <p class="lead">1. 建立评测系统</p>
           <p class="lead">2. 建立用户系统</p>
-          <a class="lead" href="about-1.html" >Detail</a>
+          <a class="lead" href="about-v0.1.html" >Detail</a>
         </div>
       </div>
   <HR width="80%" color=#987cb9 SIZE=3>
     </div>
   </div>
-  <div class="jumbotron col-md-10  col-md-offset-1" style="background: #FBFBFB;">
+  <div class="jumbotron col-md-10  col-md-offset-1" style="background: #F8F8F8;">
    <div class="container text-center" style="font-size: 25px;">
 
      <p class="lead">License</p>

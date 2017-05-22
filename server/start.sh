@@ -1,4 +1,4 @@
 #!/bin/sh
 
-forever start -l run.log -a run.js
+forever start -l app.log -a app.js
 forever list

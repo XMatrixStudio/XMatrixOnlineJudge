@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="theme-color" content="#222222">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" href="/xmatrix.ico">
+    <title>XMatrix</title>
+
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.bootcss.com/codemirror/5.25.0/codemirror.css" rel="stylesheet">
+    <link href="https://cdn.bootcss.com/codemirror/5.25.0/addon/hint/show-hint.min.css" rel="stylesheet">
+    <link href="https://cdn.bootcss.com/codemirror/5.25.0/theme/blackboard.min.css" rel="stylesheet">
+
+    <script src="https://cdn.bootcss.com/codemirror/5.25.0/codemirror.js"></script>
+    <script src="https://cdn.bootcss.com/codemirror/5.25.0/addon/edit/closebrackets.min.js"></script>
+    <script src="https://cdn.bootcss.com/codemirror/5.25.0/addon/edit/closetag.min.js"></script>
+    <script src="https://cdn.bootcss.com/codemirror/5.25.0/addon/edit/continuelist.min.js"></script>
+    <script src="https://cdn.bootcss.com/codemirror/5.25.0/addon/edit/matchbrackets.min.js"></script>
+    <script src="https://cdn.bootcss.com/codemirror/5.25.0/addon/edit/matchtags.min.js"></script>
+    <script src="https://cdn.bootcss.com/codemirror/5.25.0/addon/edit/trailingspace.min.js"></script>
+    <script src="https://cdn.bootcss.com/codemirror/5.25.0/addon/hint/javascript-hint.min.js"></script>
+    <script src="https://cdn.bootcss.com/codemirror/5.25.0/addon/hint/show-hint.min.js"></script>
+    <script src="https://cdn.bootcss.com/codemirror/5.25.0/mode/clike/clike.min.js"></script>
+
+    <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdn.bootcss.com/showdown/1.6.4/showdown.min.js"></script>
+    <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="/js/xmatrix.js"></script>
+    <style type="text/css">
+        body {
+            padding-top: 70px;
+            background-color: #EEEEEE;
+        }
+    </style>
+
+    <script type="text/javascript">
+        var gradeEachMax = [<%=jGradeEachMax[0]%>, <%=jGradeEachMax[1]%>, <%=jGradeEachMax[2]%>, <%=jGradeEachMax[3]%>];
+        $(function() {
+            $("#nav-bar").load("/nav-bar.html", function() {
+                $("#t-problem").addClass("active");
+                var username = getCookie("name");
+                if (username !== null && username !== "") {
+                    document.getElementById('userBar').innerHTML = username + ' <span class="caret"></span>';
+                } else {
+                    document.getElementById('userBar').innerHTML = '未登陆 <span class="caret"></span>';
+                }
+        }); //加载标题栏
+            testcode();
+            $('#myTab a:first').tab('show');
+        }); //处理标题栏
+        $.get("/problems/<%=pId%>.md", function(result) {
+            var converter = new showdown.Converter();
+            $("#mymarkdown").html(converter.makeHtml(result));
+        });//获取md文件
+    </script>
+</head>
+
+<body>
+    <div id="nav-bar"></div><br>
+    <div class="container-fluid">
+        <div class="row-fluid">
+
+            <!-- Nav tabs -->
+            <div class="col-md-10 col-md-offset-1">
+                <ul class="nav nav-tabs" id="myTab" role="tablist" style="font-size: 15px;">
+                    <li><a href="#home" data-toggle="tab" aria-controls="home" role="tab"><span class="glyphicon glyphicon-align-left" aria-hidden="true"> </span>  问题描述</a></li>
+                    <li style="padding-left:30px;" class="active"><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab"><span class="glyphicon glyphicon-console" aria-hidden="true"> </span>  代码提交</a></li>
+                    <li style="padding-left:30px;"><a href="#messages" aria-controls="messages" role="tab" data-toggle="tab"><span class="glyphicon glyphicon-list-alt" aria-hidden="true"> </span>  成绩报告</a></li>
+                    <li style="padding-left:30px;"><a href="#settings" aria-controls="settings" role="tab" data-toggle="tab"><span class="glyphicon glyphicon-sort-by-attributes" aria-hidden="true"> </span>  排名情况</a></li>
+                </ul>
+                <br>
+            </div>
+            <!-- Tab panes -->
+            <div class="tab-content tabs">
+
+                <div role="tabpanel" class="tab-pane" id="home">
+                    <div class="col-md-10 col-md-offset-1">
+                        <div class="panel panel-default">
+                            <div class="panel-body" style="padding-left:30px;padding-top:25px;font-size: 25px"><span class="glyphicon glyphicon-tasks" aria-hidden="true"> </span><strong> <%=pTitle%></strong></div>
+                            <div class="panel-body" style="padding:10px;">
+
+                                <div class="col-xs-9">
+                                    <p>时间限制 :
+                                        <%=pTimeLimit%> ms</p>
+                                        <p>空间限制 :
+                                            <%=pMemLimit%> KB</p>
+                                        </div>
+                                        <div class="col-xs-3 hidden-xs">
+                                            <p>出题：
+                                                <%=pAuthor%>
+                                            </p>
+                                            <p>邮箱：
+                                                <%=pEmail%>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="panel panel-default">
+                                    <div class="panel-body">
+                                        <div id="mymarkdown" class="markdown-body" style="padding:15px;">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div role="tabpanel" class="tab-pane active" id="profile">
+                            <br>
+                            <br>
+                            <div class="col-md-10 col-md-offset-1">
+                                <div class="panel panel-default" style="background-color: #0C1021;">
+                                    <div class="panel-body">
+                                        <div class="form-group">
+                                            <textarea id="codetext" name="codetext" class="form-control"><%=code%></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group" style="text-align: right;">
+                                    <a class="btn btn-success" onclick="running()">提交</a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div role="tabpanel" class="tab-pane" id="messages">
+                            <div class="col-md-12">
+                                <div class="panel panel-default col-md-3 col-md-offset-1">
+                                    <div class="panel-body">
+                                        <p style="padding: 5px;text-align: left;font-size:20px;"> 你的成绩：</p>
+                                        <p id="j_grade" style="text-align: center;font-size:55px;color:#<%=jGradeColor%>;">
+                                            <%=jGrade%>
+                                        </p>
+                                        <div class="progress">
+                                            <div id="j_pro" class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: <%=jGrade%>%">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="panel panel-default col-md-6 col-md-offset-1">
+                                 <div class="panel-body" style="text-align:left;">
+                                    <p id="j_Ltime" style="padding: 6px;font-size:18px;"> 最后提交：
+                                        <%=jLtime%>
+                                    </p>
+                                    <p id="j_Max" style="padding: 6px;font-size:18px;"> 最高分数：
+                                        <%=jGradeMax%>
+                                    </p>
+                                    <p id="j_Times" style="padding: 6px;font-size:18px;"> 提交次数：
+                                        <%=jGradeTimes%>
+                                    </p>
+                                    <p id="j_Rtime" style="padding: 6px;font-size:18px;"> 运行时间：
+                                        <%=jRtime%>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-10 col-md-offset-1">
+                            <% for(var i=0; i<4; i++) {%>
+                            <div class="panel panel-default">
+                                <div class="panel-body">
+                                    <p id="j_test<%=i%>" style="font-size:20px;color:#<%=jGradeEachColor[i]%>;">
+                                        <%=jGradeName[i]%>
+                                        <%=jGradeEach[i]%>/
+                                        <%=jGradeEachMax[i]%><span class="glyphicon glyphicon-<%=jGradeEachIcon[i]%>" style="float:right;"></span></p>
+                                    </div>
+                                    <div id="j_info<%=i%>" class="panel-footer">
+                                        <%-jText[i]%>
+                                    </div>
+                                </div>
+                                <% } %>
+                            </div>
+                        </div>
+                        <div role="tabpanel" class="tab-pane" id="settings">
+                            <div class="col-md-10 col-md-offset-1">
+                                <div class="panel panel-success">
+                                    <div class="panel-body">
+                                        <p style="font-size:30px;color:#479EA2;padding: 20px;padding-bottom: 0px;"><span class="glyphicon glyphicon-king"></span> Rank</p>
+                                    </div>
+                                    <div class="panel-body" style="padding-left: 40px;padding-right: 40px;">
+                                        <%-rankTable %>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+
+
+        </body>
+
+        </html>

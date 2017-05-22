@@ -1,206 +1,198 @@
+//user.js
+/*
+用户认证模块
+
+API:
+
+getKey: 获取加密密钥，和签名密钥， 返回json对象
+
+makeAsha(str)： 对字符串进行SHA1加密， 返回字符串
+
+getToken(userID, newToken, callback)：对指定ID用户更新Token,回调旧的Token和邮箱激活状态
+
+中间件：
+
+appUserVerif： 对用户进行认证
+
+appUserVerifNoMail：忽略邮箱激活状态对用户进行认证（需要提前设置res.locals.userSession 和 res.locals.sign）
+
+makeASign：生成新的userSession 和 sign，并设置到cookies里面，回调下一步的操作
+
+isEmailStr： 检测邮箱格式是否合法
+
+isTrueUser：检查用户名格式是否合法
+
+*/
+
 const crypto = require('crypto');
 const fs = require('fs');
+const sqlModule = require('./mysql.js'); //数据库模块
 var keyConfig = JSON.parse(fs.readFileSync('config/key.json'));
-exports.keyConfig = keyConfig;
-var userModule = {
+const cookieParser = require('cookie-parser'); // cookie模块
 
-  /*
-  SHA1加密调用方法：
-  var hashSHA1 = crypto.createHash('sha1');
-  hashSHA1.update(input);
-  output = hashSHA1.digest('hex')
-  */
-
-  // use secret to encrypt string
-  encrypt: function(str, secret) {
-    var cipher = crypto.createCipher('aes192', secret);
-    var enc = cipher.update(str, 'utf8', 'hex');
-    enc += cipher.final('hex');
-    return enc;
-  },  //加密数据
-
-  // use secret to decrypt string
-  decrypt: function(str, secret) {
-    var decipher = crypto.createDecipher('aes192', secret);
-    var dec = decipher.update(str, 'hex', 'utf8');
-    dec += decipher.final('utf8');
-    return dec;
-  },  //解密数据
-
-  /*
-  aes192加密调用方法：
-  var output = encrypt(JSON.stringify(input),key);
-  var newinput = JSON.parse(decrypt(output,key));
-  */
-  comptime: function(beginTime, endTime) {
-    var beginTimes = beginTime.substring(0, 10).split('-');
-    var endTimes = endTime.substring(0, 10).split('-');
-    beginTime = beginTimes[1] + '-' + beginTimes[2] + '-' + beginTimes[0] +
-    ' ' + beginTime.substring(10, 19);
-    endTime = endTimes[1] + '-' + endTimes[2] + '-' + endTimes[0] + ' ' +
-    endTime.substring(10, 19);
-    var a = (Date.parse(endTime) - Date.parse(beginTime)) / 3600 / 1000;
-    return a;
-  },  //进行时间比较
-
-  userVerif: function(fxk, req, callback) {
-    console.log('User Verif: ');
-    userSession = req.userSession_;
-    sign = req.sign_;
-    if (fxk == 1){
-      console.log('Ignore Email');
-    }
-    if (userSession == undefined || sign == undefined) {
-      console.log('Err: NO Sign');
-      callback('ILLEGAL_SIGN');
-      return;
-    }
-    var signSHA1 = crypto.createHash('sha1');
-    signSHA1.update(userSession + keyConfig.mysign);
-    var nowSHA1 = signSHA1.digest('hex');
-    if (nowSHA1 != sign) {
-      console.log('Err: ILLEGAL_SIGN');
-      callback('ILLEGAL_SIGN');
-      return;
-      }  //验证签名
-
-      var allData = JSON.parse(userModule.decrypt(userSession, keyConfig.mykey));
-      console.log('UserID：' + allData.userID);
-      var nowTime = new Date().Format('yyyy-MM-dd hh:mm:ss');
-      if (userModule.comptime(allData.lastDate, nowTime) > 3) {
-        console.log('Err: user Time out');
-        callback('TIME_OUT');
-        return;
-      }
-      allData.lastDate = nowTime;
-      var newToken = Math.round(Math.random() * 10000000);
-      userModule.getToken(allData.userID, newToken, function(oldToken, isMail) {
-        if (oldToken != allData.token) {
-          console.log('Err: Illegal Token');
-          callback('ILLEGAL_TOKEN');
-        } else {
-          if (isMail == 0 && fxk == 0) {
-            console.log('Email is no active');
-            callback('NO_MAIL');
-          } else {
-            allData.token = newToken;
-            callback(allData);
-          }
-        }
-      });
-  },  //进行用户认证
-
-  getToken: function(userID, newToken, callback) {
-    var pool = require('./run.js').pool;
-    console.log('updata the token...');
-    pool.getConnection(function(err, conn) {
-      if (err) console.log('POOL ==> ' + err);
-      var sqlRun = 'select user_token, isMail from user where user_id=\'' +
-      userID + '\'';
-      conn.query(sqlRun, function(err, results) {  //获取用户token
-        if (err) console.log(err);
-        var oldToken = results[0].user_token;
-        var isMail = results[0].isMail;
-        sqlRun = 'update user set user_token=\'' + newToken +
-        '\' where user_id=\'' + userID + '\'';
-        conn.query(sqlRun, function(error, results, fields) {  //更新用户tokem
-          if (error) throw error;
-          conn.release();
-          console.log('updata!');
-          callback(oldToken, isMail);
-        });
-      });
-    });
-  },  //从数据库读取用户Token
-
-
-  appUserVerif: function(req, res, next) {
-    req.userSession_ = req.cookies.userSession;
-    req.sign_ = req.cookies.sign;
-    userModule.userVerif(0, req, function(mydata) {
-      if (mydata.userID == undefined) {
-        console.log('Illegal access');
-        res.send({state: 'failed', why: mydata});
-        next('route');
-      } else {
-        console.log('Access!');
-        req.data_ = mydata;
-        next();
-      }
-    })
-  },  //进行用户认证
-
-  makeASign: function(res, req, callback) {
-    var sessionXXX = userModule.encrypt(JSON.stringify(req.data_), keyConfig.mykey);
-    var signSHA1 = crypto.createHash('sha1');
-    signSHA1.update(sessionXXX + keyConfig.mysign);
-    var qwq = signSHA1.digest('hex');
-    res.clearCookie('userSession');
-    res.clearCookie('sign');
-    res.cookie(
-      'userSession', sessionXXX,
-      {expires: new Date(Date.now() + 10000000), httpOnly: true});
-    res.cookie(
-      'sign', qwq,
-      {expires: new Date(Date.now() + 10000000), httpOnly: true});
-    res.cookie('isLogin', 1);
-    callback();
-  },
-
-  isEmailStr: function(req, res, next) {
-    var pattern =
-    /^([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+@([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+\.[a-zA-Z]{2,3}$/;
-    var strEmail = pattern.test(req.body.user_email);
-    if (!strEmail) {
-      console.log('Illegal Email');
-      res.send({state: 'failed', why: 'NOT_EMAIL'});
-      next('route');
-    } else {
-      next();
-    }
-  },
-
-  isTrueUser: function(req, res, next) {
-    var pattern2 = /^[a-zA-z0-9\_\.]{3,20}$/;
-    var strname = pattern2.test(req.body.user_name);
-    if (strname) {
-      next();
-    } else {
-      res.send({state: 'failed', why: 'NOT_USER'});
-      next('route');
-    }
-  },
-  getPid: function (req,res,next) {
-      var str = req.headers.referer;
-      var regular = /\/api\/problem\/([0-9]{4})/;
-      arr = str.match(regular);
-      if (arr == undefined) {  // url请求非法
-        console.log('NOT_PROBLEM');
-        res.send({state: 'failed', why: 'NOT_PROBLEM'});
-        next('route');
-      } else {
-        console.log('Get Pid!');
-        req.pid_ = arr[1];
-        next();
-      }
+exports.getKey =  function () {
+  return {
+    mykey: keyConfig.mykey,
+    mysign: keyConfig.mysign
   }
-  //对Session进行加密签名并发送到客户端
-
-  //-----------------------------------------------------------------------------------
-  /*调用方式
-  app.post('/submit', [appUserVerif], function(req, res) {
-
-    ...
-    code
-    ...
-
-    makeASign(res, req,  function(session, sign) {
-      res.send(response);
-    });
-  });
-
-  */
-  //-----------------------------------------------------------------------------------
-  //-----------------------------------------------------------------------------------
 };
-module.exports = userModule;
+
+exports.makeAsha = function (str) {
+  var hashSHA1 = crypto.createHash('sha1');
+  hashSHA1.update(str);
+  return hashSHA1.digest('hex');
+};
+
+exports.getToken = function(userID, newToken, callback) {
+  console.log('updata the token...');
+  var sqlCmd = 'SELECT `token`, `tureEmail` FROM `user` WHERE `id`=' + userID;
+  sqlModule.query(sqlCmd, (vals, isNull) =>{
+    if(isNull){
+      callback(-1,0);
+    }else{
+      var oldToken = vals[0].token;
+      var tureEmail = vals[0].tureEmail;
+      var sqlCmd = 'UPDATE `user` SET `token`=\'' + newToken +'\' WHERE `id`=' + userID;
+      sqlModule.query(sqlCmd, (vals, isNull) => {
+        console.log('updata!');
+        callback(oldToken, tureEmail);
+      });
+    }
+  });
+};
+
+exports.appUserVerif = function(req, res, next) {
+  res.locals.userSession = req.cookies.userSession;
+  res.locals.sign = req.cookies.sign;
+  res.locals.needMail = 1;
+  userVerif(res, function(mydata) {
+    if (mydata.userID == undefined) {
+      console.log('Illegal access');
+      res.send({state: 'failed', why: mydata});
+      next('route');
+    } else {
+      res.locals.data = mydata;
+      next();
+    }
+  });
+};
+
+exports.appUserVerifNoMail = function(req, res, next) {
+  req.locals.needMail = 0;
+  userVerif(res, function(mydata) {
+    if (mydata.userID == undefined) {
+      console.log('Illegal access');
+      res.send({state: 'failed', why: mydata});
+      next('route');
+    } else {
+      res.locals.data = mydata;
+      next();
+    }
+  })
+};
+
+exports.makeASign = function(req, res, callback) {
+  var sessionXXX = encrypt(JSON.stringify(res.locals.data), keyConfig.mykey);
+  res.cookie(
+    'userSession', sessionXXX,
+    {expires: new Date(Date.now() + 10000000), httpOnly: true});
+  res.cookie(
+    'sign', exports.makeAsha(sessionXXX + keyConfig.mysign),
+    {expires: new Date(Date.now() + 10000000), httpOnly: true});
+  res.cookie('isLogin', 1);
+  callback();
+};
+
+exports.isEmailStr = function(req, res, next) {
+  var pattern =
+  /^([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+@([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+\.[a-zA-Z]{2,3}$/;
+  var strEmail = pattern.test(req.body.userEmail);
+  if (strEmail) {
+    next();
+  } else {
+    console.log('Illegal Email');
+    res.send({state: 'failed', why: 'NOT_EMAIL'});
+    next('route');
+  }
+};
+
+exports.isTrueUser = function(req, res, next) {
+  var pattern2 = /^[a-zA-z0-9\_\.]{3,20}$/;
+  var strname = pattern2.test(req.body.user_name);
+  if (strname) {
+    next();
+  } else {
+    console.log('Illegal Name');
+    res.send({state: 'failed', why: 'NOT_USER'});
+    next('route');
+  }
+};
+
+exports.comptime =  function(beginTime, endTime) {
+  var beginTimes = beginTime.substring(0, 10).split('-');
+  var endTimes = endTime.substring(0, 10).split('-');
+  beginTime = beginTimes[1] + '-' + beginTimes[2] + '-' + beginTimes[0] +
+  ' ' + beginTime.substring(10, 19);
+  endTime = endTimes[1] + '-' + endTimes[2] + '-' + endTimes[0] + ' ' +
+  endTime.substring(10, 19);
+  var a = (Date.parse(endTime) - Date.parse(beginTime)) / 3600 / 1000;
+  return a;
+};  //进行时间比较
+
+function encrypt(str, secret) {
+  var cipher = crypto.createCipher('aes192', secret);
+  var enc = cipher.update(str, 'utf8', 'hex');
+  enc += cipher.final('hex');
+  return enc;
+} // 加密数据
+
+function decrypt(str, secret) {
+  var decipher = crypto.createDecipher('aes192', secret);
+  var dec = decipher.update(str, 'hex', 'utf8');
+  dec += decipher.final('utf8');
+  return dec;
+} //解密数据
+
+function userVerif(res, callback) {
+  console.log('User Verif: ');
+  userSession = res.locals.userSession;
+  sign = res.locals.sign;
+  needMail = res.locals.needMail
+  if (userSession == undefined || sign == undefined) {
+    console.log('Err: NO Sign');
+    callback('ILLEGAL_SIGN');
+    return;
+  }
+  if (!needMail) console.log('Ignore Email');
+  if (exports.makeAsha(userSession + keyConfig.mysign) != sign) {
+    console.log('Err: ILLEGAL_SIGN');
+    callback('ILLEGAL_SIGN');
+    return;
+  }  //验证签名
+  var allData = JSON.parse(decrypt(userSession, keyConfig.mykey));
+  console.log('UserID：' + allData.userID);
+  var nowTime = new Date().Format('yyyy-MM-dd hh:mm:ss');
+  if (exports.comptime(allData.lastDate, nowTime) > 3) {
+    console.log('Err: user Time out');
+    callback('TIME_OUT');
+    return;
+  }
+  allData.lastDate = nowTime;
+  var newToken = Math.round(Math.random() * 10000000);
+  exports.getToken(allData.userID, newToken, (oldToken, tureEmail) => {
+    if (oldToken != allData.token) {
+      console.log('Err: Illegal Token');
+      callback('ILLEGAL_TOKEN');
+    } else {
+      if (tureEmail == 0 && needMail == 1) {
+        console.log('Email is no active');
+        callback('NO_MAIL');
+      } else {
+        allData.token = newToken;
+        callback(allData);
+      }
+    }
+  });
+}  //进行用户认证
+
+
