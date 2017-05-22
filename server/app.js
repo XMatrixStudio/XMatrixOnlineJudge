@@ -282,8 +282,8 @@ app.post('/mail', (req, res, next) =>  { // 获取授权参数
 }, (req, res, next) =>  { //发送邮件
   var session = userModule.encrypt(JSON.stringify(res.locals.data), userModule.getKey().mykey);
   var mailSign = userModule.makeAsha(session + userModule.getKey().mysign);
-  var mail1 = fs.readFileSync('mail1.data');
-  var mail2 = fs.readFileSync('mail2.data');
+  var mail1 = fs.readFileSync('maildata/mail1.data');
+  var mail2 = fs.readFileSync('maildata/mail2.data');
   fs.writeFile('mail.html', mail1 + session + '&sign=' + mailSign + mail2, (err) =>  {
     if (err) console.error(err);
     const ls = spawn('./sendMail.sh', [res.locals.userEmail]);
