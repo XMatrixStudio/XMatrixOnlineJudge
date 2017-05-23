@@ -48,10 +48,10 @@ app.use((req, res, next) =>  {
 //------------------------------------------------------------------------------
 //提交代码评测
 app.post('/submit', [userModule.appUserVerif, ejsModule.getPid],(req,res, next) => {
-    userModule.makeASign(req, res, () => {
-      res.send({ state: 'failed' });
-    });
-    next('route');
+  userModule.makeASign(req, res, () => {
+    res.send({ state: 'failed' });
+  });
+  next('route');
 }, (req, res, next) =>  { //查询是否有这个问题
   var sqlCmd = 'SELECT `standCase` FROM `problem` WHERE id=' + res.locals.pId;
   sqlModule.query(sqlCmd, (vals, isNull) => {
@@ -75,12 +75,12 @@ app.post('/submit', [userModule.appUserVerif, ejsModule.getPid],(req,res, next) 
       sqlModule.query(sqlCmd, (vals, isNull)  => {
         res.locals.userName = vals[0];
         var sqlCmd = 'INSERT INTO `judge`(`pid`, `uid`, `code`, `grade`, `gradeMax`, `gradeEach`, `helpText`, `lastTime`, `runTime`, `judging`, `userName`, `judgeTimes`) VALUES'+
-        ' (' + res.locals.pId + ','+ res.locals.data.userID +',\'' + userCode + '\',0,0,\'0,0,0,0\',\' #*# #*# #*# \',\''+ nowTime + '\',-1,1,\'' + res.locals.userName + '\',0)';
+        ' (' + res.locals.pId + ','+ res.locals.data.userID +',\'' + userCode + '\',0,0,\'0,0,0,0\',\' #*# #*# #*# \',\''+ nowTime + '\',300,1,\'' + res.locals.userName + '\',0)';
         sqlModule.query(sqlCmd, (vals, isNull)  => {
           next();
         });
       });
-    } else if (vals[0].is_judging == 0 || userModule.comptime(vals[0].lastTime, nowTime) > 1) {
+    } else if (vals[0].is_judging == 0 && userModule.comptime(vals[0].lastTime, nowTime) > 1) {
       console.log('Update the record'); //更新记录
       var sqlCmd = 'UPDATE `judge` SET `code`=\'' + userCode + '\',`lastTime`=\'' + nowTime +
       '\',`judging`= 1,`judgeTimes` = ' + (vals[0].judgeTimes + 1) + ' WHERE `uid`=' + res.locals.data.userID + ' && `pid`=' + res.locals.pId;
@@ -261,7 +261,7 @@ app.post('/mail', (req, res, next) =>  { // 获取授权参数
       console.log('ready to Send email!');
       var sqlCmd = 'UPDATE `user` SET `sendEmailTime`=\'' + nowtime + '\' WHERE `id`=' + res.locals.data.userID;
       sqlModule.query(sqlCmd);
-      res.locals.userEmail = vals.user_email;
+      res.locals.userEmail = vals.email;
       next();
     } else {
       if(vals.tureEmail == 1){
@@ -294,12 +294,12 @@ app.post('/mail', (req, res, next) =>  { // 获取授权参数
 //修改密码
 app.post('/user/pwd', [userModule.appUserVerif], (req, res, next) =>  {
   console.log('Password Change: ');
-  var sqlCmd = 'select user_password from user where user_id=' + res.locals.data.userID;
+  var sqlCmd = 'SELECT `password` FROM `user` WHERE `id`=' + res.locals.data.userID;
   sqlModule.query(sqlCmd, (vals, isNull) =>  {
-    if (vals.user_password == userModule.makeAsha(req.body.old_password)) {
+    if (vals[0].password == userModule.makeAsha(req.body.oldPassword)) {
       console.log('Password is Right!');
-      var newPass = userModule.makeAsha(req.body.new_password);
-      var sqlCmd = 'UPDATE `user` SET `password`=\'' + hashSHA1 + '\' WHERE `id`=' + res.locals.data.userID;
+      var newPass = userModule.makeAsha(req.body.newPassword);
+      var sqlCmd = 'UPDATE `user` SET `password`=\'' + newPass + '\' WHERE `id`=' + res.locals.data.userID;
       sqlModule.query(sqlCmd);
       console.log('Updata password!');
       userModule.makeASign(req, res, () =>  {
@@ -317,10 +317,10 @@ app.post('/user/pwd', [userModule.appUserVerif], (req, res, next) =>  {
 //修改个人信息
 app.post('/user/info', [userModule.appUserVerif, userModule.isTrueUser], (req, res, next) =>  {
   console.log('Info Change: ');
-  var userName = sqlModule.dealEscape(req.body.user_name);
-  var userDetail = sqlModule.dealEscape(req.body.user_detail);
-  var userWeb = sqlModule.dealEscape(req.body.user_web);
-  var sqlCmd = 'UPDATE `user` SET `name`=\'' + userName + '\' `detail`=\'' + userDetail + '\',`web`=\'' +
+  var userName = sqlModule.dealEscape(req.body.userName);
+  var userDetail = sqlModule.dealEscape(req.body.userDetail);
+  var userWeb = sqlModule.dealEscape(req.body.userWeb);
+  var sqlCmd = 'UPDATE `user` SET `name`=\'' + userName + '\', `detail`=\'' + userDetail + '\',`web`=\'' +
   userWeb + '\' WHERE `id`=' + res.locals.data.userID;
   sqlModule.query(sqlCmd);
   var sqlCmd = 'UPDATE `judge` SET `userName`= \'' + userName + '\' WHERE `uid`=' + res.locals.data.userID;
@@ -407,6 +407,68 @@ app.post('/getPlist', (req, res, next) =>  {
     });
   });
 });
+//------------------------------------------------------------------------------
+//获取邮件验证码
+app.post('/getVCode', (req, res, next) =>  {
+  var sqlCmd = 'SELECT `id`, `vCodeSendTime` FROM `user` WHERE `email`=\'' + req.body.userEmail + '\'';
+  var nowTime = new Date().Format('yyyy-MM-dd hh:mm:00');
+  sqlModule.query(sqlCmd,(vals, isNull) => {
+    if(isNull){
+      res.send({state: 'failed', why:'EMAIL_NOT'});
+      next('route');
+    }else{
+      if(vals[0].vCodeSendTime == nowTime){
+        res.send({state: 'failed', why: 'TIME_LIMIT'});
+        next('route');
+      }else{
+        res.locals.nowTime = nowTime;
+        res.locals.userId = vals[0].id;
+        next();
+      }
+    }
+  });
+},(req, res, next) => {
+  var vCode = Math.round(100000 + Math.random() * 1000000);
+  var nowTime = new Date().Format('yyyy-MM-dd hh:mm:ss');
+  var sqlCmd = 'UPDATE `user` SET `vCode`=' + vCode + ',`vCodeSendTime`=\'' + res.locals.nowTime + '\',`vCodeLimitTime`=\'' + nowTime + '\' WHERE `id`=' + res.locals.userId;
+  sqlModule.query(sqlCmd, (vals,isNull) => {
+    var mail1 = fs.readFileSync('maildata/mail3.data');
+    var mail2 = fs.readFileSync('maildata/mail4.data');
+    fs.writeFile('mail.html', mail1 + vCode + mail2, (err) =>  {
+      if (err) console.error(err);
+      const ls = spawn('./sendMail2.sh', [req.body.userEmail]);
+    });
+      res.send({state: 'success'});
+  });
+});
+//------------------------------------------------------------------------------
+//重置密码
+app.post('/forget', (req, res, next) =>  {
+  var sqlCmd = 'SELECT `id`, `vCode`,`vCodeLimitTime` FROM `user` WHERE `email`=\'' + req.body.userEmail + '\'';
+  var nowTime = new Date().Format('yyyy-MM-dd hh:mm:ss');
+  sqlModule.query(sqlCmd, (vals, isNull) => {
+    if(isNull){
+      res.send({state: 'failed', why:'EMAIL_NOT'});
+      next('route');
+    }else{
+      if(vals[0].vCode == req.body.vCode && vals[0].vCode != 007 && userModule.comptime(vals[0].vCodeLimitTime, nowTime) < 1){
+        res.locals.userId = vals[0].id;
+        next();
+      }else{
+        res.send({state: 'failed', why: 'ERR_VCODE'});
+        next('route');
+      }
+    }
+  });
+}, (req, res, next) => {
+  userPassword = userModule.makeAsha(req.body.userPassword);
+  var sqlCmd = 'UPDATE `user` SET `password`=\'' + userPassword + '\', `vCode`=007 WHERE `id`=' + res.locals.userId;
+  sqlModule.query(sqlCmd, (vals,isNull) => {
+    res.send({state: 'success'});
+  });
+});
+
+
 //------------------------------------------------------------------------------
 //退出登陆
 app.get('/layout', (req, res, next) =>  {
