@@ -23,34 +23,51 @@ namespace XMatrix.Judge
         public bool DoJudge()
         {
             string compile;
-            Shell.CallShellWithReE("gcc", string.Format(@"../file/{0}_{1}.c -o ../file/a.exe", uid, pid), @"../file/compiler.txt");
-            using (StreamReader sr = File.OpenText(@"../file/compiler.txt"))
+            if (Shell.CallShellWithReE("gcc", string.Format(@"../file/{0}_{1}.c -o ../file/a.exe", uid, pid), @"../file/compiler.txt"))
             {
-                compile = sr.ReadToEnd();
+                using (StreamReader sr = File.OpenText(@"../file/compiler.txt"))
+                {
+                    compile = sr.ReadToEnd();
+                }
+                grade.SetCompile(compile);
+                if (compile != string.Empty)
+                {
+                    //grade.ToJson(string.Format(@"../file/{0}_{1}.json", uid, pid));
+                    grade.ToMySql();
+                    return false;
+                }
             }
-            grade.SetCompile(compile);
-            if (compile != string.Empty)
+            else
             {
-                //grade.ToJson(string.Format(@"../file/{0}_{1}.json", uid, pid));
+                for (int i = 0; i < std_test_num; i++)
+                {
+                    grade.SetResult(i, "Compile Time Kill");
+                }
                 grade.ToMySql();
                 return false;
             }
             for (int i = 0; i < std_test_num; i++)
             {
-                Shell.CallShellWithReIO(@"../file/a.exe", "",
-                    string.Format(@"../file/{0}/in{1}.txt", pid, i), string.Format(@"../file/out{0}.txt", i));
-                Compare cmp = new Compare(string.Format(@"../file/{0}/std{1}.txt", pid, i), string.Format(@"../file/out{0}.txt", i));
-                if (cmp.FileStringCompare())
+                if (Shell.CallShellWithReIO(@"../file/a.exe", "",
+                    string.Format(@"../file/{0}/in{1}.txt", pid, i), string.Format(@"../file/out{0}.txt", i)))
                 {
-                    grade.SetResult(i, "Accept");
-                }
-                else if (cmp.FileFormatCompare())
-                {
-                    grade.SetResult(i, "Presentation Error");
+                    Compare cmp = new Compare(string.Format(@"../file/{0}/std{1}.txt", pid, i), string.Format(@"../file/out{0}.txt", i));
+                    if (cmp.FileStringCompare())
+                    {
+                        grade.SetResult(i, "Accept");
+                    }
+                    else if (cmp.FileFormatCompare())
+                    {
+                        grade.SetResult(i, "Presentation Error");
+                    }
+                    else
+                    {
+                        grade.SetResult(i, "Wrong Answer");
+                    }
                 }
                 else
                 {
-                    grade.SetResult(i, "Wrong Answer");
+                    grade.SetResult(i, "Time Limit Exceeded");
                 }
             }
             //grade.ToJson(string.Format(@"../file/{0}_{1}.json", uid, pid));
