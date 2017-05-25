@@ -17,3 +17,5 @@ server/config/mysql.json
 server/package.json
 server/config/key.json
 server/node_modules/
+server/file/
+server/judge/

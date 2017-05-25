@@ -27,7 +27,7 @@ isTrueUser：检查用户名格式是否合法
 const crypto = require('crypto');
 const fs = require('fs');
 const sqlModule = require('./mysql.js'); //数据库模块
-var keyConfig = JSON.parse(fs.readFileSync('config/key.json'));
+const keyConfig = JSON.parse(fs.readFileSync('config/key.json'));
 const cookieParser = require('cookie-parser'); // cookie模块
 
 exports.getKey =  function () {
@@ -44,7 +44,6 @@ exports.makeAsha = function (str) {
 };
 
 exports.getToken = function(userID, newToken, callback) {
-  console.log('updata the token...');
   var sqlCmd = 'SELECT `token`, `tureEmail` FROM `user` WHERE `id`=' + userID;
   sqlModule.query(sqlCmd, (vals, isNull) =>{
     if(isNull){
@@ -54,7 +53,6 @@ exports.getToken = function(userID, newToken, callback) {
       var tureEmail = vals[0].tureEmail;
       var sqlCmd = 'UPDATE `user` SET `token`=\'' + newToken +'\' WHERE `id`=' + userID;
       sqlModule.query(sqlCmd, (vals, isNull) => {
-        console.log('updata!');
         callback(oldToken, tureEmail);
       });
     }
@@ -154,7 +152,6 @@ function decrypt(str, secret) {
 } //解密数据
 
 function userVerif(res, callback) {
-  console.log('User Verif: ');
   userSession = res.locals.userSession;
   sign = res.locals.sign;
   needMail = res.locals.needMail
