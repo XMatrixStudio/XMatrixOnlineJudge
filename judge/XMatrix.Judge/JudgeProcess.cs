@@ -39,10 +39,7 @@ namespace XMatrix.Judge
             }
             else
             {
-                for (int i = 0; i < std_test_num; i++)
-                {
-                    grade.SetResult(i, "Compile Time Kill");
-                }
+                grade.SetCompile("Compile Time Kill");
                 grade.ToMySql();
                 return false;
             }

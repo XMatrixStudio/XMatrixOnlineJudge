@@ -28,9 +28,9 @@ namespace XMatrix.Judge
             shell_process.StartInfo.RedirectStandardInput = true;
             shell_process.StartInfo.RedirectStandardOutput = true;
             shell_process.Start();
+            shell_process.StandardInput.Write(input_str);
             if (shell_process.WaitForExit(1000))
             {
-                shell_process.StandardInput.Write(input_str);
                 string output = shell_process.StandardOutput.ReadToEnd();
                 using (StreamWriter sw = File.CreateText(reoutput_path))
                 {
