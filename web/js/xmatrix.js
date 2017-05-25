@@ -440,55 +440,18 @@ function isLogin(callback) {
 
 function getPlist() {
   $.post('api/getPlist', {state: 'hello,world'}, function(resdata) {
-    var proList = new Array;
     var proCount = new Array;
-    proCount = [0, 0, 0, 0, 0, 0];
+    proCount = [0,0,0,0];
     for (var i = 0; i < resdata.pCount; i++) {
       proCount[resdata.pCourse[i]]++;
-      if (proList[resdata.pCourse[i]] == undefined) proList[resdata.pCourse[i]] = '';
-      proList[resdata.pCourse[i]] += '<a href="api/problem/';
-      proList[resdata.pCourse[i]] += resdata.pId[i];
-      proList[resdata.pCourse[i]] +=
-      '"class="list-group-item"><h4 class="list-group-item-heading">';
-      proList[resdata.pCourse[i]] += resdata.pName[i];
-      proList[resdata.pCourse[i]] += '   <span class="label label-';
-      switch (resdata.pHard[i]) {
-        case 1:
-        proList[resdata.pCourse[i]] += 'success">easy';
-        break;
-        case 2:
-        proList[resdata.pCourse[i]] += 'info">common';
-        break;
-        case 3:
-        proList[resdata.pCourse[i]] += 'danger">hard';
-        break;
-      }
-      proList[resdata.pCourse[i]] +=
-      '</span></h4><p class="list-group-item-text">';
-      switch (resdata.pClass[i]) {
-        case 1:
-        proList[resdata.pCourse[i]] += '编程题';
-        break;
-        case 2:
-        proList[resdata.pCourse[i]] += '选择题';
-        break;
-        case 3:
-        proList[resdata.pCourse[i]] += '不知道什么题';
-        break;
-      }
-      proList[resdata.pCourse[i]] += '</p></a>'
+      problemCont.contents[resdata.pCourse[i]].push({
+        pid: resdata.pId[i],
+        title: resdata.pName[i],
+        hard: resdata.pHard[i],
+        class: resdata.pClass[i]
+      });
     }
-
-    for (var i = 0; i < 4; i++) {
-      if (proList[i] == undefined) {
-        proList[i] =
-        '<a href="#" class="list-group-item"><h4 class="list-group-item-heading"><span class="label label-info">NULL</span></h4></a>'
-      }
-      if (proCount[i] == undefined) proCount[i] = 0;
-      document.getElementById('course_' + (i + 1)).innerHTML = proList[i];
-      document.getElementById('course_num_'+ (i + 1)).innerHTML = proCount[i];
-      document.getElementById('course_num_'+ (i + 1) + '_').innerHTML = proCount[i];
-    }
+    problemList.listCount = proCount;
   });
 }
 

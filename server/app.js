@@ -1,41 +1,41 @@
 ﻿const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
+const crypto = require('crypto'); //加密模块
+const spawn = require('child_process').spawn; //异步子进程模块
 const fs = require('fs'); //文件处理
-const sLine = '-----------------------------------------------';
 const cookieParser = require('cookie-parser'); // cookie模块
 const urlencodedParser = bodyParser.urlencoded({ extended: false }) // post模块
 const sqlModule = require('./mysql.js'); //数据库模块
 const userModule = require('./user.js'); //用户认证模块
 const ejsModule = require('./ejs.js');//EJS模板引擎
-const crypto = require('crypto'); //加密模块
-const spawn = require('child_process').spawn; //异步子进程模块
+const sLine = '-----------------------------------------------';
 app.use(cookieParser()); // cookie模块
 app.use(bodyParser.urlencoded({ extended: false })); // for parsing application/x-www-form-urlencoded
 app.set('views', './views'); // 指定视图所在的位置
 app.set('view engine', 'ejs'); // 注册模板引擎
 //------------------------------------------------------------------------------
-//时间模块
+//日期格式化
 Date.prototype.Format = function(fmt) {
   var o = {
-        'M+': this.getMonth() + 1, //月份
-        'd+': this.getDate(), //日
-        'h+': this.getHours(), //小时
-        'm+': this.getMinutes(), //分
-        's+': this.getSeconds(), //秒
-        'q+': Math.floor((this.getMonth() + 3) / 3), //季度
-             'S': this.getMilliseconds() //毫秒
-           };
-           if (/(y+)/.test(fmt)) {
-            fmt = fmt.replace(RegExp.$1, (this.getFullYear() + '').substr(4 - RegExp.$1.length));
-          }
-          for (var k in o) {
-            if (new RegExp('(' + k + ')').test(fmt)) {
-              fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (('00' + o[k]).substr(('' + o[k]).length)));
-            }
-          }
-          return fmt;
-        };
+    'M+': this.getMonth() + 1, //月份
+    'd+': this.getDate(), //日
+    'h+': this.getHours(), //小时
+    'm+': this.getMinutes(), //分
+    's+': this.getSeconds(), //秒
+    'q+': Math.floor((this.getMonth() + 3) / 3), //季度
+    'S': this.getMilliseconds() //毫秒
+  };
+  if (/(y+)/.test(fmt)) {
+    fmt = fmt.replace(RegExp.$1, (this.getFullYear() + '').substr(4 - RegExp.$1.length));
+  }
+  for (var k in o) {
+    if (new RegExp('(' + k + ')').test(fmt)) {
+      fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (('00' + o[k]).substr(('' + o[k]).length)));
+    }
+  }
+  return fmt;
+};
 //------------------------------------------------------------------------------
 //日志处理
 app.use((req, res, next) =>  {
@@ -47,12 +47,7 @@ app.use((req, res, next) =>  {
 });
 //------------------------------------------------------------------------------
 //提交代码评测
-app.post('/submit', [userModule.appUserVerif, ejsModule.getPid],(req,res, next) => {
-  userModule.makeASign(req, res, () => {
-    res.send({ state: 'failed' });
-  });
-  next('route');
-}, (req, res, next) =>  { //查询是否有这个问题
+app.post('/submit', [userModule.appUserVerif, ejsModule.getPid], (req, res, next) =>  { //查询是否有这个问题
   var sqlCmd = 'SELECT `standCase` FROM `problem` WHERE id=' + res.locals.pId;
   sqlModule.query(sqlCmd, (vals, isNull) => {
     if (isNull) {
@@ -73,14 +68,14 @@ app.post('/submit', [userModule.appUserVerif, ejsModule.getPid],(req,res, next) 
       console.log('Creat a record'); //新建一个记录
       var sqlCmd = 'SELECT `name` FROM `user` WHERE `id`='+ res.locals.data.userID;
       sqlModule.query(sqlCmd, (vals, isNull)  => {
-        res.locals.userName = vals[0];
+        res.locals.userName = vals[0].name;
         var sqlCmd = 'INSERT INTO `judge`(`pid`, `uid`, `code`, `grade`, `gradeMax`, `gradeEach`, `helpText`, `lastTime`, `runTime`, `judging`, `userName`, `judgeTimes`) VALUES'+
         ' (' + res.locals.pId + ','+ res.locals.data.userID +',\'' + userCode + '\',0,0,\'0,0,0,0\',\' #*# #*# #*# \',\''+ nowTime + '\',300,1,\'' + res.locals.userName + '\',0)';
         sqlModule.query(sqlCmd, (vals, isNull)  => {
           next();
         });
       });
-    } else if (vals[0].is_judging == 0 && userModule.comptime(vals[0].lastTime, nowTime) > 1) {
+    } else if (vals[0].judging == 0 && (vals[0].judgeTimes == '' || comptime(judgeTimes, nowTime) > 1)) {
       console.log('Update the record'); //更新记录
       var sqlCmd = 'UPDATE `judge` SET `code`=\'' + userCode + '\',`lastTime`=\'' + nowTime +
       '\',`judging`= 1,`judgeTimes` = ' + (vals[0].judgeTimes + 1) + ' WHERE `uid`=' + res.locals.data.userID + ' && `pid`=' + res.locals.pId;
@@ -106,7 +101,7 @@ app.post('/submit', [userModule.appUserVerif, ejsModule.getPid],(req,res, next) 
     userModule.makeASign(req, res, () => {
       res.send({ state: 'success' });
     });
-  });
+});
 //------------------------------------------------------------------------------
 //返回成绩
 app.post('/getGrade', [userModule.appUserVerif, ejsModule.getPid], (req, res, next) => { //查询该用户是否存在这个记录
@@ -119,28 +114,31 @@ app.post('/getGrade', [userModule.appUserVerif, ejsModule.getPid], (req, res, ne
             next('route');
           });
         } else {
-          res.locals.vals = vals[0];
+          res.locals.userData = vals[0];
           next();
         }
       });
 }, (req, res, next) => { //返回结果
-  if (res.locals.vals.is_judging == 0) {
+  if (res.locals.userData.judging == 0) {
         console.log('success'); //评测完毕
         userModule.makeASign(req, res, () =>  {
-
-          var helpText = res.locals.vals.helpText.split("#X#");
+          var helpText = res.locals.userData.helpText.split("#X#");
           res.send({
             state: 'success',
-            grade: res.locals.vals.grade,
-            gradeMax: res.locals.vals.gradeMax,
-            judgeTimes: res.locals.vals.judgeTimes,
-            gradeEach: res.locals.vals.gradeEach,
+            grade: res.locals.userData.grade,
+            gradeMax: res.locals.userData.grade > res.locals.userData.gradeMax ? res.locals.userData.grade : res.locals.userData.gradeMax,
+            judgeTimes: res.locals.userData.judgeTimes,
+            gradeEach: res.locals.userData.gradeEach.split(","),
             helpText: helpText,
-            lastTime: res.locals.vals.lastTime,
-            runTime: res.locals.vals.runTime,
+            lastTime: res.locals.userData.lastTime,
+            runTime: res.locals.userData.runTime,
             textName: ['编译测试', '标准测试', '随机测试', '内存测试'],
           });
         });
+        if(res.locals.userData.grade > res.locals.userData.gradeMax){
+          var sqlCmd = 'UPDATE `judge` SET `gradeMax`=`grade` WHERE `uid`=' + res.locals.data.userID + '&&`pid`=' + res.locals.pId;
+          sqlModule.query(sqlCmd);
+        }
       } else {
         userModule.makeASign(req, res, () =>  {
             console.log('JUDGING'); //在评测中
@@ -170,7 +168,7 @@ app.post('/login', [userModule.isEmailStr], (req, res, next) =>  { //用户是�
     var newToken = Math.round(Math.random() * 10000000);
     userModule.getToken(res.locals.userData.id, newToken, (oldToken,tureEmail) => {
       var nowTime = new Date().Format('yyyy-MM-dd hh:mm:ss');
-      res.locals.data = {
+      res.locals.data = {//构建session原始数据
         userID: res.locals.userData.id,
         token: newToken,
         lastDate: nowTime
@@ -207,7 +205,7 @@ app.get('/login', (req, res, next) =>  { //获取get参数
 }, [userModule.appUserVerifNoMail], (req, res, next) =>  { //查看是否已经激活
   var sqlCmd = 'SELECT `tureEmail` FROM `user` WHERE id='+ res.locals.data.userID;
   sqlModule.query(sqlCmd, (vals, isNull) =>  {
-    if (vals_[0].isMail == 0) {
+    if (vals[0].tureEmail == 0) {
       console.log('Email activation success');
       var sqlCmd = 'UPDATE `user` SET`tureEmail`=1 WHERE id='+ res.locals.data.userID;
       sqlModule.query(sqlCmd, (vals, isNull) =>  {
@@ -238,7 +236,7 @@ app.post('/register', [userModule.isEmailStr, userModule.isTrueUser], (req, res,
   sqlModule.query(sqlCmd, (vals, isNull) =>  {
     console.log('Register success!');
     res.send({ state: 'success' });
-    var userMaxId = vals;
+    var userMaxId = vals[0].intData;
     var userPass = userModule.makeAsha(req.body.userPassword);
     var sqlCmd = 'INSERT INTO `user`(`id`, `name`, `password`, `detail`, `email`, `web`, `tureEmail`) VALUES '+
     '('+(userMaxID + 10000)+',\'' + req.body.userName + '\',\'' + hashSHA1 + '\',\'Nothing\',\'' + req.body.userEmail + '\',\'Nothing\',0)';
@@ -257,14 +255,14 @@ app.post('/mail', (req, res, next) =>  { // 获取授权参数
   var nowHour = new Date().Format('yyyy-MM-dd-hh');
   var sqlCmd = 'SELECT `email`, `tureEmail`, `sendEmailTime` FROM `user` WHERE `id`=' + res.locals.data.userID;
   sqlModule.query(sqlCmd, (vals, isNull) =>  {
-    if (vals.sendEmailTime != nowHour && vals.tureEmail == 0) {
+    if (vals[0].sendEmailTime != nowHour && vals[0].tureEmail == 0) {
       console.log('ready to Send email!');
       var sqlCmd = 'UPDATE `user` SET `sendEmailTime`=\'' + nowtime + '\' WHERE `id`=' + res.locals.data.userID;
       sqlModule.query(sqlCmd);
-      res.locals.userEmail = vals.email;
+      res.locals.userEmail = vals[0].email;
       next();
     } else {
-      if(vals.tureEmail == 1){
+      if(vals[0].tureEmail == 1){
         console.log('Err: This had is a tureEmail.');
         userModule.makeASign(req, res, () =>  {
           res.send({ state: 'failed', why: 'HAD_TURE' });
@@ -292,7 +290,7 @@ app.post('/mail', (req, res, next) =>  { // 获取授权参数
 });
 //------------------------------------------------------------------------------
 //修改密码
-app.post('/user/pwd', [userModule.appUserVerif], (req, res, next) =>  {
+app.post('/user/pwd', [userModule.appUserVerif], (req, res, next) =>  {//比较是否相同
   console.log('Password Change: ');
   var sqlCmd = 'SELECT `password` FROM `user` WHERE `id`=' + res.locals.data.userID;
   sqlModule.query(sqlCmd, (vals, isNull) =>  {
@@ -315,7 +313,7 @@ app.post('/user/pwd', [userModule.appUserVerif], (req, res, next) =>  {
 });
 //------------------------------------------------------------------------------
 //修改个人信息
-app.post('/user/info', [userModule.appUserVerif, userModule.isTrueUser], (req, res, next) =>  {
+app.post('/user/info', [userModule.appUserVerif, userModule.isTrueUser], (req, res, next) =>  {//更新数据库个人信息
   console.log('Info Change: ');
   var userName = sqlModule.dealEscape(req.body.userName);
   var userDetail = sqlModule.dealEscape(req.body.userDetail);
@@ -323,14 +321,13 @@ app.post('/user/info', [userModule.appUserVerif, userModule.isTrueUser], (req, r
   var sqlCmd = 'UPDATE `user` SET `name`=\'' + userName + '\', `detail`=\'' + userDetail + '\',`web`=\'' +
   userWeb + '\' WHERE `id`=' + res.locals.data.userID;
   sqlModule.query(sqlCmd);
-  var sqlCmd = 'UPDATE `judge` SET `userName`= \'' + userName + '\' WHERE `uid`=' + res.locals.data.userID;
+  sqlCmd = 'UPDATE `judge` SET `userName`= \'' + userName + '\' WHERE `uid`=' + res.locals.data.userID;
   sqlModule.query(sqlCmd);
   console.log('Update user Info!');
   userModule.makeASign(req, res, () =>  {
     res.send({ state: 'success' });
   });
 });
-
 //------------------------------------------------------------------------------
 //问题详情
 app.get('/problem/:id', (req, res, next) =>  { //正则匹配题目ID
@@ -377,11 +374,10 @@ app.get('/problem/:id', (req, res, next) =>  { //正则匹配题目ID
       next();
     });
   });
-},ejsModule.problem);
-
+},ejsModule.problem);//渲染问题详情页面
 //------------------------------------------------------------------------------
 //获取问题列表
-app.post('/getPlist', (req, res, next) =>  {
+app.post('/getPlist', (req, res, next) =>  {//处理数据并返回
   console.log('get Problem list: ');
   var sqlCmd = 'SELECT `id`, `class`, `title`, `hard`, `course` FROM `problem` WHERE 1';
   sqlModule.query(sqlCmd, (vals, isNull) =>  {
@@ -409,7 +405,7 @@ app.post('/getPlist', (req, res, next) =>  {
 });
 //------------------------------------------------------------------------------
 //获取邮件验证码
-app.post('/getVCode', (req, res, next) =>  {
+app.post('/getVCode', (req, res, next) =>  {//检测请求是否合法
   var sqlCmd = 'SELECT `id`, `vCodeSendTime` FROM `user` WHERE `email`=\'' + req.body.userEmail + '\'';
   var nowTime = new Date().Format('yyyy-MM-dd hh:mm:00');
   sqlModule.query(sqlCmd,(vals, isNull) => {
@@ -427,7 +423,7 @@ app.post('/getVCode', (req, res, next) =>  {
       }
     }
   });
-},(req, res, next) => {
+},(req, res, next) => {//发送邮件
   var vCode = Math.round(100000 + Math.random() * 1000000);
   var nowTime = new Date().Format('yyyy-MM-dd hh:mm:ss');
   var sqlCmd = 'UPDATE `user` SET `vCode`=' + vCode + ',`vCodeSendTime`=\'' + res.locals.nowTime + '\',`vCodeLimitTime`=\'' + nowTime + '\' WHERE `id`=' + res.locals.userId;
@@ -438,12 +434,12 @@ app.post('/getVCode', (req, res, next) =>  {
       if (err) console.error(err);
       const ls = spawn('./sendMail2.sh', [req.body.userEmail]);
     });
-      res.send({state: 'success'});
+    res.send({state: 'success'});
   });
 });
 //------------------------------------------------------------------------------
 //重置密码
-app.post('/forget', (req, res, next) =>  {
+app.post('/forget', (req, res, next) =>  {//核对验证码
   var sqlCmd = 'SELECT `id`, `vCode`,`vCodeLimitTime` FROM `user` WHERE `email`=\'' + req.body.userEmail + '\'';
   var nowTime = new Date().Format('yyyy-MM-dd hh:mm:ss');
   sqlModule.query(sqlCmd, (vals, isNull) => {
@@ -460,18 +456,16 @@ app.post('/forget', (req, res, next) =>  {
       }
     }
   });
-}, (req, res, next) => {
+}, (req, res, next) => {//重置密码
   userPassword = userModule.makeAsha(req.body.userPassword);
   var sqlCmd = 'UPDATE `user` SET `password`=\'' + userPassword + '\', `vCode`=007 WHERE `id`=' + res.locals.userId;
   sqlModule.query(sqlCmd, (vals,isNull) => {
     res.send({state: 'success'});
   });
 });
-
-
 //------------------------------------------------------------------------------
 //退出登陆
-app.get('/layout', (req, res, next) =>  {
+app.get('/layout', (req, res, next) =>  {//清空cookies
   res.cookie('userSession', '');
   res.cookie('sign', '');
   res.cookie('isLogin', '0');
@@ -479,7 +473,7 @@ app.get('/layout', (req, res, next) =>  {
 });
 //------------------------------------------------------------------------------
 //监听30002端口
-var server = app.listen(30002, '127.0.0.1', () =>  {
+var server = app.listen(30002, '127.0.0.1', () =>  {//监听localhost
   var host = server.address().address;
   var port = server.address().port;
   console.log('Example app listening at http://%s:%s', host, port);

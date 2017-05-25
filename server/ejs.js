@@ -6,7 +6,7 @@ ejs页面渲染引擎
 
 problem(返回problem页面)
 
-getPid： 获取问题页面的问题id参数
+getPid： 获取问题页面的问题id参数,并储存在res.locals.pId
 
 */
 exports.getPid = function (req,res,next) {
@@ -43,7 +43,11 @@ exports.problem = function (req,res, next) {
   if(res.locals.isDone){
     var isGood= new Array;
     var helpText= new Array;
-    var helpTextOld = res.locals.userData.helpText.split("#X#");
+    if(res.locals.userData.helpText != ''){
+      var helpTextOld = res.locals.userData.helpText.split("#X#");
+    }else{
+      var helpTextOld = ['','','',''];
+    }
     var gradeEach = res.locals.userData.gradeEach.split(",");
     var gradeEachMax = res.locals.problemData.gradeEach.split(",");
 

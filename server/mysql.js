@@ -11,8 +11,6 @@ dealEscape(str)： 处理转义字符，返回处理后的字符串
 
 */
 
-
-
 const fs = require('fs'); //文件处理
 const mysql = require('mysql');
 const mysqlConfig = JSON.parse(fs.readFileSync('config/mysql.json'));  //加载配置文件
@@ -38,6 +36,7 @@ exports.dealEscape = function (str) {
   return str.toString()
   .replace(/\\n/g, '\\\\n')
   .replace(/\\r/g, '\\\\r')
+  .replace(/\\/g, '\\\\')
   .replace(/\'/g, '\\\'');
 }
 
