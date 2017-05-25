@@ -75,7 +75,7 @@ app.post('/submit', [userModule.appUserVerif, ejsModule.getPid], (req, res, next
           next();
         });
       });
-    } else if (vals[0].judging == 0) {
+    } else if (vals[0].judging == 0 && (vals[0].judgeTimes == '' || comptime(judgeTimes, nowTime) > 1)) {
       console.log('Update the record'); //更新记录
       var sqlCmd = 'UPDATE `judge` SET `code`=\'' + userCode + '\',`lastTime`=\'' + nowTime +
       '\',`judging`= 1,`judgeTimes` = ' + (vals[0].judgeTimes + 1) + ' WHERE `uid`=' + res.locals.data.userID + ' && `pid`=' + res.locals.pId;
