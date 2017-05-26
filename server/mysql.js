@@ -34,8 +34,6 @@ exports.query =  function(sqlCmd,callback){
 
 exports.dealEscape = function (str) {
   return str.toString()
-  .replace(/\\n/g, '\\\\n')
-  .replace(/\\r/g, '\\\\r')
   .replace(/\\/g, '\\\\')
   .replace(/\'/g, '\\\'');
 }

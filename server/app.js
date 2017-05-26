@@ -70,12 +70,12 @@ app.post('/submit', [userModule.appUserVerif, ejsModule.getPid], (req, res, next
       sqlModule.query(sqlCmd, (vals, isNull)  => {
         res.locals.userName = vals[0].name;
         var sqlCmd = 'INSERT INTO `judge`(`pid`, `uid`, `code`, `grade`, `gradeMax`, `gradeEach`, `helpText`, `lastTime`, `runTime`, `judging`, `userName`, `judgeTimes`) VALUES'+
-        ' (' + res.locals.pId + ','+ res.locals.data.userID +',\'' + userCode + '\',0,0,\'0,0,0,0\',\' #*# #*# #*# \',\''+ nowTime + '\',300,1,\'' + res.locals.userName + '\',0)';
+        ' (' + res.locals.pId + ','+ res.locals.data.userID +',\'' + userCode + '\',0,0,\'0,0,0,0\',\' #*# #*# #*# \',\''+ nowTime + '\',300,1,\'' + res.locals.userName + '\',1)';
         sqlModule.query(sqlCmd, (vals, isNull)  => {
           next();
         });
       });
-    } else if (vals[0].judging == 0 && (vals[0].judgeTimes == '' || comptime(judgeTimes, nowTime) > 1)) {
+    } else if (vals[0].judging == 0 || (vals[0].lastTime == '' || userModule.comptime(vals[0].lastTime, nowTime) > 1)) {
       console.log('Update the record'); //更新记录
       var sqlCmd = 'UPDATE `judge` SET `code`=\'' + userCode + '\',`lastTime`=\'' + nowTime +
       '\',`judging`= 1,`judgeTimes` = ' + (vals[0].judgeTimes + 1) + ' WHERE `uid`=' + res.locals.data.userID + ' && `pid`=' + res.locals.pId;
@@ -342,7 +342,7 @@ app.get('/problem/:id', (req, res, next) =>  { //正则匹配题目ID
   }
 }, (req, res, next) =>  { // 是否已经登陆
   if (req.cookies.isLogin != 1) {
-    res.redirect('../../index.html?op=1');
+    res.redirect('/index.html?op=1');
     next('route');
   } else {
     next();
@@ -352,7 +352,7 @@ app.get('/problem/:id', (req, res, next) =>  { //正则匹配题目ID
   sqlModule.query(sqlCmd, (vals, isNull) =>  {
     if (isNull) {
       console.log('No a problem');
-      res.redirect('../../index.html?op=0');
+      res.redirect('/index.html?op=0');
       next('route');
     } else {
       res.locals.problemData = vals[0];

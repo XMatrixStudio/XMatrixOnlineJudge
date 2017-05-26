@@ -25,8 +25,6 @@ exports.getPid = function (req,res,next) {
 }
 
 exports.problem = function (req,res, next) {
-  var rankTable = '<table class="table table-hover table-striped"><tr style="font-size:17px;color:#fff;' +
-  'background-color: #00B0AD"><th>No</th><th>昵称</th><th>运行时间</th><th>分数</th></tr>';
   var rankName= new Array;
   var rankGrade = new Array;
   var rankTime = new Array;
@@ -35,11 +33,8 @@ exports.problem = function (req,res, next) {
     rankGrade[i] = res.locals.rank[i].gradeMax;
     rankTime[i] = res.locals.rank[i].runTime;
   }
-  for (var i = 0; i < res.locals.rank.length; i++) {
-    rankTable += '<tr><td>' + i + '</td><td>' + rankName[i] + '</td><td>' +
-    rankTime[i] + ' ms</td><td>' + rankGrade[i] + '</td></tr>';
-  }
-  rankTable += '</table>';
+  var gradeEachMax = res.locals.problemData.gradeEach.split(",");
+
   if(res.locals.isDone){
     var isGood= new Array;
     var helpText= new Array;
@@ -49,14 +44,13 @@ exports.problem = function (req,res, next) {
       var helpTextOld = ['','','',''];
     }
     var gradeEach = res.locals.userData.gradeEach.split(",");
-    var gradeEachMax = res.locals.problemData.gradeEach.split(",");
 
-    for (var i = 0; i < 4; i++) {
+    for (var i = 0; i < gradeEach.length; i++) {
       isGood[i] = (gradeEach[i] == gradeEachMax[i]);
       helpText[i] = '<p>' + helpTextOld[i].toString()
       .replace(/\\n/g, '</p><p>')
       .replace(/\n/g, '</p><p>')
-      .replace(/\\r/, '') + '</p>';
+      .replace(/\\r/g, '') + '</p>';
     }
     var htmlProblemData = {
       pTitle: res.locals.problemData.title,
@@ -65,16 +59,19 @@ exports.problem = function (req,res, next) {
       pMemLimit: res.locals.problemData.memLimit,
       pAuthor: res.locals.problemData.author,
       pEmail: res.locals.problemData.email,
-      rankTable: rankTable,
+      rankTableName: rankName.join("','"),
+      rankTableRunTime: rankTime.join(","),
+      rankTableGrade: rankGrade.join(","),
       jGrade: res.locals.userData.grade,
       jGradeTimes: res.locals.userData.judgeTimes,
       jGradeColor: (res.locals.userData.grade == 100) ? '228B22' : 'B22222',
       jLtime: res.locals.userData.lastTime,
-      jRtime: res.locals.userData.runTime + 'ms',
+      jRtime: res.locals.userData.runTime,
       jGradeMax: res.locals.userData.gradeMax,
       jGradeEach: gradeEach,
       jGradeEachMax: gradeEachMax,
       jText: helpText,
+      jGradeNum: gradeEachMax.length,
       jGradeName: ['编译测试', '标准测试','随机测试','内存测试'],
       jGradeEachColor: [
       isGood[0] ? '228B22' : 'B22222',
@@ -84,14 +81,13 @@ exports.problem = function (req,res, next) {
       ],
       jGradeEachIcon: [
       isGood[0] ? 'ok' : 'remove',
-      isGood[1] ? 'ok' : 'remove',
       isGood[2] ? 'ok' : 'remove',
+      isGood[1] ? 'ok' : 'remove',
       isGood[3] ? 'ok' : 'remove',
       ],
       code: res.locals.userData.code
     };
   }else{
-    var gradeEach = res.locals.userData.gradeEach[i].split(",");
     var htmlProblemData = {
       pTitle: res.locals.problemData.title,
       pId: req.params.id,
@@ -99,7 +95,9 @@ exports.problem = function (req,res, next) {
       pMemLimit: res.locals.problemData.memLimit,
       pAuthor: res.locals.problemData.author,
       pEmail: res.locals.problemData.email,
-      rankTable: rankTable,
+      rankTableName: rankName.join("\',\'"),
+      rankTableRunTime: rankTime.join(","),
+      rankTableGrade: rankGrade.join(","),
       jGrade: 0,
       jGradeColor: 'B22222',
       jLtime: '未提交',
@@ -107,20 +105,21 @@ exports.problem = function (req,res, next) {
       jGradeMax: 0,
       jGradeTimes: 0,
       jGradeEach: [0, 0, 0, 0],
-      jGradeEachMax: gradeEach,
+      jGradeEachMax: gradeEachMax,
       jText: ['', '', '', ''],
+      jGradeNum: gradeEachMax.length,
       jGradeName: ['编译测试', '标准测试','随机测试','内存测试'],
       jGradeEachColor: [
-      gradeEach[0] ? 'B22222' : '228B22',
-      gradeEach[1] ? 'B22222' : '228B22',
-      gradeEach[2] ? 'B22222' : '228B22',
-      gradeEach[3] ? 'B22222' : '228B22',
+      gradeEachMax[0] ? 'B22222' : '228B22',
+      gradeEachMax[1] ? 'B22222' : '228B22',
+      gradeEachMax[2] ? 'B22222' : '228B22',
+      gradeEachMax[3] ? 'B22222' : '228B22',
       ],
       jGradeEachIcon: [
-      gradeEach[0] ? 'remove' : 'ok',
-      gradeEach[1] ? 'remove' : 'ok',
-      gradeEach[2] ? 'remove' : 'ok',
-      gradeEach[3] ? 'remove' : 'ok',
+      gradeEachMax[0] ? 'remove' : 'ok',
+      gradeEachMax[1] ? 'remove' : 'ok',
+      gradeEachMax[2] ? 'remove' : 'ok',
+      gradeEachMax[3] ? 'remove' : 'ok',
       ],
       code: ''
     };

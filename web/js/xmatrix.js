@@ -166,8 +166,7 @@ function login() {
       document.cookie = 'detail=' + data.detail;
       document.cookie = 'web=' + data.web;
       document.cookie = 'tureEmail=' + data.tureEmail;
-      document.cookie =
-      'userEmail=' + document.getElementById('userEmail').value;
+      document.cookie = 'userEmail=' + document.getElementById('userEmail').value;
       if (data.tureEmail == 0) {
         window.location.href = 'mail.html';
       } else {
@@ -192,18 +191,16 @@ function login() {
 
 function judge() {
   $('#myTab a[href="#messages"]').tab('show');
-  $('#j_grade').html('Judging');
-  document.getElementById('j_pro').style.width = '0%';
-  $('#j_Ltime').html('最后提交：Judging...');
-  $('#j_Rtime').html('运行时间：Judging...');
-  $('#j_Times').html('提交次数：Judging...');
-  $('#j_men').html('占用内存：Judging...');
-  var textName = ['编译测试', '标准测试', '随机测试', '内存测试'];
-  document.getElementById('j_grade').style.color = '#008B8B';
+  grade.gradeTotal = '0';
+  grade.lastTime = 'Judging...';
+  grade.times += 1;
+  grade.runTime = 'Judging...';
+  grade.color = '008B8B';
   for (var i = 0; i < 4; i++) {
-    $('#j_test' + i).html(textName[i] + '：Judging... <span class="glyphicon glyphicon-time" style="float:right;"></span>');
-    document.getElementById('j_test' + i).style.color = '#008B8B';
-    $('#j_info' + i).html("");
+    grade.gradeEach[i].color = '008B8B';
+    grade.gradeEach[i].helpText = '';
+    grade.gradeEach[i].grade = 'Judging';
+    grade.gradeEach[i].ico = 'time';
   }//处理页面
   $.post('/api/submit', {code: document.getElementById('codetext').value},function(data) {
     if (data.state == 'success') {
@@ -214,14 +211,13 @@ function judge() {
         case 'ILLEGAL_TOKEN':
         case 'NO_THIS_PROBLEM':
         window.location.href =
-        'index.html?op=4';
+        '/index.html?op=4';
         break; case 'NO_MAIL':
         document.cookie = 'tureEmail=0';
-        window.location.href = 'mail.html';
+        window.location.href = '/mail.html';
         break;
         case 'TIME_OUT':
-        window.location.href =
-        'index.html?op=4';
+        window.location.href = '/index.html?op=4';
         break;
         case 'IS_JUDGING':
         alert('正在评测中,请不要重复提交');
@@ -237,7 +233,7 @@ function getGrade(count) {
       if (data.state == 'success') {
         dealGrade(data);
       } else if (data.why == 'NO_DO') {
-        window.location.href = 'index.html?op=4';
+        window.location.href = '/index.html?op=4';
       } else {
         setTimeout(getGrade, 2000, count + 1);  // 5次循环调用，10秒后无相应返回超时
       }
@@ -257,36 +253,23 @@ function getGrade(count) {
 }//获取成绩
 
 function dealGrade(data) {
-  $('#j_grade').html(data.grade);
-  document.getElementById('j_pro').style.width = data.grade + '%';
-  $('#j_Ltime').html('最后提交：' + data.lastTime);
-  $('#j_Max').html('最高分数：' + data.gradeMax);
-  $('#j_Times').html('提交次数：' + data.judgeTimes);
-  $('#j_Rtime').html('运行时间：' + data.runTime + ' ms');
-  document.getElementById('j_grade').style.color = data.grade == 100 ? '#228B22' : '#B22222';
-  //-----------------------------------------------------------------
-  for (var i = 0; i < 4; i++) {
-    if (data.gradeEach[i] == gradeEachMax[i]) {
-      $('#j_test' + i)
-      .html(
-        data.textName[i] + '： ' + data.gradeEach[i] + '/' + gradeEachMax[i] +
-        ' <span class="glyphicon glyphicon-ok" style="float:right;"></span>');
-      document.getElementById('j_test' + i).style.color = '#228B22';
-    } else {
-      $('#j_test' + i)
-      .html(
-        data.textName[i] + '： ' + data.gradeEach[i] + '/' + gradeEachMax[i] +
-        ' <span class="glyphicon glyphicon-remove" style="float:right;"></span>');
-      document.getElementById('j_test' + i).style.color = '#B22222';
-    }
-    var helpText = '<p>' +
-    data.helpText[i]
-    .toString()
+  grade.gradeTotal = data.grade;
+  grade.lastTime = data.lastTime;
+  grade.max = data.gradeMax;
+  grade.times = data.judgeTimes;
+  grade.runTime = data.runTime;
+  grade.color = (data.grade == 100) ? '228B22' : 'B22222';
+  for (var i = 0; i < data.gradeEach.length; i++) {
+    grade.gradeEach[i].name = data.textName[i];
+    grade.gradeEach[i].grade = data.gradeEach[i];
+    grade.gradeEach[i].color = data.gradeEach[i] == grade.gradeEach[i].max ? '228B22' :'B22222';
+    grade.gradeEach[i].ico = data.gradeEach[i] == grade.gradeEach[i].max ? 'ok' :'remove';
+    var helpText = '<p>' + data.helpText[i].toString()
     .replace(/\\n/g, '</p><p>')
     .replace(/\n/g, '</p><p>')
     .replace(/\\r/, '') +
     '</p>';
-    $('#j_info' + i).html(helpText);
+    grade.gradeEach[i].helpText = helpText;
   }
 }//处理成绩
 

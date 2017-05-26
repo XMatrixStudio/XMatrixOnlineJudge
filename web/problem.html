@@ -51,8 +51,8 @@
       <div id='proCont' class="col-xs-10">
       <div class="tab-content">
           <div v-for="(cont,index) in contents"  :class="'tab-pane fade ' + active[index]" :id="'pr-100' + index">
-            <div v-for="pdata in cont" class="list-group">
-              <a :href="'api/problem/' + pdata.pid" class="list-group-item">
+            <div class="list-group">
+              <a v-for="pdata in cont" :href="'api/problem/' + pdata.pid" class="list-group-item">
                 <h4 class="list-group-item-heading">{{pdata.title}}
                   <span class="label label-success">{{pdata.hard}}</span>
                 </h4>
@@ -68,7 +68,7 @@
     var problemList = new Vue({
       el: '#proList',
       data: {
-        listName:['普通题', 'Nothing', 'Nothing', 'Nothing'],
+        listName:['普通题', 'C++', 'Nothing', 'Nothing'],
         listCount: [0,0,0,0],
         active: ['active','','','']
       }
