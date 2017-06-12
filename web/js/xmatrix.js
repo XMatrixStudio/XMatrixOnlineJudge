@@ -67,7 +67,7 @@ function rol(num, cnt) {
 }
 
 function str2binb(str) {
-  var bin = Array();
+  var bin = new Array();
   var mask = (1 << chrsz) - 1;
   for (var i = 0; i < str.length * chrsz; i += chrsz)
     bin[i >> 5] |= (str.charCodeAt(i / chrsz) & mask) << (24 - i % 32);
@@ -133,7 +133,7 @@ function isNullTest(id,send) {
 
 function lengthTest(id,min,max,send,qwq) {
   if (document.getElementById(id).value.length < min || document.getElementById(id).value.length > max) {
-    qwq == 1 ? sendNotice2(send): sendNotice(send);//qwq=1是模态框类通知
+    1 === qwq ? sendNotice2(send) : sendNotice(send);//qwq=1是模态框类通知
     $('#' + id).focus();
     return 0;
   }else{
@@ -143,7 +143,7 @@ function lengthTest(id,min,max,send,qwq) {
 
 function isEqualTest(id1,id2,send,qwq) {
   if (document.getElementById(id1).value !=document.getElementById(id2).value) {
-    qwq == 1 ? sendNotice2(send): sendNotice(send);//qwq=1是模态框类通知
+    qwq === 1 ? sendNotice2(send): sendNotice(send);//qwq=1是模态框类通知
     $('#'+id2).focus();
     return 0;
   }else{

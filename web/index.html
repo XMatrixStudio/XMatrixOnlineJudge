@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="theme-color" content="#222222">
+  <meta name="theme-color" content="#f8f8f8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>XMatrix</title>
   <!-- Bootstrap -->
@@ -53,12 +53,13 @@
       if(temp != null){
         document.cookie = "isLogin=0";
         document.cookie = "name=";
-        $("#user_email").focus();
+      $("#userEmail").focus();
       }
       var isLogin = getCookie("isLogin");
       if (isLogin == 0 || isLogin == '' || isLogin == undefined) {
         $("#logindiv").show();
         $("#other").show();
+        $("#userEmail").focus();
       }
       loadBar("#t-home"); //加载标题栏
       $('#userPassword').on('keypress', function(event) {
