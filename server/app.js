@@ -84,10 +84,8 @@ app.post('/submit', [userModule.appUserVerif, ejsModule.getPid], (req, res, next
       });
     } else {
       console.log('ERR: problem is judging'); //问题正在评测中，返回failed
-      userModule.makeASign(req, res, () => {
-        res.send({ state: 'failed', why: 'IS_JUDGING' });
-        next('route');
-      });
+      res.send({ state: 'failed', why: 'IS_JUDGING' });
+      next('route');
     }
   });
 }, (req, res, next) => { //调用judge子进程
@@ -98,9 +96,7 @@ app.post('/submit', [userModule.appUserVerif, ejsModule.getPid], (req, res, next
     var judgeModule = spawn('./judge.sh', [res.locals.data.userID, res.locals.pId, res.locals.standCase]);
   });
   console.log('judging success!');
-  userModule.makeASign(req, res, () => {
-    res.send({ state: 'success' });
-  });
+  res.send({ state: 'success' });
 });
 //------------------------------------------------------------------------------
 //返回成绩
@@ -108,11 +104,9 @@ app.post('/getGrade', [userModule.appUserVerif, ejsModule.getPid], (req, res, ne
   var sqlCmd = 'SELECT * FROM `judge` WHERE uid=' + res.locals.data.userID + ' && pid=' + res.locals.pId;
   sqlModule.query(sqlCmd, (vals, isNull) => {
     if (isNull) { //不存在这个记录
-      userModule.makeASign(req, res, () => {
-        console.log('user no do it.');
-        res.send({ state: 'failed', why: 'NO_DO' });
-        next('route');
-      });
+      console.log('user no do it.');
+      res.send({ state: 'failed', why: 'NO_DO' });
+      next('route');
     } else {
       res.locals.userData = vals[0];
       next();
@@ -121,29 +115,25 @@ app.post('/getGrade', [userModule.appUserVerif, ejsModule.getPid], (req, res, ne
 }, (req, res, next) => { //返回结果
   if (res.locals.userData.judging == 0) {
     console.log('success'); //评测完毕
-    userModule.makeASign(req, res, () => {
-      var helpText = res.locals.userData.helpText.split("#X#");
-      res.send({
-        state: 'success',
-        grade: res.locals.userData.grade,
-        gradeMax: res.locals.userData.grade > res.locals.userData.gradeMax ? res.locals.userData.grade : res.locals.userData.gradeMax,
-        judgeTimes: res.locals.userData.judgeTimes,
-        gradeEach: res.locals.userData.gradeEach.split(","),
-        helpText: helpText,
-        lastTime: res.locals.userData.lastTime,
-        runTime: res.locals.userData.runTime,
-        textName: ['编译测试', '标准测试', '随机测试', '内存测试'],
-      });
+    var helpText = res.locals.userData.helpText.split("#X#");
+    res.send({
+      state: 'success',
+      grade: res.locals.userData.grade,
+      gradeMax: res.locals.userData.grade > res.locals.userData.gradeMax ? res.locals.userData.grade : res.locals.userData.gradeMax,
+      judgeTimes: res.locals.userData.judgeTimes,
+      gradeEach: res.locals.userData.gradeEach.split(","),
+      helpText: helpText,
+      lastTime: res.locals.userData.lastTime,
+      runTime: res.locals.userData.runTime,
+      textName: ['编译测试', '标准测试', '随机测试', '内存测试'],
     });
     if (res.locals.userData.grade > res.locals.userData.gradeMax) {
       var sqlCmd = 'UPDATE `judge` SET `gradeMax`=`grade` WHERE `uid`=' + res.locals.data.userID + '&&`pid`=' + res.locals.pId;
       sqlModule.query(sqlCmd);
     }
   } else {
-    userModule.makeASign(req, res, () => {
-      console.log('JUDGING'); //在评测中
-      res.send({ state: 'failed', why: 'JUDGING' });
-    });
+    console.log('JUDGING'); //在评测中
+    res.send({ state: 'failed', why: 'JUDGING' });
     next('route');
   }
 });
@@ -264,15 +254,11 @@ app.post('/mail', (req, res, next) => { // 获取授权参数
     } else {
       if (vals[0].tureEmail == 1) {
         console.log('Err: This had is a tureEmail.');
-        userModule.makeASign(req, res, () => {
-          res.send({ state: 'failed', why: 'HAD_TURE' });
-        });
+        res.send({ state: 'failed', why: 'HAD_TURE' });
         next('route');
       } else {
         console.log('Err: Send two emails in a hour.');
-        userModule.makeASign(req, res, () => {
-          res.send({ state: 'failed', why: 'HAD_SEND' });
-        });
+        res.send({ state: 'failed', why: 'HAD_SEND' });
         next('route');
       }
     }
@@ -300,14 +286,10 @@ app.post('/user/pwd', [userModule.appUserVerif], (req, res, next) => { //比较�
       var sqlCmd = 'UPDATE `user` SET `password`=\'' + newPass + '\' WHERE `id`=' + res.locals.data.userID;
       sqlModule.query(sqlCmd);
       console.log('Updata password!');
-      userModule.makeASign(req, res, () => {
-        res.send({ state: 'success' });
-      });
+      res.send({ state: 'success' });
     } else {
       console.log('Err: Password is ERR');
-      userModule.makeASign(req, res, () => {
-        res.send({ state: 'failed', why: 'ERR_PWD' });
-      });
+      res.send({ state: 'failed', why: 'ERR_PWD' });
     }
   });
 });
@@ -324,9 +306,7 @@ app.post('/user/info', [userModule.appUserVerif, userModule.isTrueUser], (req, r
   sqlCmd = 'UPDATE `judge` SET `userName`= \'' + userName + '\' WHERE `uid`=' + res.locals.data.userID;
   sqlModule.query(sqlCmd);
   console.log('Update user Info!');
-  userModule.makeASign(req, res, () => {
-    res.send({ state: 'success' });
-  });
+  res.send({ state: 'success' });
 });
 //------------------------------------------------------------------------------
 //问题详情
@@ -367,12 +347,10 @@ app.get('/problem/:id', (req, res, next) => { //正则匹配题目ID
 }, (req, res, next) => { //返回问题详情
   var sqlCmd = 'SELECT * FROM `judge` WHERE `pid`=' + req.params.id + ' && `uid`=' + res.locals.data.userID;
   sqlModule.query(sqlCmd, (vals, isNull) => {
-    userModule.makeASign(req, res, () => {
-      res.locals.isDone = !isNull;
-      console.log(res.locals.isDone);
-      if (!isNull) res.locals.userData = vals[0];
-      next();
-    });
+    res.locals.isDone = !isNull;
+    console.log(res.locals.isDone);
+    if (!isNull) res.locals.userData = vals[0];
+    next();
   });
 }, ejsModule.problem); //渲染问题详情页面
 //------------------------------------------------------------------------------
