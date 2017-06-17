@@ -1,85 +1,94 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="theme-color" content="#f8f8f8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>XMatrix</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="theme-color" content="#f8f8f8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>XMatrix</title>
 
-  <!-- Bootstrap -->
-  <link href="css/bootstrap.min.css" rel="stylesheet">
-  <link rel="shortcut icon" href="/xmatrix.ico">
-  <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
-  <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-  <script src="https://cdn.bootcss.com/vue/2.3.3/vue.js"></script>
-  <script src="js/xmatrix.js"></script>
-  <style type="text/css">
-    body { padding-top: 70px;
-      background-color: #EEEEEE;
-    }
-  </style>
-  <script type="text/javascript">
-   $(function() {
-    loadBar("#t-problem");
-    getPlist();
-    });//处理标题栏
-  </script>
+    <!-- Bootstrap -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link rel="shortcut icon" href="/xmatrix.ico">
+    <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="https://cdn.bootcss.com/vue/2.3.3/vue.js"></script>
+    <script src="js/xmatrix.js"></script>
+    <style type="text/css">
+        body {
+            padding-top: 70px;
+            background-color: #EEEEEE;
+        }
+    </style>
+    <script type="text/javascript">
+        $(function() {
+            loadBar("#t-problem");
+            getPlist();
+        }); //处理标题栏
+    </script>
 </head>
-<body>
-  <!-- 标题栏开始 -->
-  <div id="nav-bar">
-  </div>
-  <!--标题栏结束 -->
-  <br>
-  <div class="container-fluid">
-    <div class="row-fluid">
 
-      <div id='proList' class="col-xs-2">
-        <ul class="nav nav-pills nav-stacked hidden-xs">
-          <li v-for="(name, index) in listName" :class="'list-group-item ' + active[index]">
-            <a :href="'#pr-100' + index" data-toggle="tab">{{ name }}<span :id="'courseNum' + index" class="badge">{{ listCount[index] }}</span></a>
-          </li>
-        </ul>
-        <ul class="nav nav-defualt visible-xs">
-          <li v-for="(name, index) in listName" :class="active[index]">
-            <a :href="'#pr-100' + index" data-toggle="tab">{{ name }}<span :id="'courseNum' + index + '_'" class="badge">{{ listCount[index] }}</span></a>
-          </li>
-        </ul>
-      </div>
-      <!-- Tab panes -->
-      <div id='proCont' class="col-xs-10">
-      <div class="tab-content">
-          <div v-for="(cont,index) in contents"  :class="'tab-pane fade ' + active[index]" :id="'pr-100' + index">
-            <div class="list-group">
-              <a v-for="pdata in cont" :href="'api/problem/' + pdata.pid" class="list-group-item">
-                <h4 class="list-group-item-heading">{{pdata.title}}
-                  <span class="label label-success">{{pdata.hard}}</span>
-                </h4>
-                <p class="list-group-item-text">{{pdata.class}}</p>
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
+<body>
+    <!-- 标题栏开始 -->
+    <div id="nav-bar">
     </div>
-  </div>
-  <script>
-    var problemList = new Vue({
-      el: '#proList',
-      data: {
-        listName:['普通题', 'C++', 'Nothing', 'Nothing'],
-        listCount: [0,0,0,0],
-        active: ['active','','','']
-      }
-    });
-    var problemCont = new Vue({
-      el: '#proCont',
-      data: {
-        contents:[[],[],[],[]],
-        active: ['in active','','','']
-      }
-    });
-  </script>
+    <!--标题栏结束 -->
+    <br>
+    <div class="container-fluid">
+        <div class="row-fluid">
+
+            <div name="proList" class="col-xs-2">
+                <ul class="nav nav-pills nav-stacked hidden-xs">
+                    <li v-for="(name, index) in listName" :class="'list-group-item ' + active[index]">
+                        <a :href="'#pr-100' + index" data-toggle="tab">{{ name }}<span :id="'courseNum' + index" class="badge">{{ listCount[index] }}</span></a>
+                    </li>
+                </ul>
+                <ul class="nav nav-defualt visible-xs">
+                    <li v-for="(name, index) in listName" :class="active[index]">
+                        <a :href="'#pr-100' + index" data-toggle="tab">{{ name }}<span :id="'courseNum' + index + '_'" class="badge">{{ listCount[index] }}</span></a>
+                    </li>
+                </ul>
+            </div>
+            <!-- Tab panes -->
+            <div name="proCont" class="col-xs-10">
+                <div class="tab-content">
+                    <div v-for="(cont,index) in contents" :class="'tab-pane fade ' + active[index]" :id="'pr-100' + index">
+                        <div class="list-group">
+                            <a v-for="pdata in cont" :href="'api/problem/' + pdata.pid" class="list-group-item">
+                                <h4 class="list-group-item-heading">{{pdata.title}}
+                                    <span class="label label-success">{{pdata.hard}}</span>
+                                </h4>
+                                <p class="list-group-item-text">{{pdata.class}}</p>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        var problemList = new Vue({
+            el: '.proList',
+            data: {
+                listName: ['普通题', 'C++', 'Nothing', 'Nothing'],
+                listCount: [0, 0, 0, 0],
+                active: ['active', '', '', '']
+            }
+        });
+        var problemCont = new Vue({
+            el: '#proCont',
+            data: {
+                contents: [
+                    [],
+                    [],
+                    [],
+                    []
+                ],
+                active: ['in active', '', '', '']
+            }
+        });
+    </script>
 </body>
+
 </html>
