@@ -229,9 +229,9 @@ app.post('/register', [userModule.isEmailStr, userModule.isTrueUser], (req, res,
     var userMaxId = vals[0].intData;
     var userPass = userModule.makeAsha(req.body.userPassword);
     var sqlCmd = 'INSERT INTO `user`(`id`, `name`, `password`, `detail`, `email`, `web`, `tureEmail`) VALUES ' +
-      '(' + (userMaxID + 10000) + ',\'' + req.body.userName + '\',\'' + hashSHA1 + '\',\'Nothing\',\'' + req.body.userEmail + '\',\'Nothing\',0)';
+      '(' + (userMaxId + 10000) + ',\'' + req.body.userName + '\',\'' + userPass + '\',\'Nothing\',\'' + req.body.userEmail + '\',\'Nothing\',0)';
     sqlModule.query(sqlCmd);
-    sqlCmd = 'UPDATE `global` SET`intData`=' + (userMaxID + 1) + ' WHERE `name` = \'userCount\'';
+    sqlCmd = 'UPDATE `global` SET`intData`=' + (userMaxId + 1) + ' WHERE `name` = \'userCount\'';
     sqlModule.query(sqlCmd);
   });
 });
@@ -241,13 +241,14 @@ app.post('/mail', (req, res, next) => { // 获取授权参数
   console.log('send email to user: ');
   res.locals.userSession = req.cookies.userSession;
   res.locals.sign = req.cookies.sign;
+  next();
 }, [userModule.appUserVerifNoMail], (req, res, next) => { //时间限制
   var nowHour = new Date().Format('yyyy-MM-dd-hh');
   var sqlCmd = 'SELECT `email`, `tureEmail`, `sendEmailTime` FROM `user` WHERE `id`=' + res.locals.data.userID;
   sqlModule.query(sqlCmd, (vals, isNull) => {
     if (vals[0].sendEmailTime != nowHour && vals[0].tureEmail == 0) {
       console.log('ready to Send email!');
-      var sqlCmd = 'UPDATE `user` SET `sendEmailTime`=\'' + nowtime + '\' WHERE `id`=' + res.locals.data.userID;
+      var sqlCmd = 'UPDATE `user` SET `sendEmailTime`=\'' + nowHour + '\' WHERE `id`=' + res.locals.data.userID;
       sqlModule.query(sqlCmd);
       res.locals.userEmail = vals[0].email;
       next();

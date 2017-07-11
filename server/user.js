@@ -66,8 +66,12 @@ exports.appUserVerif = function(req, res, next) {
   userVerif(res, function(mydata) {
     if (mydata.userID == undefined) {
       console.log('Illegal access');
-      res.send({ state: 'failed', why: mydata });
-      next('route');
+      if (mydata == 'NO_MAIL') {
+        res.redirect('/mail.html');
+      } else {
+        res.send({ state: 'failed', why: mydata });
+        next('route');
+      }
     } else {
       res.locals.data = mydata;
       exports.makeASign(req, res, () => {
@@ -78,7 +82,7 @@ exports.appUserVerif = function(req, res, next) {
 };
 
 exports.appUserVerifNoMail = function(req, res, next) {
-  req.locals.needMail = 0;
+  res.locals.needMail = 0;
   userVerif(res, function(mydata) {
     if (mydata.userID == undefined) {
       console.log('Illegal access');
@@ -92,7 +96,7 @@ exports.appUserVerifNoMail = function(req, res, next) {
 };
 
 exports.makeASign = function(req, res, callback) {
-  var sessionXXX = encrypt(JSON.stringify(res.locals.data), keyConfig.mykey);
+  var sessionXXX = exports.encrypt(JSON.stringify(res.locals.data), keyConfig.mykey);
   res.cookie(
     'userSession', sessionXXX, { expires: new Date(Date.now() + 10000000), httpOnly: true });
   res.cookie(
@@ -137,12 +141,12 @@ exports.comptime = function(beginTime, endTime) {
   return a;
 }; //进行时间比较
 
-function encrypt(str, secret) {
-  var cipher = crypto.createCipher('aes192', secret);
-  var enc = cipher.update(str, 'utf8', 'hex');
-  enc += cipher.final('hex');
-  return enc;
-} // 加密数据
+exports.encrypt = (str, secret) => {
+    var cipher = crypto.createCipher('aes192', secret);
+    var enc = cipher.update(str, 'utf8', 'hex');
+    enc += cipher.final('hex');
+    return enc;
+  } // 加密数据
 
 function decrypt(str, secret) {
   var decipher = crypto.createDecipher('aes192', secret);

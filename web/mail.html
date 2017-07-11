@@ -21,12 +21,12 @@
     </style>
     <script type="text/javascript">
         $(function() {
-            var qwq = getCookie("userEmail");
+            var qwq = getCookie("trueEmail");
             var isLogin = getCookie("isLogin");
             var email_s = getCookie('userEmail');
             if (qwq != 0 || email_s == null || isLogin == 0 || isLogin == undefined) {
                 alert("非法访问！");
-                //window.location.href = 'index.html';
+                window.location.href = 'index.html';
             }
             document.getElementById('myemail').innerHTML = email_s;
             loadBar("#t-home");
@@ -37,7 +37,7 @@
 <body>
 
     <div id="nav-bar"></div>
-  <br>
+    <br>
 
     <div class="container-fluid">
         <div class="row-fluid">
