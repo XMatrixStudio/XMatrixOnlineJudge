@@ -44,15 +44,17 @@ exports.makeAsha = function(str) {
 };
 
 exports.getToken = function(userID, newToken, callback) {
-  var sqlCmd = 'SELECT `token`, `tureEmail` FROM `user` WHERE `id`=' + userID;
-  sqlModule.query(sqlCmd, (vals, isNull) => {
+  var sqlCmd = 'SELECT `token`, `tureEmail` FROM `user` WHERE `id`=?';
+  var data = [userID];
+  sqlModule.query(sqlCmd, data, (vals, isNull) => {
     if (isNull) {
       callback(-1, 0);
     } else {
       var oldToken = vals[0].token;
       var tureEmail = vals[0].tureEmail;
-      var sqlCmd = 'UPDATE `user` SET `token`=\'' + newToken + '\' WHERE `id`=' + userID;
-      sqlModule.query(sqlCmd, (vals, isNull) => {
+      var sqlCmd = 'UPDATE `user` SET `token`=\'?\' WHERE `id`=?';
+      var data = [newToken, userID];
+      sqlModule.query(sqlCmd, data, (vals, isNull) => {
         callback(oldToken, tureEmail);
       });
     }

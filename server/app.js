@@ -48,8 +48,9 @@ app.use((req, res, next) => {
 //------------------------------------------------------------------------------
 //提交代码评测
 app.post('/submit', [userModule.appUserVerif, ejsModule.getPid], (req, res, next) => { //查询是否有这个问题
-  var sqlCmd = 'SELECT `standCase` FROM `problem` WHERE id=' + res.locals.pId;
-  sqlModule.query(sqlCmd, (vals, isNull) => {
+  var sqlCmd = 'SELECT `standCase` FROM `problem` WHERE id=?';
+  var data = [res.locals.pId];
+  sqlModule.query(sqlCmd, data, (vals, isNull) => {
     if (isNull) {
       console.log('ERR: NO_THIS_PROBLEM');
       res.send({ state: 'failed', why: 'NO_THIS_PROBLEM' });
@@ -60,26 +61,30 @@ app.post('/submit', [userModule.appUserVerif, ejsModule.getPid], (req, res, next
     }
   });
 }, (req, res, next) => { //查看数据库是否有记录或者judging
-  var sqlCmd = 'SELECT `judging`, `lastTime`, `judgeTimes` FROM `judge` WHERE `uid`=' + res.locals.data.userID + ' && `pid`=' + res.locals.pId;
-  sqlModule.query(sqlCmd, (vals, isNull) => {
+  var sqlCmd = 'SELECT `judging`, `lastTime`, `judgeTimes` FROM `judge` WHERE `uid`=? && `pid`=?';
+  var data = [res.locals.data.userID, res.locals.pId];
+  sqlModule.query(sqlCmd, data, (vals, isNull) => {
     var nowTime = new Date().Format('yyyy-MM-dd hh:mm:ss');
     var userCode = sqlModule.dealEscape(req.body.code);
     if (isNull) {
       console.log('Creat a record'); //新建一个记录
-      var sqlCmd = 'SELECT `name` FROM `user` WHERE `id`=' + res.locals.data.userID;
-      sqlModule.query(sqlCmd, (vals, isNull) => {
+      var sqlCmd = 'SELECT `name` FROM `user` WHERE `id`=?';
+      var data = res.locals.data.userID
+      sqlModule.query(sqlCmd, data, (vals, isNull) => {
         res.locals.userName = vals[0].name;
         var sqlCmd = 'INSERT INTO `judge`(`pid`, `uid`, `code`, `grade`, `gradeMax`, `gradeEach`, `helpText`, `lastTime`, `runTime`, `judging`, `userName`, `judgeTimes`) VALUES' +
-          ' (' + res.locals.pId + ',' + res.locals.data.userID + ',\'' + userCode + '\',0,0,\'0,0,0,0\',\' #*# #*# #*# \',\'' + nowTime + '\',300,1,\'' + res.locals.userName + '\',1)';
-        sqlModule.query(sqlCmd, (vals, isNull) => {
+          ' (?,?,\'?\',0,0,\'0,0,0,0\',\' #*# #*# #*# \',\'?\',300,1,\'?\',1)';
+        var data = [res.locals.pId, res.locals.data.userID, userCode, nowTime, res.locals.userName];
+        sqlModule.query(sqlCmd, data, (vals, isNull) => {
           next();
         });
       });
     } else if (vals[0].judging == 0 || (vals[0].lastTime == '' || userModule.comptime(vals[0].lastTime, nowTime) > 1)) {
       console.log('Update the record'); //更新记录
-      var sqlCmd = 'UPDATE `judge` SET `code`=\'' + userCode + '\',`lastTime`=\'' + nowTime +
-        '\',`judging`= 1,`judgeTimes` = ' + (vals[0].judgeTimes + 1) + ' WHERE `uid`=' + res.locals.data.userID + ' && `pid`=' + res.locals.pId;
-      sqlModule.query(sqlCmd, (vals, isNull) => {
+      var sqlCmd = 'UPDATE `judge` SET `code`=\'?\',`lastTime`=\'?' +
+        '\',`judging`= 1,`judgeTimes` = ? WHERE `uid`=? && `pid`=?';
+      var data = [userCode, nowTime, (vals[0].judgeTimes + 1), res.locals.data.userID, res.locals.pId];
+      sqlModule.query(sqlCmd, data, (vals, isNull) => {
         next();
       });
     } else {
@@ -101,8 +106,9 @@ app.post('/submit', [userModule.appUserVerif, ejsModule.getPid], (req, res, next
 //------------------------------------------------------------------------------
 //返回成绩
 app.post('/getGrade', [userModule.appUserVerif, ejsModule.getPid], (req, res, next) => { //查询该用户是否存在这个记录
-  var sqlCmd = 'SELECT * FROM `judge` WHERE uid=' + res.locals.data.userID + ' && pid=' + res.locals.pId;
-  sqlModule.query(sqlCmd, (vals, isNull) => {
+  var sqlCmd = 'SELECT * FROM `judge` WHERE uid=? && pid=?';
+  var data = [res.locals.data.userID, res.locals.pId];
+  sqlModule.query(sqlCmd, data, (vals, isNull) => {
     if (isNull) { //不存在这个记录
       console.log('user no do it.');
       res.send({ state: 'failed', why: 'NO_DO' });
@@ -128,8 +134,9 @@ app.post('/getGrade', [userModule.appUserVerif, ejsModule.getPid], (req, res, ne
       textName: ['编译测试', '标准测试', '随机测试', '内存测试'],
     });
     if (res.locals.userData.grade > res.locals.userData.gradeMax) {
-      var sqlCmd = 'UPDATE `judge` SET `gradeMax`=`grade` WHERE `uid`=' + res.locals.data.userID + '&&`pid`=' + res.locals.pId;
-      sqlModule.query(sqlCmd);
+      var sqlCmd = 'UPDATE `judge` SET `gradeMax`=`grade` WHERE `uid`=?&&`pid`=?';
+      var data = [res.locals.data.userID, res.locals.pId];
+      sqlModule.query(sqlCmd, data);
     }
   } else {
     console.log('JUDGING'); //在评测中
@@ -141,9 +148,9 @@ app.post('/getGrade', [userModule.appUserVerif, ejsModule.getPid], (req, res, ne
 //用户登录模块
 app.post('/login', [userModule.isEmailStr], (req, res, next) => { //用户是否存在
   console.log('User Login:');
-  var sqlCmd = 'SELECT `id`, `name`, `password`, `detail`, `web`, `tureEmail` FROM `user` WHERE `email`=\'' +
-    req.body.userEmail + '\'';
-  sqlModule.query(sqlCmd, (vals, isNull) => {
+  var sqlCmd = 'SELECT `id`, `name`, `password`, `detail`, `web`, `tureEmail` FROM `user` WHERE `email`=\'?\'';
+  var data = [req.body.userEmail];
+  sqlModule.query(sqlCmd, data, (vals, isNull) => {
     if (isNull) {
       console.log('ERR: user is not exist.');
       res.send({ state: 'failed', why: 'ERROR_USER' });
@@ -193,12 +200,14 @@ app.get('/login', (req, res, next) => { //获取get参数
     next('route');
   }
 }, [userModule.appUserVerifNoMail], (req, res, next) => { //查看是否已经激活
-  var sqlCmd = 'SELECT `tureEmail` FROM `user` WHERE id=' + res.locals.data.userID;
-  sqlModule.query(sqlCmd, (vals, isNull) => {
+  var sqlCmd = 'SELECT `tureEmail` FROM `user` WHERE id=?';
+  var data = [res.locals.data.userID];
+  sqlModule.query(sqlCmd, data, (vals, isNull) => {
     if (vals[0].tureEmail == 0) {
       console.log('Email activation success');
-      var sqlCmd = 'UPDATE `user` SET`tureEmail`=1 WHERE id=' + res.locals.data.userID;
-      sqlModule.query(sqlCmd, (vals, isNull) => {
+      var sqlCmd = 'UPDATE `user` SET`tureEmail`=1 WHERE id=?';
+      var data = [res.locals.data.userID];
+      sqlModule.query(sqlCmd, data, (vals, isNull) => {
         res.redirect('../index.html?op=0');
       });
     } else {
@@ -211,8 +220,9 @@ app.get('/login', (req, res, next) => { //获取get参数
 //注册模块
 app.post('/register', [userModule.isEmailStr, userModule.isTrueUser], (req, res, next) => { // 邮箱是否已经存在
   console.log('User registration:');
-  var sqlCmd = 'SELECT `name`FROM `user` WHERE email =\'' + req.body.userEmail + '\'';
-  sqlModule.query(sqlCmd, (vals, isNull) => {
+  var sqlCmd = 'SELECT `name`FROM `user` WHERE email =\'?\'';
+  var data = [req.body.userEmail];
+  sqlModule.query(sqlCmd, data, (vals, isNull) => {
     if (isNull) {
       next();
     } else {
@@ -223,16 +233,19 @@ app.post('/register', [userModule.isEmailStr, userModule.isTrueUser], (req, res,
   });
 }, (req, res, next) => { // 建立用户数据
   var sqlCmd = 'SELECT `intData` FROM `global` WHERE `name` = \'userCount\'';
-  sqlModule.query(sqlCmd, (vals, isNull) => {
+  var data = [];
+  sqlModule.query(sqlCmd, data, (vals, isNull) => {
     console.log('Register success!');
     res.send({ state: 'success' });
     var userMaxId = vals[0].intData;
     var userPass = userModule.makeAsha(req.body.userPassword);
     var sqlCmd = 'INSERT INTO `user`(`id`, `name`, `password`, `detail`, `email`, `web`, `tureEmail`) VALUES ' +
-      '(' + (userMaxId + 10000) + ',\'' + req.body.userName + '\',\'' + userPass + '\',\'Nothing\',\'' + req.body.userEmail + '\',\'Nothing\',0)';
-    sqlModule.query(sqlCmd);
-    sqlCmd = 'UPDATE `global` SET`intData`=' + (userMaxId + 1) + ' WHERE `name` = \'userCount\'';
-    sqlModule.query(sqlCmd);
+      '(?,\'?\',\'?\',\'Nothing\',\'?\',\'Nothing\',0)';
+    var data = [(userMaxId + 10000), req.body.userName, userPass, req.body.userEmail];
+    sqlModule.query(sqlCmd, data);
+    sqlCmd = 'UPDATE `global` SET`intData`=? WHERE `name` = \'userCount\'';
+    data = [(userMaxId + 1)];
+    sqlModule.query(sqlCmd, data);
   });
 });
 //------------------------------------------------------------------------------
@@ -244,12 +257,14 @@ app.post('/mail', (req, res, next) => { // 获取授权参数
   next();
 }, [userModule.appUserVerifNoMail], (req, res, next) => { //时间限制
   var nowHour = new Date().Format('yyyy-MM-dd-hh');
-  var sqlCmd = 'SELECT `email`, `tureEmail`, `sendEmailTime` FROM `user` WHERE `id`=' + res.locals.data.userID;
-  sqlModule.query(sqlCmd, (vals, isNull) => {
+  var sqlCmd = 'SELECT `email`, `tureEmail`, `sendEmailTime` FROM `user` WHERE `id`=?';
+  var data = res.locals.data.userID;
+  sqlModule.query(sqlCmd, data, (vals, isNull) => {
     if (vals[0].sendEmailTime != nowHour && vals[0].tureEmail == 0) {
       console.log('ready to Send email!');
-      var sqlCmd = 'UPDATE `user` SET `sendEmailTime`=\'' + nowHour + '\' WHERE `id`=' + res.locals.data.userID;
-      sqlModule.query(sqlCmd);
+      var sqlCmd = 'UPDATE `user` SET `sendEmailTime`=\'' + nowHour + '\' WHERE `id`=?';
+      var data = res.locals.data.userID;
+      sqlModule.query(sqlCmd, data);
       res.locals.userEmail = vals[0].email;
       next();
     } else {
@@ -279,13 +294,15 @@ app.post('/mail', (req, res, next) => { // 获取授权参数
 //修改密码
 app.post('/user/pwd', [userModule.appUserVerif], (req, res, next) => { //比较是否相同
   console.log('Password Change: ');
-  var sqlCmd = 'SELECT `password` FROM `user` WHERE `id`=' + res.locals.data.userID;
-  sqlModule.query(sqlCmd, (vals, isNull) => {
+  var sqlCmd = 'SELECT `password` FROM `user` WHERE `id`=?';
+  var data = [res.locals.data.userID];
+  sqlModule.query(sqlCmd, data, (vals, isNull) => {
     if (vals[0].password == userModule.makeAsha(req.body.oldPassword)) {
       console.log('Password is Right!');
       var newPass = userModule.makeAsha(req.body.newPassword);
-      var sqlCmd = 'UPDATE `user` SET `password`=\'' + newPass + '\' WHERE `id`=' + res.locals.data.userID;
-      sqlModule.query(sqlCmd);
+      var sqlCmd = 'UPDATE `user` SET `password`=\'?\' WHERE `id`=?;
+      var data = [newPass, res.locals.data.userID];
+      sqlModule.query(sqlCmd, data);
       console.log('Updata password!');
       res.send({ state: 'success' });
     } else {
@@ -301,11 +318,12 @@ app.post('/user/info', [userModule.appUserVerif, userModule.isTrueUser], (req, r
   var userName = sqlModule.dealEscape(req.body.userName);
   var userDetail = sqlModule.dealEscape(req.body.userDetail);
   var userWeb = sqlModule.dealEscape(req.body.userWeb);
-  var sqlCmd = 'UPDATE `user` SET `name`=\'' + userName + '\', `detail`=\'' + userDetail + '\',`web`=\'' +
-    userWeb + '\' WHERE `id`=' + res.locals.data.userID;
-  sqlModule.query(sqlCmd);
-  sqlCmd = 'UPDATE `judge` SET `userName`= \'' + userName + '\' WHERE `uid`=' + res.locals.data.userID;
-  sqlModule.query(sqlCmd);
+  var sqlCmd = 'UPDATE `user` SET `name`=\'?\', `detail`=\'?\',`web`=\'?\' WHERE `id`=?';
+  var data = [userName, userDetail, userWeb, res.locals.data.userID];
+  sqlModule.query(sqlCmd, data);
+  sqlCmd = 'UPDATE `judge` SET `userName`= \'?\' WHERE `uid`=?';
+  data = [userName, res.locals.data.userID];
+  sqlModule.query(sqlCmd, data);
   console.log('Update user Info!');
   res.send({ state: 'success' });
 });
@@ -329,25 +347,28 @@ app.get('/problem/:id', (req, res, next) => { //正则匹配题目ID
     next();
   }
 }, [userModule.appUserVerif], (req, res, next) => { //查询问题详情
-  var sqlCmd = 'SELECT * FROM `problem` WHERE `id`=' + req.params.id;
-  sqlModule.query(sqlCmd, (vals, isNull) => {
+  var sqlCmd = 'SELECT * FROM `problem` WHERE `id`=?;
+  var data = [req.params.id];
+  sqlModule.query(sqlCmd, data, (vals, isNull) => {
     if (isNull) {
       console.log('No a problem');
       res.redirect('/index.html?op=0');
       next('route');
     } else {
       res.locals.problemData = vals[0];
-      var sqlCmd = 'SELECT `userName`, `gradeMax` , `runTime` FROM `judge` WHERE `pid`=' +
-        req.params.id + ' ORDER BY `gradeMax` DESC,`runTime` ASC';
-      sqlModule.query(sqlCmd, (vals, isNull) => { //查询排名
+      var sqlCmd = 'SELECT `userName`, `gradeMax` , `runTime` FROM `judge` WHERE `pid`=?' +
+        ' ORDER BY `gradeMax` DESC,`runTime` ASC';
+      var data = [req.params.id];
+      sqlModule.query(sqlCmd, data, (vals, isNull) => { //查询排名
         res.locals.rank = vals;
         next();
       });
     }
   });
 }, (req, res, next) => { //返回问题详情
-  var sqlCmd = 'SELECT * FROM `judge` WHERE `pid`=' + req.params.id + ' && `uid`=' + res.locals.data.userID;
-  sqlModule.query(sqlCmd, (vals, isNull) => {
+  var sqlCmd = 'SELECT * FROM `judge` WHERE `pid`=? && `uid`=?';
+  var data = [req.params.id, res.locals.data.userID];
+  sqlModule.query(sqlCmd, data, (vals, isNull) => {
     res.locals.isDone = !isNull;
     console.log(res.locals.isDone);
     if (!isNull) res.locals.userData = vals[0];
@@ -359,7 +380,8 @@ app.get('/problem/:id', (req, res, next) => { //正则匹配题目ID
 app.post('/getPlist', (req, res, next) => { //处理数据并返回
   console.log('get Problem list: ');
   var sqlCmd = 'SELECT `id`, `class`, `title`, `hard`, `course` FROM `problem` WHERE 1';
-  sqlModule.query(sqlCmd, (vals, isNull) => {
+  var data = [];
+  sqlModule.query(sqlCmd, data, (vals, isNull) => {
     var arrId = new Array;
     var arrCourse = new Array;
     var arrClass = new Array;
@@ -385,9 +407,10 @@ app.post('/getPlist', (req, res, next) => { //处理数据并返回
 //------------------------------------------------------------------------------
 //获取邮件验证码
 app.post('/getVCode', (req, res, next) => { //检测请求是否合法
-  var sqlCmd = 'SELECT `id`, `vCodeSendTime` FROM `user` WHERE `email`=\'' + req.body.userEmail + '\'';
+  var sqlCmd = 'SELECT `id`, `vCodeSendTime` FROM `user` WHERE `email`=\'?\'';
+  var data = [req.body.userEmail];
   var nowTime = new Date().Format('yyyy-MM-dd hh:mm:00');
-  sqlModule.query(sqlCmd, (vals, isNull) => {
+  sqlModule.query(sqlCmd, data, (vals, isNull) => {
     if (isNull) {
       res.send({ state: 'failed', why: 'EMAIL_NOT' });
       next('route');
@@ -405,8 +428,9 @@ app.post('/getVCode', (req, res, next) => { //检测请求是否合法
 }, (req, res, next) => { //发送邮件
   var vCode = Math.round(100000 + Math.random() * 1000000);
   var nowTime = new Date().Format('yyyy-MM-dd hh:mm:ss');
-  var sqlCmd = 'UPDATE `user` SET `vCode`=' + vCode + ',`vCodeSendTime`=\'' + res.locals.nowTime + '\',`vCodeLimitTime`=\'' + nowTime + '\' WHERE `id`=' + res.locals.userId;
-  sqlModule.query(sqlCmd, (vals, isNull) => {
+  var sqlCmd = 'UPDATE `user` SET `vCode`=?,`vCodeSendTime`=\'?\',`vCodeLimitTime`=\'?\' WHERE `id`=?';
+  var data = [vCode, res.locals.nowTime, nowTime, res.locals.userId];
+  sqlModule.query(sqlCmd, data, (vals, isNull) => {
     var mail1 = fs.readFileSync('maildata/mail3.data');
     var mail2 = fs.readFileSync('maildata/mail4.data');
     fs.writeFile('mail.html', mail1 + vCode + mail2, (err) => {
@@ -419,9 +443,10 @@ app.post('/getVCode', (req, res, next) => { //检测请求是否合法
 //------------------------------------------------------------------------------
 //重置密码
 app.post('/forget', (req, res, next) => { //核对验证码
-  var sqlCmd = 'SELECT `id`, `vCode`,`vCodeLimitTime` FROM `user` WHERE `email`=\'' + req.body.userEmail + '\'';
+  var sqlCmd = 'SELECT `id`, `vCode`,`vCodeLimitTime` FROM `user` WHERE `email`=\'?\'';
+  var data = [req.body.userEmail]
   var nowTime = new Date().Format('yyyy-MM-dd hh:mm:ss');
-  sqlModule.query(sqlCmd, (vals, isNull) => {
+  sqlModule.query(sqlCmd, data, (vals, isNull) => {
     if (isNull) {
       res.send({ state: 'failed', why: 'EMAIL_NOT' });
       next('route');
@@ -437,8 +462,9 @@ app.post('/forget', (req, res, next) => { //核对验证码
   });
 }, (req, res, next) => { //重置密码
   userPassword = userModule.makeAsha(req.body.userPassword);
-  var sqlCmd = 'UPDATE `user` SET `password`=\'' + userPassword + '\', `vCode`=007 WHERE `id`=' + res.locals.userId;
-  sqlModule.query(sqlCmd, (vals, isNull) => {
+  var sqlCmd = 'UPDATE `user` SET `password`=\'?\', `vCode`=007 WHERE `id`=?';
+  var data = [userPassword, res.locals.userId];
+  sqlModule.query(sqlCmd, data, (vals, isNull) => {
     res.send({ state: 'success' });
   });
 });
