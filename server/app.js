@@ -9,6 +9,7 @@ const urlencodedParser = bodyParser.urlencoded({ extended: false }) // post模�
 const sqlModule = require('./mysql.js'); //数据库模块
 const userModule = require('./user.js'); //用户认证模块
 const ejsModule = require('./ejs.js'); //EJS模板引擎
+const verify = require('./sdk/verify.js'); //violet
 const sLine = '-----------------------------------------------';
 app.use(cookieParser()); // cookie模块
 app.use(bodyParser.urlencoded({ extended: false })); // for parsing application/x-www-form-urlencoded
@@ -475,6 +476,16 @@ app.get('/layout', (req, res, next) => { //清空cookies
   res.cookie('sign', '');
   res.cookie('isLogin', '0');
   res.redirect('../index.html?op=0');
+});
+//------------------------------------------------------------------------------
+app.post('/violet', (req, res, next) => {
+  verify.getUserInfo(req.body.code, (data) => {
+    if (data.state == 'ok') {
+
+    } else {
+
+    }
+  });
 });
 //------------------------------------------------------------------------------
 //监听30002端口
