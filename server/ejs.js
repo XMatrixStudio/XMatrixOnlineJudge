@@ -1,4 +1,4 @@
-//ejs.js
+﻿//ejs.js
 /*
 ejs页面渲染引擎
 
@@ -6,26 +6,9 @@ ejs页面渲染引擎
 
 problem(返回problem页面)
 
-getPid： 获取问题页面的问题id参数,并储存在res.locals.pId
-
 */
-exports.getPid = function (req,res,next) {
-  var str = req.headers.referer;
-  var regular = /\/api\/problem\/([0-9]{4})/;
-  arr = str.match(regular);
-  if (arr == undefined) {  // url请求非法
-    console.log('NOT_PROBLEM');
-    res.send({state: 'failed', why: 'NOT_PROBLEM'});
-    next('route');
-  } else {
-    console.log('Get Pid!');
-    res.locals.pId = arr[1];
-    next();
-  }
-}
-
-exports.problem = function (req,res, next) {
-  var rankName= new Array;
+exports.problem = function(req, res, next) {
+  var rankName = new Array;
   var rankGrade = new Array;
   var rankTime = new Array;
   for (var i = 0; i < res.locals.rank.length; i++) {
@@ -35,22 +18,22 @@ exports.problem = function (req,res, next) {
   }
   var gradeEachMax = res.locals.problemData.gradeEach.split(",");
 
-  if(res.locals.isDone){
-    var isGood= new Array;
-    var helpText= new Array;
-    if(res.locals.userData.helpText != ''){
+  if (res.locals.isDone) {
+    var isGood = new Array;
+    var helpText = new Array;
+    if (res.locals.userData.helpText != '') {
       var helpTextOld = res.locals.userData.helpText.split("#X#");
-    }else{
-      var helpTextOld = ['','','',''];
+    } else {
+      var helpTextOld = ['', '', '', ''];
     }
     var gradeEach = res.locals.userData.gradeEach.split(",");
 
     for (var i = 0; i < gradeEach.length; i++) {
       isGood[i] = (gradeEach[i] == gradeEachMax[i]);
       helpText[i] = '<p>' + helpTextOld[i].toString()
-      .replace(/\\n/g, '</p><p>')
-      .replace(/\n/g, '</p><p>')
-      .replace(/\\r/g, '') + '</p>';
+        .replace(/\\n/g, '</p><p>')
+        .replace(/\n/g, '</p><p>')
+        .replace(/\\r/g, '') + '</p>';
     }
     var htmlProblemData = {
       pTitle: res.locals.problemData.title,
@@ -72,22 +55,22 @@ exports.problem = function (req,res, next) {
       jGradeEachMax: gradeEachMax,
       jText: helpText,
       jGradeNum: gradeEachMax.length,
-      jGradeName: ['编译测试', '标准测试','随机测试','内存测试'],
+      jGradeName: ['编译测试', '标准测试', '随机测试', '内存测试'],
       jGradeEachColor: [
-      isGood[0] ? '228B22' : 'B22222',
-      isGood[1] ? '228B22' : 'B22222',
-      isGood[2] ? '228B22' : 'B22222',
-      isGood[3] ? '228B22' : 'B22222',
+        isGood[0] ? '228B22' : 'B22222',
+        isGood[1] ? '228B22' : 'B22222',
+        isGood[2] ? '228B22' : 'B22222',
+        isGood[3] ? '228B22' : 'B22222',
       ],
       jGradeEachIcon: [
-      isGood[0] ? 'ok' : 'remove',
-      isGood[2] ? 'ok' : 'remove',
-      isGood[1] ? 'ok' : 'remove',
-      isGood[3] ? 'ok' : 'remove',
+        isGood[0] ? 'ok' : 'remove',
+        isGood[2] ? 'ok' : 'remove',
+        isGood[1] ? 'ok' : 'remove',
+        isGood[3] ? 'ok' : 'remove',
       ],
       code: res.locals.userData.code
     };
-  }else{
+  } else {
     var htmlProblemData = {
       pTitle: res.locals.problemData.title,
       pId: req.params.id,
@@ -108,18 +91,18 @@ exports.problem = function (req,res, next) {
       jGradeEachMax: gradeEachMax,
       jText: ['', '', '', ''],
       jGradeNum: gradeEachMax.length,
-      jGradeName: ['编译测试', '标准测试','随机测试','内存测试'],
+      jGradeName: ['编译测试', '标准测试', '随机测试', '内存测试'],
       jGradeEachColor: [
-      gradeEachMax[0] ? 'B22222' : '228B22',
-      gradeEachMax[1] ? 'B22222' : '228B22',
-      gradeEachMax[2] ? 'B22222' : '228B22',
-      gradeEachMax[3] ? 'B22222' : '228B22',
+        gradeEachMax[0] ? 'B22222' : '228B22',
+        gradeEachMax[1] ? 'B22222' : '228B22',
+        gradeEachMax[2] ? 'B22222' : '228B22',
+        gradeEachMax[3] ? 'B22222' : '228B22',
       ],
       jGradeEachIcon: [
-      gradeEachMax[0] ? 'remove' : 'ok',
-      gradeEachMax[1] ? 'remove' : 'ok',
-      gradeEachMax[2] ? 'remove' : 'ok',
-      gradeEachMax[3] ? 'remove' : 'ok',
+        gradeEachMax[0] ? 'remove' : 'ok',
+        gradeEachMax[1] ? 'remove' : 'ok',
+        gradeEachMax[2] ? 'remove' : 'ok',
+        gradeEachMax[3] ? 'remove' : 'ok',
       ],
       code: ''
     };
