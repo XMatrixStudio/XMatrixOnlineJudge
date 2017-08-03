@@ -19,3 +19,6 @@ server/config/key.json
 server/node_modules/
 server/file/
 server/judge/
+
+# config file
+/judge/config/*

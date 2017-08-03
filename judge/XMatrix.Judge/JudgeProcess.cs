@@ -1,74 +1,24 @@
 using System;
 using System.IO;
-using System.Diagnostics;
+using Shell.NET;
+using MongoDB.Bson;
+using MongoDB.Driver;
 
-namespace XMatrix.Judge
-{
-    public class JudgeProcess
-    {
-        private int uid;
-        private int pid;
-        private int std_test_num;
-        private Grade grade;
-        public string shell;
+namespace XMatrix.Judge {
+    public class JudgeProcess {
+        Problem problem;
+        JudgeCase judge_case;
 
-        public JudgeProcess(int _uid, int _pid, int _std_test_num)
-        {
-            uid = _uid;
-            pid = _pid;
-            std_test_num = _std_test_num;
-            grade = new Grade(uid, pid, std_test_num);
+        public JudgeProcess(string _id) {
+            var client = new MongoClient(Config.MongoLink);
+            var db = client.GetDatabase(Config.DataBase);
+            var collection = db.GetCollection<JudgeCase>("judge");
+            judge_case = collection.Find(Builders<JudgeCase>.Filter.Eq("_id", new ObjectId(_id))).ToList()[0];
+
+            Console.WriteLine("name is " + judge_case.userName);
         }
 
-        public bool DoJudge()
-        {
-            string compile;
-            if (Shell.CallShellWithReE("gcc", string.Format(@"../file/{0}_{1}.c -o ../file/a.exe", uid, pid), @"../file/compiler.txt"))
-            {
-                using (StreamReader sr = File.OpenText(@"../file/compiler.txt"))
-                {
-                    compile = sr.ReadToEnd();
-                }
-                grade.SetCompile(compile);
-                if (compile != string.Empty)
-                {
-                    //grade.ToJson(string.Format(@"../file/{0}_{1}.json", uid, pid));
-                    grade.ToMySql();
-                    return false;
-                }
-            }
-            else
-            {
-                grade.SetCompile("Compile Time Kill");
-                grade.ToMySql();
-                return false;
-            }
-            for (int i = 0; i < std_test_num; i++)
-            {
-                if (Shell.CallShellWithReIO(@"../file/a.exe", "",
-                    string.Format(@"../file/{0}/in{1}.txt", pid, i), string.Format(@"../file/out{0}.txt", i)))
-                {
-                    Compare cmp = new Compare(string.Format(@"../file/{0}/std{1}.txt", pid, i), string.Format(@"../file/out{0}.txt", i));
-                    if (cmp.FileStringCompare())
-                    {
-                        grade.SetResult(i, "Accept");
-                    }
-                    else if (cmp.FileFormatCompare())
-                    {
-                        grade.SetResult(i, "Presentation Error");
-                    }
-                    else
-                    {
-                        grade.SetResult(i, "Wrong Answer");
-                    }
-                }
-                else
-                {
-                    grade.SetResult(i, "Time Limit Exceeded");
-                }
-            }
-            //grade.ToJson(string.Format(@"../file/{0}_{1}.json", uid, pid));
-            grade.ToMySql();
+        public bool DoJudge() {
             return true;
         }
     }
