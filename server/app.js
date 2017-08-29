@@ -45,5 +45,5 @@ app.post('/getPlist', [Problem.returnProblemList]);
 app.post('/logout', [Verify.logout]);
 //------------------------------------------------------------------------------
 //用户登陆
-app.post('/violet', [User.Login]);
+app.post('/violet', [User.login]);
 //------------------------------------------------------------------------------

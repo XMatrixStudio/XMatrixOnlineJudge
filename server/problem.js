@@ -1,10 +1,25 @@
 const db = require('./mongo.js');
 var problemSchema = db.xmoj.Schema({
-  pid: Number,
-  class: String,
-  title: String,
-  JudgeCounts: Number,
-
+  pid: Number, // 问题id
+  class: String, // 问题类型 [编程题]
+  category: String, // 问题分类 [秀秀推荐的题目]
+  title: String, // 标题
+  timeLimit: Number, //时间限制
+  memoryLimit: Number, //内存限制
+  authorName: String, //作者名称
+  ACCounts: Number, // 通过数
+  JudgeCounts: Number, // 总评测数
+  Rank: [{ //排行榜
+    uName: String,
+    Grade: Number,
+    submitTime: Date,
+    runTime: Number,
+    memoryUsage: Number,
+  }],
+  test: [{ //评测项目以及分数
+    name: String,
+    grade: Number,
+  }],
 }, { collection: 'problem' });
 var judgeDB = db.xmoj.model('problem', problemSchema);
 

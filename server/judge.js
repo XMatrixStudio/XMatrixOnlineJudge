@@ -1,29 +1,41 @@
 const db = require('./mongo.js');
+const Verify = require('./sdk/verify.js'); //violet
+const fs = require('fs'); //文件处理
 var judgeSchema = db.xmoj.Schema({
-  pid: Number,
-  uid: Number,
-  code: String,
-  grade: Number,
-  gradeMax: Number,
-  lang: String,
-  details: [{
+  jid: Number, // 评测id
+  pid: Number, // 问题id
+  uid: Number, // 用户id
+  uName: String, // 用户名
+  pName: String, // 问题名字
+  grade: Number, // 总成绩
+  lang: String, // 编译语言
+  details: [{ // 详细评测项目
     name: String,
     grade: Number,
     text: String,
   }],
-  runTime: Number,
-  judgeCounts: Number,
-  judging: Boolean,
-  lastTime: Date,
+  runTime: Number, // 运行时间
+  memoryUsage: Number, // 内存占用
+  judging: Boolean, // 正在评测
+  submitTime: Date, // 提交时间
 }, { collection: 'judge' });
 var judgeDB = db.xmoj.model('judge', judgeSchema);
 
 
 exports.checkJudge = (req, res, next) => { //查看数据库是否有记录或者judging
+  judgeDB.count({}, (count) => {
+    db.insertDate(judgeModule, {
+      jid: count,
+      pid: res.locals.pId,
+      uid: Verify.getUserId(res),
+
+    });
+  });
+
   var sqlCmd = 'SELECT `judging`, `lastTime`, `judgeTimes` FROM `judge` WHERE `uid`=? && `pid`=?';
   var data = [res.locals.data.userID, res.locals.pId];
   sqlModule.query(sqlCmd, data, (vals, isNull) => {
-    var nowTime = new Date().Format('yyyy-MM-dd hh:mm:ss');
+    var nowTime = new Date().Format();
     var userCode = sqlModule.dealEscape(req.body.code);
     if (isNull) {
       console.log('Creat a record'); //新建一个记录
