@@ -21,35 +21,37 @@ var problemSchema = db.xmoj.Schema({
     grade: Number,
   }],
 }, { collection: 'problem' });
-var judgeDB = db.xmoj.model('problem', problemSchema);
+var problemDB = db.xmoj.model('problem', problemSchema);
 
 exports.returnProblemList = (req, res, next) => { //处理数据并返回
   console.log('get Problem list: ');
-  var sqlCmd = 'SELECT `id`, `class`, `title`, `hard`, `course` FROM `problem` WHERE 1';
-  var data = [];
-  sqlModule.query(sqlCmd, data, (vals, isNull) => {
-    var arrId = new Array;
-    var arrCourse = new Array;
-    var arrClass = new Array;
-    var arrTitle = new Array;
-    var arrHard = new Array;
-    for (var i = 0; i < vals.length; i++) {
-      arrId[i] = vals[i].id;
-      arrCourse[i] = vals[i].course;
-      arrClass[i] = vals[i].class;
-      arrTitle[i] = vals[i].title;
-      arrHard[i] = vals[i].hard;
+  problemDB.find({}, (err, val) => {
+    var arrId = [];
+    var arrCourse = [];
+    var arrClass = [];
+    var arrTitle = [];
+    var arrACCounts = [];
+    var arrAllCounts = [];
+    for (var i = 0; i < val.length; i++) {
+      arrId[i] = val[i].pid;
+      arrCourse[i] = val[i].category;
+      arrClass[i] = val[i].class;
+      arrTitle[i] = val[i].title;
+      arrACCounts[i] = val[i].ACCounts;
+      arrAllCounts[i] = val[i].JudgeCounts;
     }
     res.send({
-      pCount: vals.length,
+      pCount: val.length,
       pId: arrId,
       pName: arrTitle,
       pCourse: arrCourse,
       pClass: arrClass,
-      pHard: arrHard
+      pACCounts: arrACCounts,
+      pAllCounts: arrAllCounts,
     });
   });
-};
+}
+
 
 exports.getPidFromUrl = (req, res, next) => {
   var str = req.headers.referer;
@@ -79,30 +81,27 @@ exports.getPidFromParam = (req, res, next) => { //正则匹配题目ID
 };
 
 exports.checkProblem = (req, res, next) => { //查询是否有这个问题
-  var sqlCmd = 'SELECT `standCase` FROM `problem` WHERE id=?';
-  var data = [res.locals.pId];
-  sqlModule.query(sqlCmd, data, (vals, isNull) => {
-    if (isNull) {
+  problemDB.findOne({ id: res.locals.pId }, (err, val) => {
+    if (val) {
+      next();
+    } else {
       console.log('ERR: NO_THIS_PROBLEM');
       res.send({ state: 'failed', why: 'NO_THIS_PROBLEM' });
       next('route');
-    } else {
-      res.locals.standCase = vals[0].standCase;
-      next();
     }
   });
 };
 
 exports.findProblemData = (req, res, next) => { //查询问题详情
-  var sqlCmd = 'SELECT * FROM `problem` WHERE `id`=?';
-  var data = [req.params.id];
-  sqlModule.query(sqlCmd, data, (vals, isNull) => {
-    if (isNull) {
+
+  problemDB.findOne({ id: req.params.id }, (err, val) => {
+    if (!val) {
       console.log('No a problem');
       res.redirect('/index.html?op=0');
       next('route');
     } else {
-      res.locals.problemData = vals[0];
+      res.locals.problemData = val;
+      // todo 获取排名
       var sqlCmd = 'SELECT `userName`, `gradeMax` , `runTime` FROM `judge` WHERE `pid`=?' +
         ' ORDER BY `gradeMax` DESC,`runTime` ASC';
       var data = [req.params.id];

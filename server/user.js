@@ -41,7 +41,7 @@ exports.login = function(req, res, next) {
           register(req, res, next);
         } else {
           res.locals.userDataByme = val;
-          updataUser(req, res, next);
+          updateUser(req, res, next);
         }
       });
     } else {
@@ -72,7 +72,7 @@ let register = function(req, res, next) {
   });
 };
 
-let updataUser = function(req, res, next) {
+let updateUser = function(req, res, next) {
   res.locals.userDataByme.userClass = val.class;
   res.locals.userDataByme.userExp = val.exp;
   res.locals.userDataByme.userLevel = val.level;
