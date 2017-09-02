@@ -456,30 +456,3 @@ function loadBar(id) {
     document.getElementById('userBar').innerHTML = '未登陆 <span class="caret"></span>';
   }
 }
-
-function settime() { //设置按钮倒计时
-  if (countdown < 0) {
-    document.getElementById('gCode').removeAttribute("disabled");
-    document.getElementById('gCode').innerHTML = "获取验证码";
-    countdown = 120;
-  } else {
-    document.getElementById('gCode').setAttribute("disabled", true);
-    document.getElementById('gCode').innerHTML = "重新发送(" + countdown + ")";
-    countdown--;
-    setTimeout(settime, 1000);
-  }
-}
-
-function getCode() { //获取验证码
-  $.post('api/getVCode', {
-    userEmail: document.getElementById('userEmail').value
-  }, function(data) {
-    if (data.state == 'success') {
-      settime();
-    } else if (data.why == 'EMAIL_NOT') {
-      sendNotice('邮箱已经不存在，请进行注册');
-    } else if (data.why == 'TIME_LIMIT') {
-      sendNotice('请两分钟后再尝试');
-    }
-  });
-}

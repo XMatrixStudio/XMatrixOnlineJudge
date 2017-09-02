@@ -23,32 +23,10 @@ var problemSchema = db.xmoj.Schema({
 }, { collection: 'problem' });
 var problemDB = db.xmoj.model('problem', problemSchema);
 
-exports.returnProblemList = (req, res, next) => { //处理数据并返回
+exports.returnProblemList = (req, res, next) => { //获取问题列表
   console.log('get Problem list: ');
   problemDB.find({}, (err, val) => {
-    var arrId = [];
-    var arrCourse = [];
-    var arrClass = [];
-    var arrTitle = [];
-    var arrACCounts = [];
-    var arrAllCounts = [];
-    for (var i = 0; i < val.length; i++) {
-      arrId[i] = val[i].pid;
-      arrCourse[i] = val[i].category;
-      arrClass[i] = val[i].class;
-      arrTitle[i] = val[i].title;
-      arrACCounts[i] = val[i].ACCounts;
-      arrAllCounts[i] = val[i].JudgeCounts;
-    }
-    res.send({
-      pCount: val.length,
-      pId: arrId,
-      pName: arrTitle,
-      pCourse: arrCourse,
-      pClass: arrClass,
-      pACCounts: arrACCounts,
-      pAllCounts: arrAllCounts,
-    });
+    res.send(val);
   });
 }
 
