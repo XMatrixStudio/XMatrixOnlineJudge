@@ -30,7 +30,7 @@ app.use((req, res, next) => {
 });
 //------------------------------------------------------------------------------
 //提交代码评测
-app.post('/submit', [Verify.checkToken, Problem.getPidFromUrl, Problem.checkProblem, Judge.checkJudge, Judge.judging]);
+app.post('/submit', [Verify.checkToken, Problem.getPidFromUrl, Problem.checkProblem, Judge.newJudge, Judge.judging]);
 //------------------------------------------------------------------------------
 //返回成绩
 app.post('/getGrade', [Verify.checkToken, Problem.getPidFromUrl, Judge.findUserGrade, Judge.returnUserGrade]);

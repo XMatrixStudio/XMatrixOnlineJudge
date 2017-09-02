@@ -9,7 +9,7 @@ var problemSchema = db.xmoj.Schema({
   authorName: String, //作者名称
   ACCounts: Number, // 通过数
   JudgeCounts: Number, // 总评测数
-  Rank: [{ //排行榜
+  rank: [{ //排行榜
     uName: String,
     Grade: Number,
     submitTime: Date,
@@ -83,6 +83,7 @@ exports.getPidFromParam = (req, res, next) => { //正则匹配题目ID
 exports.checkProblem = (req, res, next) => { //查询是否有这个问题
   problemDB.findOne({ id: res.locals.pId }, (err, val) => {
     if (val) {
+      res.locals.problemData = val;
       next();
     } else {
       console.log('ERR: NO_THIS_PROBLEM');
@@ -93,7 +94,6 @@ exports.checkProblem = (req, res, next) => { //查询是否有这个问题
 };
 
 exports.findProblemData = (req, res, next) => { //查询问题详情
-
   problemDB.findOne({ id: req.params.id }, (err, val) => {
     if (!val) {
       console.log('No a problem');
@@ -101,14 +101,8 @@ exports.findProblemData = (req, res, next) => { //查询问题详情
       next('route');
     } else {
       res.locals.problemData = val;
-      // todo 获取排名
-      var sqlCmd = 'SELECT `userName`, `gradeMax` , `runTime` FROM `judge` WHERE `pid`=?' +
-        ' ORDER BY `gradeMax` DESC,`runTime` ASC';
-      var data = [req.params.id];
-      sqlModule.query(sqlCmd, data, (vals, isNull) => { //查询排名
-        res.locals.rank = vals;
-        next();
-      });
+      res.locals.rank = val.rank;
+      next();
     }
   });
 };

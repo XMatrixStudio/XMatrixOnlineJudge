@@ -25,10 +25,10 @@ db.on('connected', function() {
 exports.insertDate = (myModel, data, callback) => {
   var object = new myModel(data); // 创建一个数据对象
   object.save((err, res) => {
-    if (callback !== undefined) callback();
+    if (callback !== undefined) callback(res);
   });
 };
-exports.violet = mongoose;
+exports.xmoj = mongoose;
 
 /*
 update 更新

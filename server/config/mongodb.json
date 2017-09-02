@@ -1,7 +1,7 @@
 {
-  "host": "127.0.0.1",
+  "host": "119.29.250.13",
   "port": 27017,
-  "user": "",
-  "password": "",
+  "user": "xmoj",
+  "password": "zhenly-xmoj",
   "dbName": "xmoj"
 }

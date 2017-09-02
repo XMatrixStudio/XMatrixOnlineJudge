@@ -11,7 +11,7 @@ var userSchema = db.xmoj.Schema({
   level: Number, // 用户等级
   class: Number, // 用户类型(0:普通用户，1：投稿者，2：管理员，3：最高权限)
   problems: [{ // 题目评测记录
-    pid: Number, // 问题id
+    pId: Number, // 问题id
     pName: String, // 题目名称
     class: String, // 题目类型
     lastJudge: Number, //最新一次评测的id，
@@ -50,6 +50,18 @@ exports.login = function(req, res, next) {
   });
 };
 
+exports.upDateUserGrade = function(uid, pid, newGrade) {
+  userDB.findOne({ uid: uid }, (err, val) => {
+    var details = val.details;
+    for (var i in details) {
+      if (details[i].pId == pid) {
+        details[i].grade = newGrade;
+      }
+    }
+    val.details = details;
+    val.save(() => {});
+  });
+}
 
 let register = function(req, res, next) {
   db.insertDate(userDB, {

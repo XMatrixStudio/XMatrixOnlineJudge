@@ -8,20 +8,20 @@ problem(返回problem页面)
 
 */
 exports.problem = function(req, res, next) {
-  var rankName = new Array;
-  var rankGrade = new Array;
-  var rankTime = new Array;
+  var rankName = [];
+  var rankGrade = [];
+  var rankTime = [];
   for (var i = 0; i < res.locals.rank.length; i++) {
     rankName[i] = res.locals.rank[i].userName;
     rankGrade[i] = res.locals.rank[i].gradeMax;
     rankTime[i] = res.locals.rank[i].runTime;
   }
   var gradeEachMax = res.locals.problemData.gradeEach.split(",");
-
+  var htmlProblemData;
   if (res.locals.isDone) {
-    var isGood = new Array;
-    var helpText = new Array;
-    if (res.locals.userData.helpText != '') {
+    var isGood = [];
+    var helpText = [];
+    if (res.locals.userData.helpText !== '') {
       var helpTextOld = res.locals.userData.helpText.split("#X#");
     } else {
       var helpTextOld = ['', '', '', ''];
@@ -35,7 +35,7 @@ exports.problem = function(req, res, next) {
         .replace(/\n/g, '</p><p>')
         .replace(/\\r/g, '') + '</p>';
     }
-    var htmlProblemData = {
+    htmlProblemData = {
       pTitle: res.locals.problemData.title,
       pId: res.locals.pId,
       pTimeLimit: res.locals.problemData.timeLimit,
@@ -71,7 +71,7 @@ exports.problem = function(req, res, next) {
       code: res.locals.userData.code
     };
   } else {
-    var htmlProblemData = {
+    htmlProblemData = {
       pTitle: res.locals.problemData.title,
       pId: req.params.id,
       pTimeLimit: res.locals.problemData.timeLimit,
