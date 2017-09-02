@@ -2,30 +2,19 @@
 
 模块功能： Violet 客户端 SDK
 
-配置文件： violet.json - host
+配置文件： violet.json
 
-API:
------------
-post(path, data, callback(result)) 向认证服务器发送信息
-@param path : 请求服务类型 []
-@param data : 数据主体
-@param callback(result) : 返回请求结果
-@具体服务类型和返回数据结构请查看相关文档
-******
-example code :
-exports.post('/user/post', { data: 'hello, world' }, (data) => {
-  console.log(data);
-});
-----------
 */
-
+// 使用前准备
+const userDB = require('../user.js').db; //授权数据库
+// ------------------------
 const fs = require('fs'); //文件处理
-const config = JSON.parse(fs.readFileSync('./config/violet.json'));
+const config = JSON.parse(fs.readFileSync('./config/violet.json')); // 配置文件
 const https = require('https'); // https模块
 const queryString = require("querystring"); // 转化为格式化对象
 const crypto = require('crypto');
 const cookieParser = require('cookie-parser'); // cookie模块
-const userMod = require('../user.js');
+
 
 
 exports.post = (path, data, callback) => {
@@ -46,7 +35,7 @@ exports.post = (path, data, callback) => {
     }
     res.on('data', (d) => {
       if (d.toString('ascii').indexOf('"state":"ok"') != -1) {
-        return callback({ state: 'ok', data: JSON.parse(d.toString('ascii')) });
+        return callback({ state: 'ok', userData: JSON.parse(d.toString('ascii')) });
       } else {
         return callback({ state: 'failed', reason: d.toString('ascii') });
       }
@@ -141,7 +130,7 @@ exports.checkToken = (req, res, next) => { // 检测token
     next('route');
   } else {
     let token = Math.round(Math.random() * 1000000);
-    userMod.DBToken(res, data[0], data[2], token, (str) => {
+    exports.DBToken(res, data[0], data[2], token, (str) => {
       if (str == 'OK') {
         let userData = data[0] + '&' + exports.getNowTime() + '&' + token;
         exports.makeUserToken(req, res, userData, () => {
@@ -166,6 +155,15 @@ exports.makeUserToken = (req, res, userData, callback) => { //设置cookies信�
   if (callback !== undefined) callback();
 };
 
+exports.getLoginState = (req) => {
+  return req.cookies.token !== undefined;
+};
+
+exports.setCookies = (res, name, data, time, callback) => {
+  res.cookie(name, data, { expires: new Date(Date.now() + time * 1000), httpOnly: false });
+  if (callback !== undefined) callback();
+};
+
 
 exports.logout = (req, res, next) => { // 退出登陆
   res.cookie('isLogin', false, { expires: new Date(Date.now() + 8640000000), httpOnly: false });
@@ -181,8 +179,36 @@ exports.makeToken = () => { // 生成网站令牌
 };
 
 exports.getUserInfo = (token, callback) => { //获取用户信息
-  exports.post('/api/getInfo', { userToken: token, webToken: exports.makeToken() }, (data) => {
+  exports.post('/api/getInfo', { sid: config.webId, userToken: token, webToken: exports.makeToken() }, (data) => {
     if (data.state == 'failed') console.log('ERR: ' + data.reason);
     callback(data);
+  });
+};
+
+exports.DBToken = (res, uid, oldToken, newToken, callback) => {
+  userDB.findOne({ uid: uid }, (err, val) => {
+    if (val === null) {
+      callback('NO_USER');
+    } else if (val.token != oldToken) {
+      callback('ERR_TOKEN');
+    } else {
+      res.locals.userData = val;
+      val.token = newToken;
+      val.save((err) => {});
+      callback('OK');
+    }
+  });
+};
+
+
+exports.makeNewToken = (req, res, uid, callback) => {
+  let token = Math.round(Math.random() * 1000000);
+  userDB.findOne({ uid: uid }, (err, val) => {
+    val.token = token;
+    val.save((err) => {});
+    let userData = uid + '&' + exports.getNowTime() + '&' + token;
+    exports.makeUserToken(req, res, userData, () => {
+      callback();
+    });
   });
 };

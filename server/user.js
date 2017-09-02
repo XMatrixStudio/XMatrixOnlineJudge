@@ -1,5 +1,4 @@
 const db = require('./mongo.js');
-const verify = require('./sdk/verify.js');
 var userSchema = db.xmoj.Schema({
   uid: Number, // 用户id
   token: Number, // 访问令牌
@@ -21,6 +20,7 @@ var userSchema = db.xmoj.Schema({
 }, { collection: 'users' });
 var userDB = db.xmoj.model('users', userSchema);
 exports.db = userDB;
+const verify = require('./sdk/verify.js');
 
 
 exports.checkLogin = function(req, res, next) { // 是否已经登陆
@@ -37,11 +37,18 @@ exports.login = function(req, res, next) {
     if (data.state == 'ok') {
       userDB.findOne({ uid: data.userData.uid }, (err, val) => { //更新用户信息
         res.locals.userDataByViolet = data.userData;
+        console.log(data.userData);
         if (val === null) {
           register(req, res, next);
         } else {
-          res.locals.userDataByme = val;
-          updateUser(req, res, next);
+          res.locals.userDataByMe = val;
+          res.locals.userDataByMe.userClass = val.class;
+          res.locals.userDataByMe.userExp = val.exp;
+          res.locals.userDataByMe.userLevel = val.level;
+          val.detail = data.userData.detail;
+          val.web = data.userData.web;
+          val.sex = data.userData.sex;
+          val.save(() => { sendUserData(req, res, next); });
         }
       });
     } else {
@@ -77,23 +84,13 @@ let register = function(req, res, next) {
     class: 0,
     problems: [],
   }, () => {
-    res.locals.userDataByme.userClass = 0;
-    res.locals.userDataByme.userExp = 0;
-    res.locals.userDataByme.userLevel = 0;
+    res.locals.userDataByMe = {
+      userClass: 0,
+      userExp: 0,
+      userLevel: 0,
+    };
     sendUserData(req, res, next);
   });
-};
-
-let updateUser = function(req, res, next) {
-  res.locals.userDataByme.userClass = val.class;
-  res.locals.userDataByme.userExp = val.exp;
-  res.locals.userDataByme.userLevel = val.level;
-  //val.name = data.userData.name;
-  //val.email = data.userData.email;
-  val.detail = data.userData.detail;
-  val.web = data.userData.web;
-  val.sex = data.userData.sex;
-  val.save(() => { sendUserData(req, res, next); });
 };
 
 let sendUserData = function(req, res, next) {
@@ -107,9 +104,9 @@ let sendUserData = function(req, res, next) {
       web: res.locals.userDataByViolet.web,
       sex: res.locals.userDataByViolet.sex,
       // userData by me
-      level: res.locals.userDataByme.userLevel,
-      exp: res.locals.userDataByme.userExp,
-      class: res.locals.userDataByme.userClass,
+      level: res.locals.userDataByMe.userLevel,
+      exp: res.locals.userDataByMe.userExp,
+      class: res.locals.userDataByMe.userClass,
     });
   });
 };

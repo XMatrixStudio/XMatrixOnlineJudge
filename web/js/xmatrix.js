@@ -448,11 +448,21 @@ function loadBar(id) {
   } else {
     $("#nav-bar").html(localStorage.navBar);
   }
-  $(id).addClass("active");
-  var username = getCookie("name");
-  if (username !== null && username !== "") {
-    document.getElementById('userBar').innerHTML = username + ' <span class="caret"></span>';
-  } else {
-    document.getElementById('userBar').innerHTML = '未登陆 <span class="caret"></span>';
-  }
+  setTimeout(function() {
+    if (getCookie('isLogin') == 'true') {
+      $('#loginBtn').hide();
+      $('#userBar').show()
+      $('#userBar').html(getCookie('name') + '<span class="caret"></span>')
+    } else {
+      $('#userBar').hide();
+      $('#loginBtn').show()
+    }
+    $(id).addClass("active");
+  }, 800);
+}
+
+function logout() {
+  $.post('/api/logout', {}, (data) => {
+    window.location.href = '/';
+  });
 }
