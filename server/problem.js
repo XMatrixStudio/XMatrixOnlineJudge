@@ -28,8 +28,7 @@ exports.returnProblemList = (req, res, next) => { //获取问题列表
   problemDB.find({}, (err, val) => {
     res.send(val);
   });
-}
-
+};
 
 exports.getPidFromUrl = (req, res, next) => {
   var str = req.headers.referer;
@@ -40,17 +39,17 @@ exports.getPidFromUrl = (req, res, next) => {
     res.send({ state: 'failed', why: 'NOT_PROBLEM' });
     next('route');
   } else {
-    console.log('Get Pid!');
-    res.locals.pId = arr[1];
+    console.log('Get pid!');
+    res.locals.pid = arr[1];
     next();
   }
 };
 
 exports.getPidFromParam = (req, res, next) => { //正则匹配题目ID
   console.log('Get a Problem: ');
-  var pattern = /^[0-9]{1,4}$/;
+  var pattern = /^[0-9]{1,5}$/;
   if (pattern.test(req.params.id)) {
-    res.locals.pId = req.params.id;
+    res.locals.pid = req.params.id;
     next();
   } else {
     console.log('Not a id ' + req.params.id);
@@ -59,7 +58,7 @@ exports.getPidFromParam = (req, res, next) => { //正则匹配题目ID
 };
 
 exports.checkProblem = (req, res, next) => { //查询是否有这个问题
-  problemDB.findOne({ id: res.locals.pId }, (err, val) => {
+  problemDB.findOne({ id: res.locals.pid }, (err, val) => {
     if (val) {
       res.locals.problemData = val;
       next();
@@ -79,7 +78,6 @@ exports.findProblemData = (req, res, next) => { //查询问题详情
       next('route');
     } else {
       res.locals.problemData = val;
-      res.locals.rank = val.rank;
       next();
     }
   });

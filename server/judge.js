@@ -32,7 +32,7 @@ exports.newJudge = (req, res, next) => { //查看数据库是否有记录或者j
     gradeDetails[i].text = '';
   }
   db.insertDate(judgeDB, {
-    pid: res.locals.pId,
+    pid: res.locals.pid,
     uid: Verify.getUserId(),
     uName: Verify.getUserName(),
     pName: res.locals.problemData.title,
@@ -44,67 +44,61 @@ exports.newJudge = (req, res, next) => { //查看数据库是否有记录或者j
     judging: true,
     submitTime: new Date(),
   }, (val) => {
-    res.locals.problemData = val;
+    res.locals.judgeData = val;
+    User.upDateUserJudge(res);
+    next();
   });
 };
 
-
 exports.judging = (req, res, next) => { //调用judge子进程
-  console.log('write to file: file/' + res.locals.problemData._id + '.c'); //存文件
-  fs.writeFile('file/' + res.locals.problemData._id + '.c', req.body.code, (err) => {
+  console.log('write to file: file/' + res.locals.judgeData._id + '.c'); //存文件
+  fs.writeFile('file/' + res.locals.judgeData._id + '.c', req.body.code, (err) => {
     if (err) return console.error(err);
     console.log('toJudge...');
-    var judgeModule = spawn('./judge.sh', [res.locals.problemData._id]);
+    var judgeModule = spawn('./judge.sh', [res.locals.judgeData._id]);
   });
   console.log('judging success!');
   res.send({ state: 'success' });
 };
 
-exports.findUserGrade = (req, res, next) => { //查询该用户是否存在这个记录
-  var problemData = res.locals.userData.problemData;
-  for (var i in problemData) {
-    if (problemData[i].pId == res.locals.pId) {
-      res.locals.userProblem = problemData[i];
-      next();
-    }
-  }
-  console.log('user no do it.');
-  res.send({ state: 'failed', why: 'NO_DO' });
-  next('route');
-};
-
 exports.returnUserGrade = (req, res, next) => { //返回结果
-  judgeDB.findById(res.locals.userProblem.lastJudge, (err, val) => {
-    if (val.judging) {
-      console.log('JUDGING'); //在评测中
-      res.send({ state: 'failed', why: 'JUDGING' });
-      next('route');
-    } else {
+  if (res.locals.isDone) {
+    if (!res.locals.judgeData.judging) {
       console.log('success'); //评测完毕
       res.send({
         state: 'success',
-        grade: val.grade,
-        gradeMax: val.grade > res.locals.userData.grade ? val.grade : res.locals.userData.grade,
-        submitCounts: res.locals.userData.submitCounts,
-        detail: val.detail,
-        lastTime: val.submitTime,
-        runTime: val.runTime,
-        lang: val.lang,
+        grade: res.locals.judgeData.grade,
+        detail: res.locals.judgeData.detail,
+        lastTime: res.locals.judgeData.submitTime,
+        runTime: res.locals.judgeData.runTime,
+        memoryUsage: res.locals.judgeData.memoryUsage,
+        lang: res.locals.judgeData.lang,
       });
       if (val.grade > res.locals.userData.grade) {
         User.upDateUserGrade(res.locals.userData.uid, val.pid, val.grade);
       }
+    } else {
+      console.log('JUDGING'); //在评测中
+      res.send({ state: 'failed', why: 'JUDGING' });
+      next('route');
     }
-  });
+  } else {
+    console.log('NO_DONE');
+    res.send({ state: 'failed', why: 'NO_DONE' });
+    next('route');
+  }
 };
 
 exports.findJudgeData = (req, res, next) => { //返回问题详情
-  var sqlCmd = 'SELECT * FROM `judge` WHERE `pid`=? && `uid`=?';
-  var data = [req.params.id, res.locals.data.userID];
-  sqlModule.query(sqlCmd, data, (vals, isNull) => {
-    res.locals.isDone = !isNull;
-    console.log(res.locals.isDone);
-    if (!isNull) res.locals.userData = vals[0];
+  let userJudge = Verify.getUserData(res).problems;
+  User.findLastJudge(userJudge, res.locals.pid).then((jid) => {
+    res.locals.isDone = false;
+    judgeDB.findById(jid, (err, val) => {
+      res.locals.judgeData = val;
+      next();
+    });
+  }).catch((err) => {
+    res.locals.isDone = true;
     next();
   });
 };

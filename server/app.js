@@ -33,7 +33,7 @@ app.use((req, res, next) => {
 app.post('/submit', [Verify.checkToken, Problem.getPidFromUrl, Problem.checkProblem, Judge.newJudge, Judge.judging]);
 //------------------------------------------------------------------------------
 //返回成绩
-app.post('/getGrade', [Verify.checkToken, Problem.getPidFromUrl, Judge.findUserGrade, Judge.returnUserGrade]);
+app.post('/getGrade', [Verify.checkToken, Problem.getPidFromUrl, Judge.findJudgeData, Judge.returnUserGrade]);
 //------------------------------------------------------------------------------
 //问题详情
 app.get('/problem/:id', [Verify.checkToken, Problem.getPidFromParam, User.checkLogin, Problem.findProblemData, Judge.findJudgeData, Ejs.problem]); //渲染问题详情页面
