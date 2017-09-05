@@ -347,7 +347,7 @@ function loadBar(id) {
     $("#nav-bar").html(localStorage.navBar);
   }
   setTimeout(function() {
-    if (getCookie('isLogin') == 'true') {
+    if (getCookie('isLogin') == 'true' && getCookie('name') !== null) {
       $('#loginBtn').hide();
       $('#userBar').show();
       $('#userBar').html(getCookie('name') + '<span class="caret"></span>')

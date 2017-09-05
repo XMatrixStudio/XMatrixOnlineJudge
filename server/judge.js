@@ -23,7 +23,7 @@ var judgeDB = db.xmoj.model('judge', judgeSchema);
 
 var dealEscape = function(str) {
   return str.toString().replace(/\\/g, '\\\\').replace(/\'/g, '\\\'');
-}
+};
 
 exports.newJudge = (req, res, next) => { //查看数据库是否有记录或者judging
   var gradeDetails = res.locals.problemData.test;

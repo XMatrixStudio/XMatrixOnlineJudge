@@ -105,7 +105,7 @@ exports.findLastJudge = function(userJudge, pid) {
     reject('null');
   });
   return p;
-}
+};
 
 let register = function(req, res, next) {
   db.insertDate(userDB, {

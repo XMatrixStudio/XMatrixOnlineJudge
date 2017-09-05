@@ -31,9 +31,8 @@
         document.cookie = 'level=' + data.level;
         document.cookie = 'exp=' + data.exp;
         document.cookie = 'class=' + data.class;
-
-        if (getQueryString('param')) {
-          window.location.href = getQueryString('param');
+        if (getQueryString('args') && getQueryString('args') !== 'null' && getQueryString('args') !== '') {
+          window.location.href = getQueryString('args');
         } else {
           window.location.href = '/';
         }
