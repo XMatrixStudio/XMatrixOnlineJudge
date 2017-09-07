@@ -341,22 +341,18 @@ function loadBar(id) {
   if (localStorage.navBar === undefined) {
     $.get('nav-bar.html', (data) => {
       localStorage.navBar = data;
-      $("#nav-bar").html(localStorage.navBar);
     });
-  } else {
-    $("#nav-bar").html(localStorage.navBar);
   }
-  setTimeout(function() {
-    if (getCookie('isLogin') == 'true' && getCookie('name') !== null) {
-      $('#loginBtn').hide();
-      $('#userBar').show();
-      $('#userBar').html(getCookie('name') + '<span class="caret"></span>')
-    } else {
-      $('#userBar').hide();
-      $('#loginBtn').show()
-    }
-    $(id).addClass("active");
-  }, 800);
+  $("#nav-bar").html(localStorage.navBar);
+  if (getCookie('isLogin') == 'true' && getCookie('name') !== null) {
+    $('#loginBtn').hide();
+    $('#userBar').show();
+    $('#userBar').html(getCookie('name') + '<span class="caret"></span>')
+  } else {
+    $('#userBar').hide();
+    $('#loginBtn').show()
+  }
+  $(id).addClass("active");
 }
 
 function logout() {
