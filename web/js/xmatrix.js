@@ -337,13 +337,7 @@ function isLogin(callback) {
 } //检测是否登陆和验证邮箱
 
 
-function loadBar(id) {
-  if (localStorage.navBar === undefined) {
-    $.get('nav-bar.html', (data) => {
-      localStorage.navBar = data;
-    });
-  }
-  $("#nav-bar").html(localStorage.navBar);
+function loadBar() {
   if (getCookie('isLogin') == 'true' && getCookie('name') !== null) {
     $('#loginBtn').hide();
     $('#userBar').show();
@@ -352,8 +346,10 @@ function loadBar(id) {
     $('#userBar').hide();
     $('#loginBtn').show()
   }
-  $(id).addClass("active");
 }
+
+
+
 
 function logout() {
   $.post('/api/logout', {}, (data) => {

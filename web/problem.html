@@ -4,40 +4,22 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="theme-color" content="#f8f8f8">
+  <meta name="theme-color" content="#393D49">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>XMatrix</title>
-
-  <!-- Bootstrap -->
   <link href="css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
   <link rel="shortcut icon" href="/xmatrix.ico">
-
-  <style type="text/css">
-    body {
-      padding-top: 70px;
-      background-color: #EEEEEE;
-    }
-    
-    .box-right {
-      position: relative;
-      display: inline-block;
-      width: 45%;
-      text-align: right;
-    }
-    
-    .box-left {
-      position: relative;
-      display: inline-block;
-      width: 50%;
-    }
-  </style>
-
+  <link rel="import" href="nav-bar.html">
 </head>
 
 <body>
   <!-- 标题栏开始 -->
-  <div id="nav-bar">
-  </div>
+  <div id="nav-bar"></div>
+  <script>
+    document.getElementById('nav-bar').appendChild(document.querySelector('link[rel="import"]').import.querySelector('.navbar'));
+    document.getElementById('t-problem').className += 'active';
+  </script>
   <!--标题栏结束 -->
   <br>
   <div class="container-fluid">
@@ -84,7 +66,7 @@
     }
 
     $(function() {
-      loadBar("#t-problem");
+      loadBar();
       getPlist();
     }); //处理标题栏
   </script>

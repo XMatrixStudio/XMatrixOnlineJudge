@@ -2,72 +2,69 @@
 <html lang="zh-CN">
 
 <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="theme-color" content="#f8f8f8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>XMatrix</title>
-
-    <!-- Bootstrap -->
-    <link href="css/bootstrap.min.css" rel="stylesheet">
-    <link rel="shortcut icon" href="xmatrix.ico">
-
-    <style type="text/css">
-        body {
-            padding-top: 70px;
-            background-color: #EEEEEE;
-        }
-    </style>
-
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="theme-color" content="#393D49">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>XMatrix</title>
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <link rel="shortcut icon" href="/xmatrix.ico">
+  <link rel="import" href="nav-bar.html">
 </head>
 
 <body>
-    <!-- 标题栏开始 -->
+  <!-- 标题栏开始 -->
 
-    <div id="nav-bar"></div>
-    <br>
-    <!--标题栏结束 -->
-    <div class="container-fluid">
-        <div class="row-fluid">
-            <div class="span12">
-                <div class="jumbotron col-md-10  col-md-offset-1" style="background: #F8F8F8;">
-                    <div class="container">
-                        <h1>XMatrix</h1>
-                        <h3>一个还没有完成的Online Judging System</h3>
+  <div id="nav-bar"></div>
+  <script>
+    document.getElementById('nav-bar').appendChild(document.querySelector('link[rel="import"]').import.querySelector('.navbar'));
+    document.getElementById('t-about').className += 'active';
+  </script>
 
-                    </div>
-                </div>
-                <div class="jumbotron col-md-10  col-md-offset-1" style="background: #F8F8F8;">
-                    <div class="container">
-                        <h2><img src="pic/cat.png"><strong>  V0.1 </strong>森林猫<small> Apr 02, 2017 ~ May 20,2017</small></h2>
-                        <div class="col-md-10  col-md-offset-1">
-                            <p class="lead">1. 建立评测系统</p>
-                            <p class="lead">2. 建立用户系统</p>
-                            <a class="lead" href="about-v0.1.html">Detail</a>
-                        </div>
-                    </div>
-                    <hr width="80%" color="#987cb9" size="3">
-                </div>
-            </div>
-            <div class="jumbotron col-md-10  col-md-offset-1" style="background: #F8F8F8;">
-                <div class="container text-center" style="font-size: 25px;">
+  <br>
+  <!--标题栏结束 -->
+  <div class="container-fluid">
+    <div class="row-fluid">
+      <div class="span12">
+        <div class="jumbotron col-md-10  col-md-offset-1" style="background: #F8F8F8;">
+          <div class="container">
+            <h1>XMatrix</h1>
+            <h3>一个还没有完成的Online Judging System</h3>
 
-                    <p class="lead">License</p>
-                    <p> XMatrix Online Judge is released under the MIT License.</p>
-                    <hr width="80%" color="#987cb9" size="3">
-                    <a href="https://github.com/XMatrixTeam/XMatrixOnlineJudge" target="_blank"><img src="pic/github.png"></a>
-                </div>
-            </div>
+          </div>
         </div>
+        <div class="jumbotron col-md-10  col-md-offset-1" style="background: #F8F8F8;">
+          <div class="container">
+            <h2><img src="pic/cat.png"><strong>  V0.1 </strong>森林猫<small> Apr 02, 2017 ~ May 20,2017</small></h2>
+            <div class="col-md-10  col-md-offset-1">
+              <p class="lead">1. 建立评测系统</p>
+              <p class="lead">2. 建立用户系统</p>
+              <a class="lead" href="about-v0.1.html">Detail</a>
+            </div>
+          </div>
+          <hr width="80%" color="#987cb9" size="3">
+        </div>
+      </div>
+      <div class="jumbotron col-md-10  col-md-offset-1" style="background: #F8F8F8;">
+        <div class="container text-center" style="font-size: 25px;">
+
+          <p class="lead">License</p>
+          <p> XMatrix Online Judge is released under the MIT License.</p>
+          <hr width="80%" color="#987cb9" size="3">
+          <a href="https://github.com/XMatrixTeam/XMatrixOnlineJudge" target="_blank"><img src="pic/github.png"></a>
+        </div>
+      </div>
     </div>
+  </div>
 </body>
 <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
 <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 <script src="js/xmatrix.js"></script>
 <script type="text/javascript">
-    $(function() {
-        loadBar("#t-about");
-    }); //处理标题栏
+  $(function() {
+    loadBar();
+  }); //处理标题栏
 </script>
 
 </html>

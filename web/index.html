@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="theme-color" content="#f8f8f8">
+  <meta name="theme-color" content="#393D49">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>XMatrix</title>
   <!-- Bootstrap -->
@@ -12,22 +12,99 @@
   <link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
   <link rel="shortcut icon" href="xmatrix.ico">
   <style type="text/css">
-    body {
-      padding-top: 70px;
-      background-color: #EEE;
-    }
+
   </style>
+  <link rel="import" href="nav-bar.html">
 </head>
 
 <body>
   <div id="nav-bar"></div>
-  <div class="container-fluid">
-    <div class="col-md-6  col-md-offset-3" style="padding-top:5%;">
-      <div class="jumbotron" style="background: #F8F8F8;">
-        <div class="text-center">
-          <h1>XMatrix</h1>
-          <p>Online Judging System</p>
+  <script>
+    document.getElementById('nav-bar').appendChild(document.querySelector('link[rel="import"]').import.querySelector('.navbar'));
+    document.getElementById('t-home').className += 'active';
+  </script>
+  <div class="container-fluid" style="padding-top: 1%;">
+    <div class="col-sm-4 col-md-3 col-lg-2 col-lg-offset-2">
+      <div class="userInfoBox">
+        <img class="avatarBox" src="pic/20028311.jpg">
+        <p class="userName" data-toggle="tooltip" data-placement="left" title="修改昵称" onclick="changeName()">Zhenly <span class="label label-success labal-lv">Lv.3</span></p>
+        <p class="userNameReal">ZhenlyChen
+          <i class="fa fa-mars fa-fw blue-text" aria-hidden="true"></i>
+          <i class="fa fa-venus fa-fw pink-text" aria-hidden="true" style="display: none;"></i>
+        </p>
+        <p class="userDetail">Hello, world</p>
+        <hr class="hrStyle" />
+        <p class="userDetail">
+          <i class="fa fa-link fa-fw" aria-hidden="true"></i>
+          <a href="https://blog.zhenly.cn" target="_blank"> blog.zhenly.cn</a>
+        </p>
+        <p class="userDetail">
+          <i class="fa fa-envelope-o fa-fw" aria-hidden="true"></i>
+          <a href="mailto:zhenlychen@foxmail.com" target="_blank"> zhenlychen@foxmail.com</a>
+        </p>
+        <p class="userDetail">
+          <i class="fa fa-map-marker fa-fw" aria-hidden="true"></i> GuangZhou
+        </p>
+        <hr class="hrStyle" />
+        <a href="https://oauth.xmatrix.studio/user.html" target="_blank">修改个人信息</a>
+      </div>
+    </div>
+    <div class="col-sm-8 col-md-9 col-lg-6">
+      <p class="boxTitle"><i class="fa fa-newspaper-o fa-fw" aria-hidden="true"></i> Welcome to XMatrix OJ</p>
+      <hr class="hrStyle" />
+      <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+        <div class="panel panel-default">
+          <div class="panel-heading" role="tab" id="headingOne">
+            <h4 class="panel-title">
+              <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                <span class="label label-success">公告</span> 系统升级中
+              </a>
+            </h4>
+          </div>
+          <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+            <div class="panel-body">
+              XMatrix Online Judging System 的 Ragdoll版本迭代开发正在进行中，评测功能暂时关闭。
+            </div>
+          </div>
         </div>
+        <div class="panel panel-default">
+          <div class="panel-heading" role="tab" id="headingTwo">
+            <h4 class="panel-title">
+              <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                <span class="label label-danger">爆料</span> 部分新版本特性
+              </a>
+            </h4>
+          </div>
+          <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+            <div class="panel-body">
+              <p>1. 评测支持多种语言</p>
+              <p>2. 用户等级积分制度</p>
+              <p>3. 用户可以保存多次提交</p>
+            </div>
+          </div>
+        </div>
+        <div class="panel panel-default">
+          <div class="panel-heading" role="tab" id="headingThree">
+            <h4 class="panel-title">
+              <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                <span class="label label-warning">广告</span> 前排出售秀秀
+              </a>
+            </h4>
+          </div>
+          <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+            <div class="panel-body">
+              价格好商量
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <p class="boxTitle"><i class="fa fa-database fa-fw" aria-hidden="true"></i> 统计数据</p>
+      <hr class="hrStyle" />
+      <div class="userData">
+        <p>积分：1034 / 1500</p>
+        <p>排名 ：<a href="rank.html"><span class="label label-success">No.5</span></a></p>
+        <p>已通过题目：34 道</p>
       </div>
     </div>
   </div>
@@ -35,11 +112,26 @@
 <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
 <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 <script src="js/xmatrix.js"></script>
+<script src="layer/layer.js"></script>
 
 <script type="text/javascript">
   $(function() {
-    loadBar("#t-home"); //加载标题栏
+    loadBar(); //加载标题栏
+    $('[data-toggle="tooltip"]').tooltip();
   });
+
+  function changeName() {
+    layer.prompt({
+      title: '请输入你的新昵称',
+    }, function(text, index) {
+      layer.close(index);
+      layer.confirm('是否更改昵称为 ' + text, {
+        btn: ['确定', '取消'] //按钮
+      }, function() {
+        layer.msg('你的新昵称为：' + text);
+      });
+    });
+  }
 </script>
 
 </html>
