@@ -12,6 +12,9 @@
   <link href="/css/Xmui.css" rel="stylesheet">
   <link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
   <link rel="shortcut icon" href="/xmatrix.ico">
+  <style type="text/css">
+
+  </style>
   <link rel="import" href="/nav-bar.html">
 </head>
 
@@ -19,14 +22,13 @@
   <div id="nav-bar"></div>
   <script>
     document.getElementById('nav-bar').appendChild(document.querySelector('link[rel="import"]').import.querySelector('.navbar'));
-    document.getElementById('t-home').className += 'active';
   </script>
   <div class="container-fluid" style="padding-top: 1%;">
     <div class="col-sm-4 col-md-3 col-lg-2 col-lg-offset-2">
       <div class="userInfoBox">
         <img class="avatarBox" src="/pic/20028311.jpg">
         <p class="userName">
-          <a href="javascript:;" data-toggle="tooltip" data-placement="right" title="修改昵称" onclick="changeName()">Zhenly</a>
+          <a>Zhenly</a>
         </p>
         <p class="userNameReal">ZhenlyChen
           <i class="fa fa-mars fa-fw blue-text" aria-hidden="true"></i>
@@ -46,72 +48,13 @@
           <i class="fa fa-map-marker fa-fw" aria-hidden="true"></i> GuangZhou
         </p>
         <hr class="hrStyle" />
-        <p class="smailTitle"><i class="fa fa-users fa-fw" aria-hidden="true"></i>关注好友列表</p>
-        <div class="sild-bar">
-          <p><a href="/user/megashow/">MegaShow</a> <a href="javascript:;" class="label-right" onclick="deleteFriend()"><i class="fa fa-close fa-fw" aria-hidden="true"></i></a></p>
-          <p><a href="/user/zhenlychen/">Zhenly</a> <a href="javascript:;" class="label-right" onclick="deleteFriend()"><i class="fa fa-close fa-fw" aria-hidden="true"></i></a></p>
-        </div>
-        <hr class="hrStyle" />
         <p class="smailTitle"><i class="fa fa-mortar-board fa-fw" aria-hidden="true"></i>成就</p>
         <span class="label label-info">连错十题</span>
         <hr class="hrStyle" />
-
-        <p class="zhenlyBtn">
-          <a href="javascript:;" onclick="userSetting()">个人设置</a>
-        </p>
+        <button class="btn btn-default" href="javascript:;" onclick="userSetting()"> + 关注</button>
       </div>
     </div>
     <div class="col-sm-8 col-md-9 col-lg-6">
-      <p class="boxTitle"><i class="fa fa-newspaper-o fa-fw" aria-hidden="true"></i> Welcome to XMatrix OJ</p>
-      <hr class="hrStyle" />
-      <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
-        <div class="panel panel-default">
-          <div class="panel-heading" role="tab" id="headingOne">
-            <h4 class="panel-title">
-              <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                <span class="label label-success">公告</span> 系统升级中
-              </a>
-            </h4>
-          </div>
-          <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
-            <div class="panel-body">
-              XMatrix Online Judging System 的 Ragdoll版本迭代开发正在进行中，评测功能暂时关闭。
-            </div>
-          </div>
-        </div>
-        <div class="panel panel-default">
-          <div class="panel-heading" role="tab" id="headingTwo">
-            <h4 class="panel-title">
-              <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                <span class="label label-danger">爆料</span> 部分新版本特性
-              </a>
-            </h4>
-          </div>
-          <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
-            <div class="panel-body">
-              <p>1. 评测支持多种语言</p>
-              <p>2. 用户等级积分制度</p>
-              <p>3. 用户可以保存多次提交</p>
-              <p>4. 全新的用户中心</p>
-            </div>
-          </div>
-        </div>
-        <div class="panel panel-default">
-          <div class="panel-heading" role="tab" id="headingThree">
-            <h4 class="panel-title">
-              <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-                <span class="label label-warning">广告</span> 前排出售秀秀
-              </a>
-            </h4>
-          </div>
-          <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
-            <div class="panel-body">
-              价格好商量
-            </div>
-          </div>
-        </div>
-      </div>
-
       <p class="boxTitle"><i class="fa fa-database fa-fw" aria-hidden="true"></i> 用户信息</p>
       <hr class="hrStyle" />
       <div class="userData">
@@ -119,7 +62,6 @@
         <p>排名 ：<span class="label label-success"><a href="rank.html">No.5</a></span></p>
         <p>已通过题目：34 道</p>
       </div>
-
       <p class="boxTitle"><i class="fa fa-envelope-open-o fa-fw" aria-hidden="true"></i> 留言</p>
       <hr class="hrStyle" />
       <div id="myMail" class="mailBox">
@@ -137,15 +79,12 @@
         <div v-for="(mail, index) in mails" class="mailBox">
           <div class="mailDiv">
             <i class="fa fa-user-o fa-fw" aria-hidden="true"></i>
-            <a href="javascript:;" class="label-right" onclick="readMail()"><span v-if="mail.new" class="label label-success">new</span></a>
             <div class="mailBox-right">
               <a :href="'/user/' + mail.from">{{mail.fromName}} </a> <span v-if="mail.title" class="label label-primary">{{mail.titleName}}</span> :
               <p class="mailContent">{{mail.content}}</p>
             </div>
-            <div class="mailControl">
+            <div class="mailControlGuest">
               <span>{{new Date(mail.time).format('yyyy-MM-dd hh:mm:ss')}}</span>
-              <a href="javascript:;"><i class="fa fa-reply fa-fw" aria-hidden="true"></i></a> |
-              <a href="javascript:;"><i class="fa fa-trash-o fa-fw" aria-hidden="true"></i></a>
             </div>
           </div>
         </div>
@@ -189,43 +128,6 @@
       loadBar(); //加载标题栏
       $('[data-toggle="tooltip"]').tooltip();
     });
-
-    function changeName() {
-      layer.prompt({
-        title: '请输入你的新昵称',
-        maxlength: 10,
-      }, function(text, index) {
-        layer.close(index);
-        layer.confirm('是否更改昵称为 <b>' + text + '</b><br>剩余修改次数：1', {
-          btn: ['确定', '取消'] //按钮
-        }, function() {
-          layer.msg('你的新昵称为：' + text);
-        });
-      });
-    }
-
-    function readMail() {
-      layer.msg('标记为已读');
-    }
-
-    function deleteFriend() {
-      layer.confirm('是否取消关注 <b>MegaShow</b>', {
-        btn: ['确定', '取消'] //按钮
-      }, function() {
-        layer.msg('取消关注成功！');
-      });
-    }
-
-    function userSetting() {
-      layer.open({
-        type: 2,
-        title: '用户设置',
-        shadeClose: true,
-        shade: 0.8,
-        area: ['400px', '500px'],
-        content: '/setting.html'
-      });
-    }
   </script>
 
 </body>
