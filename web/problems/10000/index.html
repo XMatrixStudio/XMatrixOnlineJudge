@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="theme-color" content="#393D49">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>XMatrix</title>
+  <link href="/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/css/Xmui.css" rel="stylesheet">
+  <link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+
+  <link href="https://cdn.bootcss.com/codemirror/5.25.0/codemirror.css" rel="stylesheet">
+  <link href="https://cdn.bootcss.com/codemirror/5.25.0/addon/hint/show-hint.min.css" rel="stylesheet">
+  <link href="https://cdn.bootcss.com/codemirror/5.25.0/theme/blackboard.min.css" rel="stylesheet">
+
+  <link rel="shortcut icon" href="/xmatrix.ico">
+  <link rel="import" href="/nav-bar.html">
+</head>
+
+<body>
+  <div id="nav-bar"></div>
+  <script>
+    document.getElementById('nav-bar').appendChild(document.querySelector('link[rel="import"]').import.querySelector('.navbar'));
+  </script>
+  <div class="container-fluid">
+    <div class="row-fluid">
+      <div class="col-lg-8 col-lg-offset-2">
+        <ul class="nav nav-tabs nav-category" id="myTab" role="tablist">
+          <li class="active"><a href="#home" data-toggle="tab" aria-controls="home" role="tab">问题描述</a></li>
+          <li><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab">成绩报告</a></li>
+          <li><a href="#messages" aria-controls="messages" role="tab" data-toggle="tab">提交记录</a></li>
+          <li><a href="#settings" aria-controls="settings" role="tab" data-toggle="tab">排名</a></li>
+        </ul>
+        <br>
+        <!-- Tab panes -->
+        <div class="tab-content tabs">
+          <div role="tabpanel" class="tab-pane active" id="home">
+            <div class="panel panel-default">
+              <div class="panel-body" style="padding-left:30px;padding-top:25px;font-size: 25px"><span class="glyphicon glyphicon-tasks" aria-hidden="true"> </span><strong> {{title}}</strong></div>
+              <div class="panel-body" style="padding:10px;">
+                <div class="col-xs-9">
+                  <p>时间限制 : {{timeLimit}} ms</p>
+                  <p>内存限制 : {{memLimit}} KB</p>
+                </div>
+                <div class="col-xs-3 hidden-xs">
+                  <p>出题：{{author}}
+                  </p>
+                  <p>邮箱：{{email}}
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div class="panel panel-default">
+              <div class="panel-body">
+                <div id="mymarkdown" class="markdown-body" style="padding:15px;">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div role="tabpanel" class="tab-pane" id="messages">
+            <div class="panel panel-default col-md-3 col-md-offset-1">
+              <div class="panel-body">
+                <p style="padding: 5px;text-align: left;font-size:20px;"> 你的成绩：</p>
+                <p :style="'text-align: center;font-size:55px;color:#' + color">
+                  {{gradeTotal}}
+                </p>
+                <div class="progress">
+                  <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" :style="'width: ' + gradeTotal +'%'"></div>
+                </div>
+              </div>
+            </div>
+            <div class="panel panel-default col-md-6 col-md-offset-1">
+              <div class="panel-body" style="text-align:left;">
+                <p style="padding: 6px;font-size:18px;"> 最后提交：{{lastTime}}</p>
+                <p style="padding: 6px;font-size:18px;"> 最高分数：{{max}}</p>
+                <p style="padding: 6px;font-size:18px;"> 提交次数：{{times}}</p>
+                <p style="padding: 6px;font-size:18px;"> 运行时间：{{runTime}} ms</p>
+              </div>
+            </div>
+
+            <div v-for="grades in gradeEach" class="panel panel-default">
+              <div class="panel-body">
+                <p :style="'font-size:20px;color:#' + grades.color">
+                  {{grades.name}} {{grades.grade}}/{{grades.max}}
+                  <span :class="'glyphicon glyphicon-'+grades.ico" style="float:right;"></span>
+                </p>
+              </div>
+              <div v-html="grades.helpText" class="panel-footer"></div>
+            </div>
+          </div>
+
+          <div role="tabpanel" class="tab-pane" id="settings">
+            <div class="panel panel-success">
+              <div class="panel-body">
+                <p style="font-size:30px;color:#479EA2;padding: 20px;padding-bottom: 0px;"><span class="glyphicon glyphicon-king"></span> Rank</p>
+              </div>
+              <div class="panel-body" style="padding-left: 40px;padding-right: 40px;">
+                <table class="table table-hover table-striped">
+                  <tr style="font-size:17px;color:#fff;background-color: #00B0AD">
+                    <th>No</th>
+                    <th>昵称</th>
+                    <th>运行时间</th>
+                    <th>分数</th>
+                  </tr>
+                  <tr v-for="(grade, index) in grade">
+                    <td>{{index}}</td>
+                    <td>{{name[index]}}</td>
+                    <td>{{runTime[index]}} ms</td>
+                    <td>{{grade}}</td>
+                  </tr>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel panel-default" style="background-color: #0C1021;">
+          <div class="panel-body">
+            <div class="form-group">
+              <textarea id="codetext" name="codetext" class="form-control"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="form-group" style="text-align: right;">
+          <a class="btn btn-success" onclick="judge()">提交</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.bootcss.com/codemirror/5.25.0/codemirror.js"></script>
+  <script src="https://cdn.bootcss.com/codemirror/5.25.0/addon/edit/closebrackets.min.js"></script>
+  <script src="https://cdn.bootcss.com/codemirror/5.25.0/addon/edit/closetag.min.js"></script>
+  <script src="https://cdn.bootcss.com/codemirror/5.25.0/addon/edit/continuelist.min.js"></script>
+  <script src="https://cdn.bootcss.com/codemirror/5.25.0/addon/edit/matchbrackets.min.js"></script>
+  <script src="https://cdn.bootcss.com/codemirror/5.25.0/addon/edit/matchtags.min.js"></script>
+  <script src="https://cdn.bootcss.com/codemirror/5.25.0/addon/edit/trailingspace.min.js"></script>
+  <script src="https://cdn.bootcss.com/codemirror/5.25.0/addon/hint/javascript-hint.min.js"></script>
+  <script src="https://cdn.bootcss.com/codemirror/5.25.0/addon/hint/show-hint.min.js"></script>
+  <script src="https://cdn.bootcss.com/codemirror/5.25.0/mode/clike/clike.min.js"></script>
+
+  <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://cdn.bootcss.com/showdown/1.6.4/showdown.min.js"></script>
+  <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <script src="https://cdn.bootcss.com/vue/2.3.3/vue.js"></script>
+  <script src="/js/xmatrix.js"></script>
+  <script>
+    $(function() {
+      testcode();
+      loadBar();
+    }); //处理标题栏
+
+    $.get("/problems/10000/index.md", function(result) {
+      var converter = new showdown.Converter();
+      $("#mymarkdown").html(converter.makeHtml(result));
+    }); //获取md文件
+  </script>
+</body>
+
+</html>

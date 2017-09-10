@@ -152,16 +152,16 @@
 }
 
 .box-right {
-  position: relative;
-  display: inline-block;
-  width: 45%;
-  text-align: right;
+  float: right;
 }
 
 .box-left {
   position: relative;
   display: inline-block;
-  width: 50%;
+}
+
+.box-left>p {
+  margin-top: 10px;
 }
 
 .boxTitle {
@@ -171,7 +171,7 @@
 
 .hrStyle {
   height: 1px;
-  background: rgb(200, 200, 200);
+  background: #e5e5e5;
   border: none;
   margin: 10px 0px 10px 0px;
 }
@@ -288,7 +288,7 @@ body {
 
 .mailBox-right {
   position: relative;
-  margin: -10px 40px 10px 40px;
+  margin: -10px 0px 10px 40px;
 }
 
 .mailControl {
@@ -304,7 +304,6 @@ body {
   float: left;
   font-size: 10px;
   font-weight: 400;
-  margin-left: 40px;
 }
 
 .mailControlGuest>span {
@@ -352,4 +351,49 @@ body {
 
 .mailBox-right>p {
   margin-top: 10px;
+}
+
+.titleBox {
+  margin-left: 20px;
+}
+
+.container-fluid {
+  padding-top: 1%;
+}
+
+.label-small {
+  font-size: 10px;
+  margin-right: 10px;
+  font-weight: normal;
+}
+
+.media-body>span {
+  font-size: 8px;
+}
+
+.media-body>a:focus,
+.media-body>a:hover {
+  text-decoration: none;
+}
+
+.pageNav {
+  text-align: center;
+}
+
+.nav-category {
+  font-size: 17px;
+  border-bottom: 1px solid rgb(221, 221, 221);
+}
+
+.nav-category>li {
+  padding-right: 20px;
+}
+
+.problemsId {
+  color: #555;
+  font-size: 14px;
+}
+
+.problemsName {
+  font-size: 21px;
 }

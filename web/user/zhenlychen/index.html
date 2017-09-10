@@ -23,7 +23,7 @@
   <script>
     document.getElementById('nav-bar').appendChild(document.querySelector('link[rel="import"]').import.querySelector('.navbar'));
   </script>
-  <div class="container-fluid" style="padding-top: 1%;">
+  <div class="container-fluid">
     <div class="col-sm-4 col-md-3 col-lg-2 col-lg-offset-2">
       <div class="userInfoBox">
         <img class="avatarBox" src="/pic/20028311.jpg">
@@ -55,41 +55,47 @@
       </div>
     </div>
     <div class="col-sm-8 col-md-9 col-lg-6">
-      <p class="boxTitle"><i class="fa fa-database fa-fw" aria-hidden="true"></i> 用户信息</p>
-      <hr class="hrStyle" />
-      <div class="userData">
-        <p>积分：1034 / 1500 <span class="label label-success labal-lv">Lv.3</span></p>
-        <p>排名 ：<span class="label label-success"><a href="rank.html">No.5</a></span></p>
-        <p>已通过题目：34 道</p>
-      </div>
-      <p class="boxTitle"><i class="fa fa-envelope-open-o fa-fw" aria-hidden="true"></i> 留言</p>
-      <hr class="hrStyle" />
-      <div id="myMail" class="mailBox">
-        <div class="mailDiv">
-          <i class="fa fa-user-o fa-fw" aria-hidden="true"></i>
-          <div class="mailBox-right">
-            <a href="javascript:;">  Zhenly:</a>
-            <textarea id="writeMailBox" rows="3"></textarea>
-            <p style="display: none;" class="smail-text">留言功能需要用户等级达到 <span class="label label-success labal-lv">Lv.2</span></p>
-          </div>
-          <div class="mailControl">
-            <button class="btn btn-default">确认</button>
-          </div>
+      <fieldset>
+        <legend><i class="fa fa-database fa-fw" aria-hidden="true"></i> 用户信息</legend>
+        <div class="userData">
+          <p>积分：1034 / 1500 <span class="label label-success labal-lv">Lv.3</span></p>
+          <p>排名 ：<span class="label label-success"><a href="rank.html">No.5</a></span></p>
+          <p>已通过题目：34 道</p>
         </div>
-        <div v-for="(mail, index) in mails" class="mailBox">
+      </fieldset>
+      <fieldset>
+        <legend><i class="fa fa-envelope-open-o fa-fw" aria-hidden="true"></i> 留言</legend>
+        <div id="myMail" class="mailBox">
           <div class="mailDiv">
             <i class="fa fa-user-o fa-fw" aria-hidden="true"></i>
             <div class="mailBox-right">
-              <a :href="'/user/' + mail.from">{{mail.fromName}} </a> <span v-if="mail.title" class="label label-primary">{{mail.titleName}}</span> :
-              <p class="mailContent">{{mail.content}}</p>
+              <a href="javascript:;">  Zhenly:</a>
+              <textarea id="writeMailBox" rows="3"></textarea>
+              <p style="display: none;" class="smail-text">留言功能需要用户等级达到 <span class="label label-success labal-lv">Lv.2</span></p>
             </div>
-            <div class="mailControlGuest">
-              <span>{{new Date(mail.time).format('yyyy-MM-dd hh:mm:ss')}}</span>
+            <div class="mailControl">
+              <button class="btn btn-default">确认</button>
+            </div>
+          </div>
+          <div v-for="(mail, index) in mails" class="mailBox">
+            <div class="media">
+              <div class="media-left">
+                <i class="fa fa-user-o fa-fw" aria-hidden="true"></i>
+              </div>
+              <div class="media-body">
+                <a title="标记为已读" v-if="mail.new" href="javascript:;" class="label-right" onclick="readMail()"><span class="label label-success">new</span></a>
+                <a class="media-heading" :href="'/user/' + mail.from">{{mail.fromName}} <span v-if="mail.title" class="label label-primary">{{mail.titleName}}</span></a>
+                <p class="mailContent">{{mail.content}}</p>
+                <div class="mailControl">
+                  <span>{{new Date(mail.time).format('yyyy-MM-dd hh:mm:ss')}}</span>
+                  <a href="javascript:;" title="回复"><i class="fa fa-reply fa-fw" aria-hidden="true"></i></a> |
+                  <a href="javascript:;" title="删除"><i class="fa fa-trash-o fa-fw" aria-hidden="true"></i></a>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-
+      </fieldset>
 
     </div>
   </div>
