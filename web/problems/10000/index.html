@@ -14,6 +14,9 @@
   <link href="https://cdn.bootcss.com/codemirror/5.25.0/codemirror.css" rel="stylesheet">
   <link href="https://cdn.bootcss.com/codemirror/5.25.0/addon/hint/show-hint.min.css" rel="stylesheet">
   <link href="https://cdn.bootcss.com/codemirror/5.25.0/theme/blackboard.min.css" rel="stylesheet">
+  <link href="https://cdn.bootcss.com/codemirror/5.29.0/theme/colorforth.min.css" rel="stylesheet">
+  <link href="https://cdn.bootcss.com/codemirror/5.29.0/theme/yeti.min.css" rel="stylesheet">
+  <link href="https://cdn.bootcss.com/codemirror/5.29.0/theme/solarized.min.css" rel="stylesheet">
 
   <link rel="shortcut icon" href="/xmatrix.ico">
   <link rel="import" href="/nav-bar.html">
@@ -29,9 +32,9 @@
       <div class="col-lg-8 col-lg-offset-2">
         <ul class="nav nav-tabs nav-category" id="myTab" role="tablist">
           <li class="active"><a href="#home" data-toggle="tab" aria-controls="home" role="tab">问题描述</a></li>
-          <li><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab">成绩报告</a></li>
-          <li><a href="#messages" aria-controls="messages" role="tab" data-toggle="tab">提交记录</a></li>
-          <li><a href="#settings" aria-controls="settings" role="tab" data-toggle="tab">排名</a></li>
+          <li><a href="#gradePage" aria-controls="gradePage" role="tab" data-toggle="tab">成绩报告</a></li>
+          <li><a href="#judgePage" aria-controls="judgePage" role="tab" data-toggle="tab">提交记录</a></li>
+          <li><a href="#rankPage" aria-controls="rankPage" role="tab" data-toggle="tab">排名</a></li>
         </ul>
         <br>
         <!-- Tab panes -->
@@ -60,19 +63,19 @@
             </div>
           </div>
 
-          <div role="tabpanel" class="tab-pane" id="messages">
-            <div class="panel panel-default col-md-3 col-md-offset-1">
+          <div role="tabpanel" class="tab-pane" id="gradePage">
+            <div class="panel panel-default col-md-3">
               <div class="panel-body">
                 <p style="padding: 5px;text-align: left;font-size:20px;"> 你的成绩：</p>
-                <p :style="'text-align: center;font-size:55px;color:#' + color">
-                  {{gradeTotal}}
+                <p style="text-align: center;font-size:55px;color:#666">
+                  50
                 </p>
                 <div class="progress">
-                  <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" :style="'width: ' + gradeTotal +'%'"></div>
+                  <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" :style="width:50%"></div>
                 </div>
               </div>
             </div>
-            <div class="panel panel-default col-md-6 col-md-offset-1">
+            <div class="panel panel-default col-md-8 col-md-offset-1">
               <div class="panel-body" style="text-align:left;">
                 <p style="padding: 6px;font-size:18px;"> 最后提交：{{lastTime}}</p>
                 <p style="padding: 6px;font-size:18px;"> 最高分数：{{max}}</p>
@@ -83,21 +86,19 @@
 
             <div v-for="grades in gradeEach" class="panel panel-default">
               <div class="panel-body">
-                <p :style="'font-size:20px;color:#' + grades.color">
+                <p style="font-size:20px;">
                   {{grades.name}} {{grades.grade}}/{{grades.max}}
-                  <span :class="'glyphicon glyphicon-'+grades.ico" style="float:right;"></span>
                 </p>
               </div>
-              <div v-html="grades.helpText" class="panel-footer"></div>
+              <div v-html="grades.helpText" class="panel-footer">
+                你好
+              </div>
             </div>
           </div>
 
-          <div role="tabpanel" class="tab-pane" id="settings">
+          <div role="tabpanel" class="tab-pane" id="rankPage">
             <div class="panel panel-success">
-              <div class="panel-body">
-                <p style="font-size:30px;color:#479EA2;padding: 20px;padding-bottom: 0px;"><span class="glyphicon glyphicon-king"></span> Rank</p>
-              </div>
-              <div class="panel-body" style="padding-left: 40px;padding-right: 40px;">
+              <div class="panel-body" style="padding: 0px;">
                 <table class="table table-hover table-striped">
                   <tr style="font-size:17px;color:#fff;background-color: #00B0AD">
                     <th>No</th>
@@ -117,8 +118,28 @@
           </div>
         </div>
 
-        <div class="panel panel-default" style="background-color: #0C1021;">
-          <div class="panel-body">
+        <div class="panel panel-default">
+          <div class="panel-header">
+            <form class="form-inline">
+              <select class="form-control left-code-select" onchange="selectMode()">
+                    <option value="text/x-c++src">C++</option>
+                    <option value="text/x-csrc">C</option>
+                    <option value="text/x-java">Java</option>
+                    <option value="text/javascript">JavaScript</option>
+                    <option value="text/x-sh">Shell</option>
+              </select>
+              <select class="form-control right-code-select" onchange="selectTheme()">
+                  <option>blackboard</option>
+                  <option>colorforth</option>
+                  <option>solarized dark</option>
+                  <option>solarized light</option>
+                  <option value="yeti">yeti</option>
+                  <option value="default">default</option>
+              </select>
+            </form>
+          </div>
+
+          <div class="panel-body code-panel">
             <div class="form-group">
               <textarea id="codetext" name="codetext" class="form-control"></textarea>
             </div>
@@ -140,7 +161,10 @@
   <script src="https://cdn.bootcss.com/codemirror/5.25.0/addon/edit/trailingspace.min.js"></script>
   <script src="https://cdn.bootcss.com/codemirror/5.25.0/addon/hint/javascript-hint.min.js"></script>
   <script src="https://cdn.bootcss.com/codemirror/5.25.0/addon/hint/show-hint.min.js"></script>
+
   <script src="https://cdn.bootcss.com/codemirror/5.25.0/mode/clike/clike.min.js"></script>
+  <script src="https://cdn.bootcss.com/codemirror/5.29.0/mode/javascript/javascript.min.js"></script>
+  <script src="https://cdn.bootcss.com/codemirror/5.29.0/mode/shell/shell.min.js"></script>
 
   <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
   <script src="https://cdn.bootcss.com/showdown/1.6.4/showdown.min.js"></script>
@@ -148,8 +172,9 @@
   <script src="https://cdn.bootcss.com/vue/2.3.3/vue.js"></script>
   <script src="/js/xmatrix.js"></script>
   <script>
+    let globalEditer;
     $(function() {
-      testcode();
+      codeBoxInit();
       loadBar();
     }); //处理标题栏
 
@@ -157,6 +182,37 @@
       var converter = new showdown.Converter();
       $("#mymarkdown").html(converter.makeHtml(result));
     }); //获取md文件
+    function codeBoxInit() {
+      var textarea = document.getElementById('codetext');
+      var editor = CodeMirror.fromTextArea(textarea, {
+        autofocus: true,
+        content: textarea.value,
+        mode: 'text/x-c++src',
+        theme: 'blackboard',
+        matchBrackets: true,
+        autoCloseBrackets: true,
+        extraKeys: {
+          'Ctrl': 'autocomplete'
+        },
+        lineNumbers: true,
+        inputStyle: 'contenteditable',
+      });
+      editor.on('change', function(Editor, changes) {
+        $('#codetext').text(editor.getValue());
+      });
+      editor.setSize('auto', '500px');
+      globalEditer = editor;
+    } //代码编辑框
+
+
+    function selectTheme() {
+      var theme = $('.right-code-select').eq(0).val();
+      globalEditer.setOption("theme", theme);
+    }
+
+    function selectMode() {
+      globalEditer.setOption("mode", $('.left-code-select').eq(0).val())
+    }
   </script>
 </body>
 

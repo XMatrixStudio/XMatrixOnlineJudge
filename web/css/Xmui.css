@@ -397,3 +397,16 @@ body {
 .problemsName {
   font-size: 21px;
 }
+
+.left-code-select {
+  width: 30%;
+}
+
+.right-code-select {
+  width: 30%;
+  float: right;
+}
+
+.code-panel {
+  padding: 0px;
+}

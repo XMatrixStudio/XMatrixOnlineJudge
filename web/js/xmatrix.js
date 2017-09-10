@@ -305,24 +305,7 @@ function toMail() {
   });
 } //发送邮件
 
-function testcode() {
-  var textarea = document.getElementById('codetext');
-  var editor = CodeMirror.fromTextArea(textarea, {
-    autofocus: true,
-    content: textarea.value,
-    mode: 'text/x-c++src',
-    theme: 'blackboard',
-    matchBrackets: true,
-    autoCloseBrackets: true,
-    extraKeys: { 'Ctrl': 'autocomplete' },
-    lineNumbers: true,
-    inputStyle: 'contenteditable',
-  });
-  editor.on('change', function(Editor, changes) {
-    $('#codetext').text(editor.getValue());
-  });
-  editor.setSize('auto', '500px');
-} //代码编辑框
+
 
 function isLogin(callback) {
   var qwq = getCookie('isLogin');
