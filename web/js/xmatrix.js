@@ -305,29 +305,12 @@ function toMail() {
   });
 } //发送邮件
 
-function testcode() {
-  var textarea = document.getElementById('codetext');
-  var editor = CodeMirror.fromTextArea(textarea, {
-    autofocus: true,
-    content: textarea.value,
-    mode: 'text/x-c++src',
-    theme: 'blackboard',
-    matchBrackets: true,
-    autoCloseBrackets: true,
-    extraKeys: { 'Ctrl': 'autocomplete' },
-    lineNumbers: true,
-    inputStyle: 'contenteditable',
-  });
-  editor.on('change', function(Editor, changes) {
-    $('#codetext').text(editor.getValue());
-  });
-  editor.setSize('auto', '500px');
-} //代码编辑框
+
 
 function isLogin(callback) {
   var qwq = getCookie('isLogin');
   var wdf = getCookie('tureEmail');
-  if (qwq === '' || qwq === 0 || qwq == undefined) {
+  if (qwq === '' || qwq === 0 || qwq === undefined) {
     window.location.href = '/index.html?op=1';
   } else if (wdf == '0' || wdf == undefined || wdf == '') {
     window.location.href = '/mail.html';
@@ -337,30 +320,39 @@ function isLogin(callback) {
 } //检测是否登陆和验证邮箱
 
 
-function loadBar(id) {
-  if (localStorage.navBar === undefined) {
-    $.get('nav-bar.html', (data) => {
-      localStorage.navBar = data;
-      $("#nav-bar").html(localStorage.navBar);
-    });
+function loadBar() {
+  if (1) { //if (getCookie('isLogin') == 'true' && getCookie('name') !== null) {
+    $('#loginBtn').hide();
+    $('#userBar').show();
+    $('#userBar').html(getCookie('name') + '<span class="caret"></span>');
   } else {
-    $("#nav-bar").html(localStorage.navBar);
+    $('#userBar').hide();
+    $('#loginBtn').show()
   }
-  setTimeout(function() {
-    if (getCookie('isLogin') == 'true' && getCookie('name') !== null) {
-      $('#loginBtn').hide();
-      $('#userBar').show();
-      $('#userBar').html(getCookie('name') + '<span class="caret"></span>')
-    } else {
-      $('#userBar').hide();
-      $('#loginBtn').show()
-    }
-    $(id).addClass("active");
-  }, 800);
 }
 
 function logout() {
   $.post('/api/logout', {}, (data) => {
     window.location.href = '/';
   });
+}
+
+Date.prototype.format = function(format) {
+  var o = {
+    "M+": this.getMonth() + 1, //month
+    "d+": this.getDate(), //day
+    "h+": this.getHours(), //hour
+    "m+": this.getMinutes(), //minute
+    "s+": this.getSeconds(), //second
+    "q+": Math.floor((this.getMonth() + 3) / 3), //quarter
+    "S": this.getMilliseconds() //millisecond
+  };
+  if (/(y+)/.test(format)) format = format.replace(RegExp.$1,
+    (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+  for (var k in o)
+    if (new RegExp("(" + k + ")").test(format))
+      format = format.replace(RegExp.$1,
+        RegExp.$1.length == 1 ? o[k] :
+        ("00" + o[k]).substr(("" + o[k]).length));
+  return format;
 }

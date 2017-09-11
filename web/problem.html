@@ -4,62 +4,74 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="theme-color" content="#f8f8f8">
+  <meta name="theme-color" content="#393D49">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>XMatrix</title>
-
-  <!-- Bootstrap -->
   <link href="css/bootstrap.min.css" rel="stylesheet">
+  <link href="/css/Xmui.css" rel="stylesheet">
+  <link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
   <link rel="shortcut icon" href="/xmatrix.ico">
-
-  <style type="text/css">
-    body {
-      padding-top: 70px;
-      background-color: #EEEEEE;
-    }
-    
-    .box-right {
-      position: relative;
-      display: inline-block;
-      width: 45%;
-      text-align: right;
-    }
-    
-    .box-left {
-      position: relative;
-      display: inline-block;
-      width: 50%;
-    }
-  </style>
-
+  <link rel="import" href="nav-bar.html">
 </head>
 
 <body>
   <!-- 标题栏开始 -->
-  <div id="nav-bar">
-  </div>
+  <div id="nav-bar"></div>
+  <script>
+    document.getElementById('nav-bar').appendChild(document.querySelector('link[rel="import"]').import.querySelector('.navbar'));
+    document.getElementById('t-problem').className += 'active';
+  </script>
   <!--标题栏结束 -->
-  <br>
   <div class="container-fluid">
     <div class="row-fluid">
       <!-- Tab panes -->
-      <div id="proCont" class="col-md-8 col-md-offset-2">
-        <div class="tab-content">
-          <div class="list-group">
-            <a v-for="(cont,index) in contents" :href="'api/problem/' + cont.pid" class="list-group-item">
-              <div class="box-left">
-                <h4 class="list-group-item-heading">{{cont.title}}
-                  <span class="label label-success">{{cont.category}}</span>
-                </h4>
-                <p class="list-group-item-text">{{cont.class}}</p>
+      <div id="proCont" class="col-lg-8 col-lg-offset-2">
+        <ul class="nav nav-tabs nav-category">
+          <li role="presentation" class="active"><a href="#">算法</a></li>
+          <li role="presentation"><a href="#">设计模式</a></li>
+          <li role="presentation"><a href="#">数据结构</a></li>
+        </ul>
+        <!-- 问题列表开始 -->
+        <div class="list-group">
+          <a v-for="(cont,index) in contents" :href="'problems/' + cont.pid" class="list-group-item">
+            <div class="box-left">
+              <h4 class="list-group-item-heading">
+                <span class="problemsId"># {{cont.pid}} </span>
+                <span class="problemsName"> {{cont.title}}</span>
+              </h4>
+              <p class="list-group-item-text">{{cont.class}} <span v-for="tag in cont.tags" class="label label-success label-small">{{tag}}</span></p>
+            </div>
+            <div class="box-right" title="通过率">
+              <div class="progress">
+                <div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" :style="'width:' + Math.ceil((cont.ACCounts / cont.JudgeCounts)*10000)/100 + '%;'">
+                </div>
               </div>
-              <div class="box-right">
-                <p>通过率：{{Math.ceil((cont.ACCounts / cont.JudgeCounts)*10000)/100}} %</p>
-                <p>热度： {{cont.JudgeCounts}}</p>
-              </div>
-            </a>
-          </div>
+              <p>热度： {{cont.JudgeCounts}}</p>
+            </div>
+          </a>
         </div>
+        <!-- 问题列表结束 -->
+        <!-- 分页开始 -->
+        <nav class="pageNav">
+          <ul class="pagination">
+            <li class="disabled">
+              <a href="#" aria-label="Previous">
+                <span aria-hidden="true">&laquo;</span>
+              </a>
+            </li>
+            <li class="active"><a href="?page=1">1</a></li>
+            <li><a href="?page=2">2</a></li>
+            <li><a href="?page=3">3</a></li>
+            <li><a href="?page=4">4</a></li>
+            <li><a href="?page=5">5</a></li>
+            <li>
+              <a href="#" aria-label="Next">
+                <span aria-hidden="true">&raquo;</span>
+              </a>
+            </li>
+          </ul>
+        </nav>
+        <!-- 分页结束 -->
       </div>
     </div>
   </div>
@@ -71,7 +83,82 @@
     var problemCont = new Vue({
       el: '#proCont',
       data: {
-        contents: []
+        contents: [{
+          "_id": "59ab7437e6010858e5b04152",
+          "pid": 10000,
+          "class": "编程题",
+          "category": "algorithms",
+          "tags": ['数据结构', '并查集', '输入输出'],
+          "title": "Hello, world",
+          "timeLimit": 1000,
+          "memoryLimit": 1000,
+          "authorName": "MegaShow",
+          "ACCounts": 10,
+          "JudgeCounts": 38,
+          "__v": 0,
+        }, {
+          "_id": "59ab743be6010858e5b04156",
+          "pid": 10001,
+          "class": "编程题",
+          "category": "algorithms",
+          "tags": ['二叉树'],
+          "title": "Hi, world",
+          "timeLimit": 1000,
+          "memoryLimit": 1000,
+          "authorName": "MegaShow",
+          "ACCounts": 18,
+          "JudgeCounts": 98,
+          "__v": 0,
+        }, {
+          "_id": "59ab7437e6010858e5b04152",
+          "pid": 10002,
+          "class": "编程题",
+          "category": "algorithms",
+          "tags": ['队列', '红黑树'],
+          "title": "Hello, world",
+          "timeLimit": 1000,
+          "memoryLimit": 1000,
+          "authorName": "MegaShow",
+          "ACCounts": 10,
+          "JudgeCounts": 38,
+          "__v": 0,
+        }, {
+          "_id": "59ab743be6010858e5b04156",
+          "pid": 10003,
+          "class": "编程题",
+          "category": "algorithms",
+          "title": "Hi, world",
+          "timeLimit": 1000,
+          "memoryLimit": 1000,
+          "authorName": "MegaShow",
+          "ACCounts": 78,
+          "JudgeCounts": 98,
+          "__v": 0,
+        }, {
+          "_id": "59ab7437e6010858e5b04152",
+          "pid": 10004,
+          "class": "编程题",
+          "category": "algorithms",
+          "title": "Hello, world",
+          "timeLimit": 1000,
+          "memoryLimit": 1000,
+          "authorName": "MegaShow",
+          "ACCounts": 0,
+          "JudgeCounts": 18,
+          "__v": 0,
+        }, {
+          "_id": "59ab743be6010858e5b04156",
+          "pid": 10332,
+          "class": "编程题",
+          "category": "algorithms",
+          "title": "Hi, world",
+          "timeLimit": 1000,
+          "memoryLimit": 1000,
+          "authorName": "MegaShow",
+          "ACCounts": 8,
+          "JudgeCounts": 19,
+          "__v": 0,
+        }]
       }
     });
 
@@ -84,7 +171,7 @@
     }
 
     $(function() {
-      loadBar("#t-problem");
+      loadBar();
       getPlist();
     }); //处理标题栏
   </script>
