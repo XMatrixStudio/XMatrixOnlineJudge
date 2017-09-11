@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Shell.NET" Version="0.1.5-alpha"/>
+    <PackageReference Include="Shell.NET" Version="0.1.8-alpha"/>
     <PackageReference Include="Newtonsoft.Json" Version="10.0.2"/>
     <PackageReference Include="MongoDB.Driver" Version="2.4.3"/>
   </ItemGroup>

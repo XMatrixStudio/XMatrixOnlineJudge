@@ -1,3 +1,10 @@
+/*
+  Copyright (c) 2017 XMatrix Studio
+  Licensed under the MIT license
+
+  Description: 配置文件读取
+ */
+
 using System.IO;
 using Newtonsoft.Json;
 
