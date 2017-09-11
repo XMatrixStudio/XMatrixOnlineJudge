@@ -3,6 +3,7 @@ var userSchema = db.xmoj.Schema({
   uid: Number, // 用户id
   token: Number, // 访问令牌
   name: String, // 用户名
+  nikeName: String, // 昵称
   sex: Number, // 性别
   email: String, // 电子邮箱
   web: String, // 个人主页

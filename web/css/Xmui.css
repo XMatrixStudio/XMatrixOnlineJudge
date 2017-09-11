@@ -410,3 +410,7 @@ body {
 .code-panel {
   padding: 0px;
 }
+
+.problem-info a {
+  text-decoration: none;
+}

@@ -7,6 +7,7 @@ var problemSchema = db.xmoj.Schema({
   timeLimit: Number, //时间限制
   memoryLimit: Number, //内存限制
   authorName: String, //作者名称
+  nikeName: String, // 作者昵称
   ACCounts: Number, // 通过数
   JudgeCounts: Number, // 总评测数
   rank: [{ //排行榜
