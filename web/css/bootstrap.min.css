@@ -1955,6 +1955,16 @@ kbd kbd {
 
 pre {
   display: block;
+  padding: 11px;
+  margin: 0 0 11.5px;
+  font-size: 12px;
+  line-height: 1.846;
+  word-break: break-all;
+  word-wrap: break-word;
+  color: #212121;
+  background-color: #f5f5f5;
+  border: 1px solid #cccccc;
+  border-radius: 3px;
 }
 
 pre code {
@@ -2809,7 +2819,7 @@ th {
 .table {
   width: 100%;
   max-width: 100%;
-  margin-bottom: 23px;
+  /* margin-bottom: 23px; */
 }
 
 .table>thead>tr>th,
