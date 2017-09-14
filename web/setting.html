@@ -46,6 +46,22 @@
         <div class="layui-form-mid layui-word-aux">在个人主页显示你获得的成就</div>
       </div>
       <div class="layui-form-item">
+        <label class="layui-form-label">显示成就</label>
+        <div class="layui-input-block">
+          <input type="checkbox" name="switch4" lay-skin="switch" lay-text="ON|OFF">
+        </div>
+        <div class="layui-form-mid layui-word-aux">在你的名字后面显示一个成就</div>
+      </div>
+      <div class="layui-form-item">
+        <label class="layui-form-label">显示成就选择</label>
+        <div class="layui-input-block">
+          <select name="title" lay-verify="required">
+            <option value="0">坏坏萌妹</option>
+            <option value="1">萌妹秀秀</option>
+          </select>
+        </div>
+      </div>
+      <div class="layui-form-item">
         <div class="layui-input-block">
           <button class="layui-btn" lay-submit lay-filter="formDemo">立即提交</button>
           <button type="reset" class="layui-btn layui-btn-primary">重置</button>

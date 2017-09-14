@@ -1,22 +1,67 @@
 const db = require('./mongo.js');
 var userSchema = db.xmoj.Schema({
+  // 用户基础资料
   uid: Number, // 用户id
-  token: Number, // 访问令牌
   name: String, // 用户名
-  nikeName: String, // 昵称
-  sex: Number, // 性别
-  email: String, // 电子邮箱
-  web: String, // 个人主页
-  exp: Number, // 用户当前经验
-  level: Number, // 用户等级
-  class: Number, // 用户类型(0:普通用户，1：投稿者，2：管理员，3：最高权限)
+
+  // 安全访问
+  token: Number, // 访问令牌
+
+  info: { // 用户个性资料 (from violet)
+    nikeName: String, // 昵称
+    sex: Number, // 性别
+    email: String, // 电子邮箱
+    web: String, // 个人主页
+    locale: String, // 所在地
+    avatar: String, // 用户头像url
+  },
+
+  // 用户等级积分信息
+  detail: {
+    exp: Number, // 用户当前经验
+    level: Number, // 用户等级
+    class: Number, // 用户类型(0:普通用户，1：投稿者，2：管理员，3：最高权限)
+    title: [{ // 已获得成就
+      id: Number, // 成就 id
+      name: String, // 成就名称
+    }], // 已获得成就
+    showTitle: String, // 显示的成就
+  },
+
   problems: [{ // 题目评测记录
     pid: Number, // 问题id
-    pName: String, // 题目名称
-    class: String, // 题目类型
     lastJudge: Number, //最新一次评测的id，
     grade: Number, // 最高成绩
     submitCounts: Number, // 提交次数
+  }],
+
+  userSetting: { // 用户设置
+    allow: {
+      Message: Boolean, // 是否允许留言
+    },
+    public: {
+      message: Boolean, // 是否公开留言
+      title: Boolean, // 是否公开成就
+      showTitle: Boolean, // 是否显示成就头衔
+      titleId: Number, // 显示头衔的 id
+    },
+  },
+
+  follow: { // 社交信息
+    following: [{ // 关注的人
+      name: String,
+    }],
+    followers: [{ // 我的粉丝
+      name: String,
+    }],
+  },
+
+  message: [{ // 主页留言
+    from: String, // 评论者 name
+    content: String, // 评论内容
+    new: Boolean, // 是否未读
+    title: Boolean, // 是否显示头衔
+    time: Date, // 发表时间
   }],
 }, { collection: 'users' });
 var userDB = db.xmoj.model('users', userSchema);
