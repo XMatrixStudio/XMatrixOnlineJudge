@@ -151,6 +151,30 @@
   top: 10%;
 }
 
+
+/* 绿色方块动画背景
+使用样例：
+<body>
+  <div class="wrapper">
+    ...
+    你的内容
+    ...
+    <ul class="bg-bubbles">
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+    </ul>
+  </div>
+</body>
+*/
+
 .box-right {
   float: right;
 }
@@ -437,4 +461,10 @@ body {
 .hljs ol li {
   margin-left: -10px;
   list-style-type: decimal-leading-zero;
+}
+
+.CodeMirror {
+  font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+  font-size: 14px;
+  line-height: 20px;
 }
