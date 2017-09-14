@@ -21,6 +21,7 @@ server/file/
 server/judge/
 
 # config file
+/.vscode/
 /judge/config/*
 server/package-lock.json
 .vscode/cSpell.json

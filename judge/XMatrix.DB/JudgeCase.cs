@@ -17,11 +17,13 @@ namespace XMatrix.DB {
         public string pName;  // 问题名字
         public int grade;  // 总成绩
         public string lang;  // 编译语言
-        public BsonArray[] details;  // 详细评测项目
+        public BsonDocument[] details;  // 详细评测项目
         // details: [{ name:String, grade:Number, text:String }]
         public int runTime;  // 运行时间
         public int memoryUsage;  // 内存占用
         public bool judging;  // 正在评测
         public BsonDateTime submitTime;  // 提交时间
+
+        // public 
     }
 }

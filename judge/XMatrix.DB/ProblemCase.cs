@@ -21,7 +21,7 @@ namespace XMatrix.DB {
         public int judgeCounts;  // 总评测数
         public BsonArray rank;  // 排行榜
         // rank: [{ uName:String, grade:Number, submitTime:Date, runTime:Number, memoryUsage:Number }]
-        public BsonArray test;  // 评测项目以及分数
+        public BsonDocument[] test;  // 评测项目以及分数
         // test: [{ name:String, grade:Number }]
     }
 }
