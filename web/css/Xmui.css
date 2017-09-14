@@ -151,6 +151,30 @@
   top: 10%;
 }
 
+
+/* 绿色方块动画背景
+使用样例：
+<body>
+  <div class="wrapper">
+    ...
+    你的内容
+    ...
+    <ul class="bg-bubbles">
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+    </ul>
+  </div>
+</body>
+*/
+
 .box-right {
   float: right;
 }
@@ -409,4 +433,38 @@ body {
 
 .code-panel {
   padding: 0px;
+}
+
+.problem-info a {
+  text-decoration: none;
+}
+
+.myPre {
+  position: relative;
+  margin-bottom: 24px;
+  border-radius: 3px;
+  border: 1px solid #C3CCD0;
+  background: #FFF;
+  overflow: hidden;
+  padding: 0px;
+}
+
+.myCode {
+  display: block;
+  padding: 12px 24px;
+  overflow-y: auto;
+  font-weight: 300;
+  font-family: Menlo, monospace;
+  font-size: 0.8em;
+}
+
+.hljs ol li {
+  margin-left: -10px;
+  list-style-type: decimal-leading-zero;
+}
+
+.CodeMirror {
+  font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+  font-size: 14px;
+  line-height: 20px;
 }

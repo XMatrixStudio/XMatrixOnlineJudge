@@ -18,6 +18,8 @@
   <link href="https://cdn.bootcss.com/codemirror/5.29.0/theme/yeti.min.css" rel="stylesheet">
   <link href="https://cdn.bootcss.com/codemirror/5.29.0/theme/solarized.min.css" rel="stylesheet">
 
+  <link href="https://cdn.bootcss.com/highlight.js/9.12.0/styles/monokai-sublime.min.css" rel="stylesheet">
+
   <link rel="shortcut icon" href="/xmatrix.ico">
   <link rel="import" href="/nav-bar.html">
 </head>
@@ -39,78 +41,138 @@
         <br>
         <!-- Tab panes -->
         <div class="tab-content tabs">
-          <div role="tabpanel" class="tab-pane active" id="home">
+          <div role="tabpanel" class="tab-pane active fade in" id="home">
             <div class="panel panel-default">
-              <div class="panel-body" style="padding-left:30px;padding-top:25px;font-size: 25px"><span class="glyphicon glyphicon-tasks" aria-hidden="true"> </span><strong> {{title}}</strong></div>
+              <div class="panel-body" style="padding-left:30px;padding-top:25px;font-size: 25px"><span class="glyphicon glyphicon-tasks" aria-hidden="true"> </span><strong> Hello, world</strong></div>
               <div class="panel-body" style="padding:10px;">
                 <div class="col-xs-9">
-                  <p>时间限制 : {{timeLimit}} ms</p>
-                  <p>内存限制 : {{memLimit}} KB</p>
+                  <p>时间限制 : 1000 ms</p>
+                  <p>内存限制 : 10240 KB</p>
                 </div>
-                <div class="col-xs-3 hidden-xs">
-                  <p>出题：{{author}}
+                <div class="col-xs-3 hidden-xs problem-info">
+                  <p>作者: <a class="" href="/user/megashow"> MegaShow</a>
                   </p>
-                  <p>邮箱：{{email}}
+                  <p>邮箱: <a href="mailto:megashow@xmatrix.studio"> megashow@xmatrix.studio</a>
                   </p>
                 </div>
               </div>
             </div>
             <div class="panel panel-default">
               <div class="panel-body">
-                <div id="mymarkdown" class="markdown-body" style="padding:15px;">
+                <div id="markdownBox" class="markdown-body" style="padding:15px;">
                 </div>
               </div>
             </div>
           </div>
 
-          <div role="tabpanel" class="tab-pane" id="gradePage">
+          <div role="tabpanel" class="tab-pane fade in" id="gradePage">
             <div class="panel panel-default col-md-3">
               <div class="panel-body">
                 <p style="padding: 5px;text-align: left;font-size:20px;"> 你的成绩：</p>
                 <p style="text-align: center;font-size:55px;color:#666">
-                  50
+                  80
                 </p>
                 <div class="progress">
-                  <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" :style="width:50%"></div>
+                  <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width: 80%">
+                    <span class="sr-only">40% Complete (success)</span>
+                  </div>
                 </div>
               </div>
             </div>
             <div class="panel panel-default col-md-8 col-md-offset-1">
               <div class="panel-body" style="text-align:left;">
-                <p style="padding: 6px;font-size:18px;"> 最后提交：{{lastTime}}</p>
-                <p style="padding: 6px;font-size:18px;"> 最高分数：{{max}}</p>
-                <p style="padding: 6px;font-size:18px;"> 提交次数：{{times}}</p>
-                <p style="padding: 6px;font-size:18px;"> 运行时间：{{runTime}} ms</p>
+                <p style="padding: 6px;font-size:18px;"> 最后提交：2017-4-14 12:11:18</p>
+                <p style="padding: 6px;font-size:18px;"> 最高分数：77</p>
+                <p style="padding: 6px;font-size:18px;"> 提交次数：3</p>
+                <p style="padding: 6px;font-size:18px;"> 运行时间：455 ms</p>
               </div>
             </div>
 
-            <div v-for="grades in gradeEach" class="panel panel-default">
+            <div class="panel panel-default col-md-12" style="padding: 0px;">
               <div class="panel-body">
                 <p style="font-size:20px;">
-                  {{grades.name}} {{grades.grade}}/{{grades.max}}
+                  标准测试 60/60
+                </p>
+                <div>输入：
+                  <pre class="myPre"><code class="lang-javascript myCode" style="border-radius: 4px;">1 2 3 4 5
+2 3 4 5
+6 7</code></pre>
+                </div>
+                <div>标准输出：
+                  <pre class="myPre"><code class="lang-javascript myCode" style="border-radius: 4px;">1 2 3 4 5
+2 3 4 5
+6 7</code></pre>
+                </div>
+                <div>你的输出：
+                  <pre class="myPre"><code class="lang-javascript myCode" style="border-radius: 4px;">1 2 3 4 5
+2 3 4 5
+6 7</code></pre>
+                </div>
+              </div>
+              <div v-html="grades.helpText" class="panel-footer">
+                这是什么鬼
+              </div>
+            </div>
+            <div class="panel panel-default col-md-12" style="padding: 0px;">
+              <div class="panel-body">
+                <p style="font-size:20px;">
+                  内存测试 20/30
                 </p>
               </div>
               <div v-html="grades.helpText" class="panel-footer">
-                你好
+                内存泄漏了
               </div>
             </div>
           </div>
 
-          <div role="tabpanel" class="tab-pane" id="rankPage">
+          <div role="tabpanel" class="tab-pane fade in" id="rankPage">
             <div class="panel panel-success">
               <div class="panel-body" style="padding: 0px;">
                 <table class="table table-hover table-striped">
-                  <tr style="font-size:17px;color:#fff;background-color: #00B0AD">
+                  <tr style="font-size:17px;background-color: #ddd">
                     <th>No</th>
                     <th>昵称</th>
                     <th>运行时间</th>
                     <th>分数</th>
                   </tr>
                   <tr v-for="(grade, index) in grade">
-                    <td>{{index}}</td>
-                    <td>{{name[index]}}</td>
-                    <td>{{runTime[index]}} ms</td>
-                    <td>{{grade}}</td>
+                    <td>1</td>
+                    <td><a href="/user/megashow" target="_blank">MegaShow</a></td>
+                    <td>545 ms</td>
+                    <td>100</td>
+                  </tr>
+                  <tr v-for="(grade, index) in grade">
+                    <td>2</td>
+                    <td style="color: green;">zhenlychen</td>
+                    <td>545 ms</td>
+                    <td>90</td>
+                  </tr>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <div role="tabpanel" class="tab-pane fade in" id="judgePage">
+            <div class="panel panel-success">
+              <div class="panel-body" style="padding: 0px;">
+                <table class="table table-hover table-striped">
+                  <tr style="font-size:17px;background-color: #ddd">
+                    <th>提交时间</th>
+                    <th>状态</th>
+                    <th>运行时间</th>
+                    <th>分数</th>
+                  </tr>
+                  <tr v-for="(grade, index) in grade">
+                    <td>2017-1-12 12:11:22</td>
+                    <td style="color:green;">Success</td>
+                    <td>345 ms</td>
+                    <td>100</td>
+                  </tr>
+                  <tr v-for="(grade, index) in grade">
+                    <td>2017-1-12 12:11:22</td>
+                    <td style="color:red;">Wrong answer</td>
+                    <td>345 ms</td>
+                    <td>77</td>
                   </tr>
                 </table>
               </div>
@@ -118,7 +180,7 @@
           </div>
         </div>
 
-        <div class="panel panel-default">
+        <div class="panel panel-default col-md-12" style="padding: 0px;">
           <div class="panel-header">
             <form class="form-inline">
               <select class="form-control left-code-select" onchange="selectMode()">
@@ -141,7 +203,7 @@
 
           <div class="panel-body code-panel">
             <div class="form-group">
-              <textarea id="codetext" name="codetext" class="form-control"></textarea>
+              <textarea id="codeText" name="codeText" class="form-control"></textarea>
             </div>
           </div>
         </div>
@@ -166,6 +228,8 @@
   <script src="https://cdn.bootcss.com/codemirror/5.29.0/mode/javascript/javascript.min.js"></script>
   <script src="https://cdn.bootcss.com/codemirror/5.29.0/mode/shell/shell.min.js"></script>
 
+  <script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+
   <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
   <script src="https://cdn.bootcss.com/showdown/1.6.4/showdown.min.js"></script>
   <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
@@ -176,14 +240,25 @@
     $(function() {
       codeBoxInit();
       loadBar();
+      hljs.initHighlighting();
+      $('pre code').each(function() {
+        texts = $(this).text().replace(/&(?!#?[a-zA-Z0-9]+;)/g, '&amp;')
+          .replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/'/g, '&#39;').replace(/"/g, '&quot;')
+        var codeText = texts.split('\n');
+        var code = '';
+        $(codeText).each(function(v) {
+          code += '<li>' + codeText[v] + '</li>';
+        })
+        code = '<ol>' + code + '</ol>';
+        $(this).html(code);
+      });
     }); //处理标题栏
-
     $.get("/problems/10000/index.md", function(result) {
       var converter = new showdown.Converter();
-      $("#mymarkdown").html(converter.makeHtml(result));
+      $("#markdownBox").html(converter.makeHtml(result));
     }); //获取md文件
     function codeBoxInit() {
-      var textarea = document.getElementById('codetext');
+      var textarea = document.getElementById('codeText');
       var editor = CodeMirror.fromTextArea(textarea, {
         autofocus: true,
         content: textarea.value,
@@ -198,7 +273,7 @@
         inputStyle: 'contenteditable',
       });
       editor.on('change', function(Editor, changes) {
-        $('#codetext').text(editor.getValue());
+        $('#codeText').text(editor.getValue());
       });
       editor.setSize('auto', '500px');
       globalEditer = editor;

@@ -6,12 +6,17 @@ var judgeSchema = db.xmoj.Schema({
   pid: Number, // 问题id
   uid: Number, // 用户id
   uName: String, // 用户名
+  nikeName: String, // 用户昵称
   pName: String, // 问题名字
   grade: Number, // 总成绩
   lang: String, // 编译语言
   details: [{ // 详细评测项目
     name: String,
     grade: Number,
+    io: [{ in: String,
+      out: String,
+      stdout: String,
+    }],
     text: String,
   }],
   runTime: Number, // 运行时间
