@@ -23,11 +23,6 @@ server/judge/
 # config file
 /.vscode/
 /judge/config/*
-server/package-lock.json
-.vscode/cSpell.json
 server/config/
-server/config/mongodb.json
-server/config/mongodb.json
-server/config/mongodb.json
-server/config/mongodb.json
 web/layui/
+web2.0/node_modules/
