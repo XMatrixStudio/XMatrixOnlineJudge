@@ -26,3 +26,7 @@ server/judge/
 server/config/
 web/layui/
 web2.0/node_modules/
+web2.0/src/style/font-awesome/
+web2.0/src/lib/layer/
+web/layer/
+web2.0/dist/

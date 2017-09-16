@@ -1,0 +1,17 @@
+$navBackColor:rgb(57, 61, 73);
+$navBackFocus:rgb(67, 71, 83);
+$navFontColor:#dddddd;
+$navFontFocus:#ffffff;
+* {
+  box-sizing: border-box;
+}
+
+body {
+  letter-spacing: .2px;
+  line-height: 1.846;
+  margin-top: 80px;
+}
+
+a {
+  text-decoration: none;
+}

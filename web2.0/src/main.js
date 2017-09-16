@@ -3,10 +3,13 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
+import 'bootstrap-loader'
+import 'font-awesome-webpack'
+import './lib/layer/theme/default/layer.css'
 
+// require('./lib/layer/layer.js')
 Vue.config.productionTip = false
-
-/* eslint-disable no-new */
+  /* eslint-disable no-new */
 new Vue({
   el: '#app',
   router,
