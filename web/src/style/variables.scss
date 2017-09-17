@@ -1,0 +1,19 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  letter-spacing: .1px;
+  line-height: 1.846;
+  margin-top: 80px;
+}
+
+a {
+  color: #2196f3;
+  transition: color .3s;
+  text-decoration: none;
+  &:focus,
+  &:hover {
+    color: #0a6edb;
+  }
+}
