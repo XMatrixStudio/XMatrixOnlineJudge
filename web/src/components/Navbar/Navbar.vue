@@ -52,6 +52,7 @@ export default {
 <style lang="scss">
 $fontColor: #bfcbd9;
 .navBox {
+  z-index: 1024;
   position: fixed;
   top: 0;
   left: 0;

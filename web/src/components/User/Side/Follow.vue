@@ -1,7 +1,7 @@
 <template>
   <div>
     <p class="smailTitle">
-      <i class="fa fa-users fa-fw" aria-hidden="true"></i>关注好友列表</p>
+      <i class="fa fa-users fa-fw" aria-hidden="true"></i> 关注好友列表</p>
     <div class="sild-bar">
       <p v-for="(follower, index) in followers" :key="index">
         <a :href="'/user/' + follower.name">{{follower.nikeName}}</a>
@@ -40,8 +40,8 @@ export default {
   },
   methods: {
     deleteFriend(index) {
-      this.$data.selectedMan = this.$data.followers[index].nikeName;
-      this.$data.dialogVisible = true;
+      this.selectedMan = this.followers[index].nikeName;
+      this.dialogVisible = true;
     },
     handleClose(done) {
       done();

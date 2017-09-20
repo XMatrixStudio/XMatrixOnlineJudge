@@ -1,20 +1,20 @@
 <template>
   <div class="sideBox">
     <userInfo></userInfo>
-    <follow></follow>
   </div>
 </template>
 
 <script>
 import userInfo from './UserInfo';
 import follow from './Follow';
+import userTitle from './UserTitle';
 export default {
   data() {
     return {
-      msg: 'Welcome to Your Vue.js App'
+      msg: ''
     };
   },
-  components: { userInfo, follow }
+  components: { userInfo, follow, userTitle }
 };
 </script>
 

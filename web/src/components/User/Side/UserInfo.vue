@@ -3,6 +3,7 @@
     <img class="avatarBox" src="../../../assets/20028311.jpg">
     <p class="userName">
       <a href="javascript:;">{{nickName}}</a>
+      <el-tag type="primary">{{defaultTitle}}</el-tag>
     </p>
     <p class="userNameReal">{{name}}
       <i class="fa fa-mars fa-fw" aria-hidden="true"></i>
@@ -34,7 +35,8 @@ export default {
       detail: 'Hello, world!',
       web: 'blog.zhenly.cn',
       email: 'zhenlychen@foxmail.com',
-      locale: 'Guangzhou'
+      locale: 'Guangzhou',
+      defaultTitle: '管理员'
     };
   }
 };
