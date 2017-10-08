@@ -27,6 +27,7 @@ module.exports = {
     // allow debugger during development
     'no-debugger': process.env.NODE_ENV === 'production' ? 2 : 0,
     //语句强制分号结尾
-    "semi": [2, "always"]
+    "semi": [2, "always"],
+    "space-before-function-paren": ["error", "never"],
   }
 };

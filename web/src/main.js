@@ -6,18 +6,19 @@ import router from './router';
 import Vuex from 'vuex';
 import VueResource from 'vue-resource';
 import ElementUI from 'element-ui';
+import store from './store';
 import '../node_modules/element-ui/lib/theme-default/index.css';
 import 'font-awesome-webpack';
 Vue.use(Vuex);
 Vue.use(VueResource);
 Vue.use(ElementUI);
-
-// require('./lib/layer/layer.js')
 Vue.config.productionTip = false;
+
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
   router,
+  store,
   template: '<App/>',
   components: { App }
 });

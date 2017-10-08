@@ -20,10 +20,15 @@
 <script>
 import router from '../../router';
 export default {
+  props: ['nav'],
   data() {
     return {
-      activeIndex: '1',
     };
+  },
+  computed: {
+    activeIndex() {
+      return this.nav.toString();
+    }
   },
   methods: {
     handleSelect(key, keyPath) {

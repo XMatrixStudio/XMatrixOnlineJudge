@@ -10,7 +10,7 @@
       <i class="fa fa-venus fa-fw" aria-hidden="true" style="display: none;"></i>
     </p>
     <p class="userDetail">{{detail}}</p>
-    <hr class="line"/>
+    <hr class="line" />
     <p class="userInfo">
       <i class="fa fa-link fa-fw" aria-hidden="true"></i>
       <a :href="'http://' + web" target="_blank"> {{web}}</a>
@@ -19,10 +19,12 @@
       <i class="fa fa-envelope-o fa-fw" aria-hidden="true"></i>
       <a :href="'mailto:' + email" target="_blank"> {{email}}</a>
     </p>
-    <p class="userInfo">
-      <i class="fa fa-map-marker fa-fw" aria-hidden="true"></i> {{locale}}
-    </p>
-    <hr class="line"/>
+  <!--
+     <p class="userInfo">
+        <i class="fa fa-map-marker fa-fw" aria-hidden="true"></i> {{locale}}
+  </p>
+-->
+    <hr class="line" />
   </div>
 </template>
 
@@ -51,7 +53,7 @@ export default {
   }
 }
 
-.avatarBox{
+.avatarBox {
   height: 160px;
   width: 160px;
   border-radius: 9px;
@@ -63,26 +65,18 @@ export default {
   color: #555;
   font-weight: lighter;
   >.fa-mars {
-    color:cornflowerblue;
+    color: cornflowerblue;
   }
   >.fa-venus {
     color: palevioletred;
   }
 }
 
-.userDetail{
+.userDetail {
   font-size: 13px;
 }
 
-.line {
-  width: 80%;
-  height: 1px;
-  background: #e5e5e5;
-  border: none;
-  margin: 10px 0px 10px 0px;
-}
-
-.userInfo{
+.userInfo {
   margin: 5px auto;
   font-size: 14px;
 }

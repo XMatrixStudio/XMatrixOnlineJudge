@@ -1,15 +1,26 @@
 <template>
   <div id="app">
-    <navbar></navbar>
-    <router-view></router-view>
+    <navbar :nav="nav"></navbar>
+    <router-view @changeNav="changeNav"></router-view>
   </div>
 </template>
 
 <script>
 import navbar from './components/Navbar/Navbar';
 export default {
-  components: {navbar},
-  name: 'app'
+  components: { navbar },
+  name: 'app',
+  data() {
+    return {
+      nav: 1,
+    }
+  },
+  methods: {
+    changeNav(index) {
+      console.log(index)
+      this.nav = index
+    }
+  }
 };
 </script>
 
@@ -22,5 +33,4 @@ export default {
   color: #2c3e50;
   margin-top: 60px;
 }
-
 </style>

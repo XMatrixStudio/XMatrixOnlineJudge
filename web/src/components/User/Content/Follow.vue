@@ -1,16 +1,13 @@
 <template>
   <div>
-    <p class="smailTitle">
-      <i class="fa fa-users fa-fw" aria-hidden="true"></i> 关注好友列表</p>
-    <div class="sild-bar">
+    <div class="followTabBox">
       <p v-for="(follower, index) in followers" :key="index">
-        <a :href="'/user/' + follower.name">{{follower.nikeName}}</a>
+        <a href="javascrpit:;" @click="checkUser(follower.name)" :to="{ name: 'UserPage', params: { name: follower.name }}">{{follower.nikeName}}</a>
         <el-button type="text" @click="deleteFriend(index)">
           <i class="fa fa-close fa-fw" aria-hidden="true"></i>
         </el-button>
       </p>
     </div>
-    <hr class="line" />
 
     <el-dialog title="提示" :visible.sync="dialogVisible" size="tiny" :before-close="handleClose">
       <span>是否要取消关注 {{selectedMan}}</span>
@@ -45,20 +42,21 @@ export default {
     },
     handleClose(done) {
       done();
+    },
+    checkUser(userName) {
+      if (userName == 'zhenlychen') {
+        this.$router.push('/');
+      } else {
+        this.$router.push({ name: 'UserPage', params: { name: userName } });
+      }
     }
   }
 };
 </script>
 
 <style lang="scss">
-.smailTitle {
-  font-size: 15px;
-}
-
-.sild-bar {
+.followTabBox {
   >p {
-    margin: 6px 14px;
-    width: 70%;
     >a {
       font-size: 14px;
     }
