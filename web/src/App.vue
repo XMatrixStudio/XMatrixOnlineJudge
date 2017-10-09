@@ -17,7 +17,7 @@ export default {
   },
   methods: {
     changeNav(index) {
-      console.log(index)
+      console.log('nav', index)
       this.nav = index
     }
   }

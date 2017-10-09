@@ -33,6 +33,10 @@ export default {
     };
   },
   mounted() {
+    this.$emit('changeNav', '1');
+    // 代码登陆
+    this.$store.state.user.logged = true;
+    // 测试代码
     this.checkLogin();
   },
   components: { userInfo, followInfo, followTab },

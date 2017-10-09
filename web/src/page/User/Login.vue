@@ -27,8 +27,12 @@ export default {
   },
   methods: {
     init() {
-      this.$emit('changeNav', '0');
-      this.$message.error('请登陆后再访问');
+      this.$emit('changeNav', '1');
+      this.$message({
+          showClose: true,
+          message: '请登陆后再访问',
+          type: 'error'
+        });
     },
     gotoViolet() {
       window.location.href = 'https://oauth.xmatrix.studio/?sid=10001&args=login';

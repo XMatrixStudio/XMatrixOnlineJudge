@@ -7,7 +7,7 @@ import Vuex from 'vuex';
 import VueResource from 'vue-resource';
 import ElementUI from 'element-ui';
 import store from './store';
-import '../node_modules/element-ui/lib/theme-default/index.css';
+import 'element-ui/lib/theme-chalk/index.css';
 import 'font-awesome-webpack';
 Vue.use(Vuex);
 Vue.use(VueResource);

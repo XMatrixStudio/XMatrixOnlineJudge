@@ -3,35 +3,20 @@
     <el-col :xs="{span: 22, offset: 1}" :span="18" :offset="3">
       <el-tabs v-model="activeName" @tab-click="handleClick">
         <el-tab-pane v-for="(tab, index) in problem" :label="tab.name" :name="'tab' + index" :key="index">
-          <el-table :data="tab.content" style="width: 100%">
+          <el-table stripe :data="tab.content" :default-sort="{prop: 'pid', order: 'ascending'}">
             <el-table-column type="expand">
               <template scope="props">
                 <el-form label-position="left" inline class="demo-table-expand">
-                  <el-form-item label="题目">
-                    <span>{{ props.row.title }}</span>
+                  <el-form-item label="类型">
+                    <span>{{ props.row.class }}</span>
                   </el-form-item>
-                  <el-form-item label="所属店铺">
-                    <span>{{ props.row.shop }}</span>
-                  </el-form-item>
-                  <el-form-item label="商品 ID">
-                    <span>{{ props.row.id }}</span>
-                  </el-form-item>
-                  <el-form-item label="店铺 ID">
-                    <span>{{ props.row.shopId }}</span>
-                  </el-form-item>
-                  <el-form-item label="商品分类">
-                    <span>{{ props.row.category }}</span>
-                  </el-form-item>
-                  <el-form-item label="店铺地址">
-                    <span>{{ props.row.address }}</span>
-                  </el-form-item>
-                  <el-form-item label="商品描述">
-                    <span>{{ props.row.desc }}</span>
+                  <el-form-item label="出题人">
+                    <span>{{ props.row.authorName }}</span>
                   </el-form-item>
                 </el-form>
               </template>
             </el-table-column>
-            <el-table-column label="ID" prop="pid">
+            <el-table-column sortable label="ID" prop="pid" width="70">
             </el-table-column>
             <el-table-column label="题目" prop="title">
               <template scope="props">
@@ -43,7 +28,18 @@
                 <el-tag v-for="(tag,index) in props.row.tags" :key="index" type="success" close-transition>{{tag}}</el-tag>
               </template>
             </el-table-column>
+            <el-table-column sortable label="通过人数" width="120" prop="ACCounts">
+              <template scope="props">
+                {{props.row.ACCounts}} ({{Math.ceil(props.row.ACCounts / props.row.JudgeCounts * 1000)/10}}%)
+              </template>
+            </el-table-column>
+            <el-table-column sortable label="评测数" prop="JudgeCounts" width="100">
+            </el-table-column>
           </el-table>
+          <div class="paginagion">
+            <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page.sync="tab.currentPage" :page-size="10" layout="prev, pager, next, jumper" :total="tab.total">
+            </el-pagination>
+          </div>
         </el-tab-pane>
       </el-tabs>
     </el-col>
@@ -58,6 +54,9 @@ export default {
       problem: [
         {
           name: '算法',
+          category: 'algorithms',
+          currentPage: 1,
+          total: 50,
           content: [{
             "_id": "59ab7437e6010858e5b04152",
             "pid": 10000,
@@ -65,8 +64,6 @@ export default {
             "category": "algorithms",
             "tags": ['数据结构', '并查集', '输入输出'],
             "title": "Hello, world",
-            "timeLimit": 1000,
-            "memoryLimit": 1000,
             "authorName": "MegaShow",
             "ACCounts": 10,
             "JudgeCounts": 38,
@@ -78,8 +75,6 @@ export default {
             "category": "algorithms",
             "tags": ['二叉树'],
             "title": "Hi, world",
-            "timeLimit": 1000,
-            "memoryLimit": 1000,
             "authorName": "MegaShow",
             "ACCounts": 18,
             "JudgeCounts": 98,
@@ -91,8 +86,6 @@ export default {
             "category": "algorithms",
             "tags": ['队列', '红黑树'],
             "title": "Hello, world",
-            "timeLimit": 1000,
-            "memoryLimit": 1000,
             "authorName": "MegaShow",
             "ACCounts": 10,
             "JudgeCounts": 38,
@@ -104,8 +97,6 @@ export default {
             "category": "algorithms",
             "tags": ['队列', '红黑树'],
             "title": "Hi, world",
-            "timeLimit": 1000,
-            "memoryLimit": 1000,
             "authorName": "MegaShow",
             "ACCounts": 78,
             "JudgeCounts": 98,
@@ -113,15 +104,16 @@ export default {
           }]
         }, {
           name: '数据结构',
+          category: 'dataStructure',
+          currentPage: 1,
+          total: 500,
           content: [{
             "_id": "59ab7437e6010858e5b04152",
             "pid": 10004,
             "class": "编程题",
-            "category": "algorithms",
+            "category": "dataStructure",
             "tags": ['队列', '红黑树'],
             "title": "Hello, world3",
-            "timeLimit": 1000,
-            "memoryLimit": 1000,
             "authorName": "MegaShow",
             "ACCounts": 0,
             "JudgeCounts": 18,
@@ -130,11 +122,9 @@ export default {
             "_id": "59ab743be6010858e5b04156",
             "pid": 10332,
             "class": "编程题",
-            "category": "algorithms",
+            "category": "dataStructure",
             "tags": ['队列', '红黑树'],
             "title": "Hi, world",
-            "timeLimit": 1000,
-            "memoryLimit": 1000,
             "authorName": "MegaShow",
             "ACCounts": 8,
             "JudgeCounts": 19,
@@ -142,15 +132,16 @@ export default {
           }]
         }, {
           name: '设计模式',
+          category: "design",
+          currentPage: 1,
+          total: 5,
           content: [{
             "_id": "59ab7437e6010858e5b04152",
             "pid": 10044,
             "class": "编程题",
-            "category": "algorithms",
+            "category": "design",
             "tags": ['队列', '红黑树'],
             "title": "Hello, world2.0",
-            "timeLimit": 1000,
-            "memoryLimit": 1000,
             "authorName": "MegaShow",
             "ACCounts": 0,
             "JudgeCounts": 18,
@@ -171,6 +162,12 @@ export default {
     },
     init() {
       this.$emit('changeNav', '2');
+    },
+    handleSizeChange(val) {
+      console.log(`每页 ${val} 条`);
+    },
+    handleCurrentChange(val) {
+      console.log(`当前页: ${val}`);
     }
   },
   mounted() {
@@ -180,5 +177,23 @@ export default {
 </script>
 
 <style lang="scss">
+.el-tag {
+  margin: 3px;
+}
 
+.el-form-item {
+  width: 45%;
+  margin-right: 0;
+  margin-bottom: 0;
+}
+
+.el-form-item__label {
+  width: 90px;
+  color: #99a9bf;
+}
+
+.paginagion {
+  margin-top: 20px;
+  text-align: center;
+}
 </style>

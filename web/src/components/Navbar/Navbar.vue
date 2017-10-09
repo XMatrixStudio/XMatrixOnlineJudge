@@ -1,7 +1,14 @@
 <template>
   <div class="navBox">
     <el-col :lg="{span: 18, offset: 3}">
-      <el-menu theme="dark" :default-active="activeIndex" mode="horizontal" @select="handleSelect">
+      <el-menu
+  :default-active="activeIndex"
+  class="el-menu-demo"
+  mode="horizontal"
+  @select="handleSelect"
+  background-color="#23262E"
+  text-color="#fff"
+  active-text-color="#5FB878">
         <li class="nav-brand">XMatrix</li>
         <el-menu-item index="1">
           <i class="fa fa-home fa-fw" aria-hidden="true"></i> 个人中心</el-menu-item>
@@ -56,14 +63,18 @@ export default {
 
 <style lang="scss">
 $fontColor: #bfcbd9;
+.el-menu--horizontal {
+  border-bottom: none;
+}
 .navBox {
   z-index: 1024;
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
-  background: #324157;
+  background: #23262E;
   min-width: 530px;
+  border-bottom: solid 1px #e6e6e6;
 }
 
 @keyframes brand {
