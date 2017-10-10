@@ -20,7 +20,7 @@
             </el-table-column>
             <el-table-column label="题目" prop="title">
               <template scope="props">
-                <a :href="'problem/' + props.row.pid">{{props.row.title}}</a>
+                <router-link :to="'/problem/' + props.row.pid">{{props.row.title}}</router-link>
               </template>
             </el-table-column>
             <el-table-column label="标签">

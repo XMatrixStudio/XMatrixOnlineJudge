@@ -4,6 +4,7 @@ import User from '@/page/User/Index';
 import UserPage from '@/page/User/UserPage';
 import UserLogin from '@/page/User/Login';
 import Problem from '@/page/Problem/ProblemList';
+import ProblemDetail from '@/page/Problem/ProblemDetail';
 
 Vue.use(Router);
 
@@ -16,6 +17,10 @@ export default new Router({
     path: '/problem',
     name: 'Problem',
     component: Problem
+  }, {
+    path: '/problem/:pid',
+    name: 'ProblemDetail',
+    component: ProblemDetail
   }, {
     path: '/user/:name',
     name: 'UserPage',
