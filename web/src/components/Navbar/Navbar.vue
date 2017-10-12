@@ -67,7 +67,7 @@ $fontColor: #bfcbd9;
   border-bottom: none;
 }
 .navBox {
-  z-index: 1024;
+  z-index: 102400;
   position: fixed;
   top: 0;
   left: 0;

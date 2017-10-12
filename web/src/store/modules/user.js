@@ -1,5 +1,6 @@
 const state = {
-  logged: false
+  logged: false,
+  name: 'zhenlychen'
 };
 
 const getters = {};

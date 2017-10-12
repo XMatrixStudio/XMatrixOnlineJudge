@@ -9,7 +9,7 @@ import ElementUI from 'element-ui';
 import store from './store';
 import VueCodeMirror from 'vue-codemirror';
 import 'element-ui/lib/theme-chalk/index.css';
-import 'font-awesome-webpack';
+//import 'font-awesome-webpack';
 import ax from '@/lib/axios';
 Vue.use(Vuex);
 Vue.use(VueResource);

@@ -1,5 +1,5 @@
 <template>
-  <el-card>
+  <el-card class="codebox">
     <p class="selectbox">
       <span>Language:
         <el-select v-model="editorOptions.mode" placeholder="C++ 14">
@@ -21,11 +21,6 @@
 <script>
 import marked from 'marked';
 import { codemirror, CodeMirror } from 'vue-codemirror';
-// 导入主题文件
-require('../../../node_modules/codemirror/theme/mdn-like.css');
-require('../../../node_modules/codemirror/theme/base16-dark.css');
-require('../../../node_modules/codemirror/theme/monokai.css');
-require('../../../node_modules/codemirror/theme/material.css');
 // 导入lang高亮文件
 require('../../../node_modules/codemirror/mode/clike/clike.js');
 require('../../../node_modules/codemirror/mode/javascript/javascript.js');
@@ -110,5 +105,8 @@ export default {
 }
 .themebox{
   text-align: right;
+}
+.codebox{
+  margin-top: 20px;
 }
 </style>

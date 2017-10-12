@@ -1,10 +1,10 @@
 <template>
   <div class="followBox">
-    <a href="javascript:;" @click="toFollow('following')">
+    <a href="javascript:;">
       <p class="followTitle">关注</p>
       <p>{{following}}</p>
     </a>
-    <a href="javascript:;" @click="toFollow('follower')">
+    <a href="javascript:;">
       <p class="followTitle">粉丝</p>
       <p>{{follower}}</p>
     </a>
@@ -25,9 +25,6 @@ export default {
     };
   },
   methods: {
-    toFollow (index) {
-      this.$emit('changeTab', index)
-    }
   }
 };
 </script>

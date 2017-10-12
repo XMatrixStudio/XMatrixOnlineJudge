@@ -8,12 +8,8 @@
     </el-col>
     <el-col :xs="{span: 22, offset: 1}" :sm="16" :md="17" :lg="13">
       <el-tabs v-model="activeName" @tab-click="handleClick">
-        <el-tab-pane label="主页" name="notice">主页即将上线</el-tab-pane>
         <el-tab-pane label="留言" name="message">留言即将上线</el-tab-pane>
         <el-tab-pane label="统计数据" name="userData">统计数据即将上线</el-tab-pane>
-        <el-tab-pane label="关注" name="following"><follow-tab></follow-tab>
-        </el-tab-pane>
-        <el-tab-pane label="粉丝" name="follower">关注模块即将上线</el-tab-pane>
         <el-tab-pane label="成就" name="userTitle">成就系统即将上线</el-tab-pane>
         <el-tab-pane label="用户设置" name="userSetting">用户设置即将上线</el-tab-pane>
       </el-tabs>
@@ -24,12 +20,11 @@
 <script>
 import userInfo from '../../components/User/Side/UserInfo';
 import followInfo from '../../components/User/Side/FollowInfo';
-import followTab from '../../components/User/Content/Follow';
 export default {
   name: 'User',
   data() {
     return {
-      activeName: 'notice'
+      activeName: 'message'
     };
   },
   mounted() {
@@ -39,7 +34,7 @@ export default {
     // 测试代码
     this.checkLogin();
   },
-  components: { userInfo, followInfo, followTab },
+  components: { userInfo, followInfo },
   methods: {
     handleClick(tab, event) {
 

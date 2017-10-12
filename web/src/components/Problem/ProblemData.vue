@@ -31,6 +31,7 @@
 
 <script>
 import marked from 'marked';
+import 'highlight.js/styles/atom-one-light.css';
 export default {
   data() {
     return {
@@ -75,6 +76,10 @@ export default {
 <style lang="scss">
 .problem_detail .el-card {
   margin-bottom: 10px;
+}
+
+.el-tabs__content{
+  padding-left: 0;
 }
 
 .title {
